@@ -1,0 +1,16 @@
+import type { Metadata } from 'next'
+import '../globals.css'
+
+export const metadata: Metadata = {
+  title: 'Theme Preview',
+}
+
+export default function PreviewLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body style={{ margin: 0, padding: 0, background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
+        {children}
+      </body>
+    </html>
+  )
+}
