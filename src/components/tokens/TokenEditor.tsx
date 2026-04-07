@@ -8,18 +8,42 @@ export interface TokenOverrides {
   secondary?: string
   accent?: string
   radius?: string
+  fontHeading?: string
+  fontBody?: string
+  fontMono?: string
 }
 
 interface TokenEditorProps {
   primaryForeground: string
   overrides: TokenOverrides
   defaults: { primary: string; secondary: string; accent: string; radius: string }
+  presetFonts: { heading: string; body: string; mono: string }
   onChange: (overrides: TokenOverrides) => void
 }
 
 const RADIUS_OPTIONS = ['0px', '4px', '8px', '12px', '16px', '24px']
 
-export function TokenEditor({ primaryForeground, overrides, defaults, onChange }: TokenEditorProps) {
+const HEADING_FONTS = [
+  { label: 'Preset default', value: '' },
+  { label: 'System UI', value: 'system-ui, sans-serif' },
+  { label: 'Arial Black', value: "'Arial Black', Impact, sans-serif" },
+  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Palatino', value: 'Palatino, serif' },
+]
+const BODY_FONTS = [
+  { label: 'Preset default', value: '' },
+  { label: 'System UI', value: 'system-ui, sans-serif' },
+  { label: 'Georgia', value: 'Georgia, serif' },
+  { label: 'Courier New', value: "'Courier New', monospace" },
+]
+const MONO_FONTS = [
+  { label: 'Preset default', value: '' },
+  { label: 'Courier New', value: "'Courier New', monospace" },
+  { label: 'Lucida Console', value: "'Lucida Console', monospace" },
+  { label: 'Monaco', value: 'Monaco, monospace' },
+]
+
+export function TokenEditor({ primaryForeground, overrides, defaults, presetFonts, onChange }: TokenEditorProps) {
   const primary = overrides.primary ?? defaults.primary
   const secondary = overrides.secondary ?? defaults.secondary
   const accent = overrides.accent ?? defaults.accent
@@ -34,6 +58,10 @@ export function TokenEditor({ primaryForeground, overrides, defaults, onChange }
 
   const setRadius = (val: string) => {
     onChange({ ...overrides, radius: val })
+  }
+
+  const setFont = (key: 'fontHeading' | 'fontBody' | 'fontMono', val: string) => {
+    onChange({ ...overrides, [key]: val || undefined })
   }
 
   return (
@@ -85,6 +113,35 @@ export function TokenEditor({ primaryForeground, overrides, defaults, onChange }
           </select>
         </div>
       </div>
+
+      <div style={{ marginTop: '12px', borderTop: '1px solid hsl(var(--border, 0 0% 20%))', paddingTop: '8px' }}>
+        <div style={{ fontSize: '10px', fontFamily: 'monospace', color: 'hsl(var(--muted-foreground, 0 0% 40%))', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Typography
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <FontRow
+            label="Heading"
+            options={HEADING_FONTS}
+            value={overrides.fontHeading ?? ''}
+            presetDefault={presetFonts.heading}
+            onChange={(val) => setFont('fontHeading', val)}
+          />
+          <FontRow
+            label="Body"
+            options={BODY_FONTS}
+            value={overrides.fontBody ?? ''}
+            presetDefault={presetFonts.body}
+            onChange={(val) => setFont('fontBody', val)}
+          />
+          <FontRow
+            label="Mono"
+            options={MONO_FONTS}
+            value={overrides.fontMono ?? ''}
+            presetDefault={presetFonts.mono}
+            onChange={(val) => setFont('fontMono', val)}
+          />
+        </div>
+      </div>
     </div>
   )
 }
@@ -95,6 +152,43 @@ interface ColorRowProps {
   badge?: string
   badgeOk?: boolean
   onChange: (hex: string) => void
+}
+
+interface FontRowProps {
+  label: string
+  options: { label: string; value: string }[]
+  value: string
+  presetDefault: string
+  onChange: (val: string) => void
+}
+
+function FontRow({ label, options, value, onChange }: FontRowProps) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <span style={{ fontSize: '11px', fontFamily: 'monospace', color: 'hsl(var(--foreground, 0 0% 5%))' }}>
+        {label}
+      </span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          fontSize: '11px',
+          fontFamily: 'monospace',
+          background: 'hsl(var(--muted, 0 0% 88%))',
+          color: 'hsl(var(--foreground, 0 0% 5%))',
+          border: '1px solid hsl(var(--border, 0 0% 20%))',
+          borderRadius: '2px',
+          padding: '2px 4px',
+          cursor: 'pointer',
+          maxWidth: '130px',
+        }}
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>{opt.label}</option>
+        ))}
+      </select>
+    </div>
+  )
 }
 
 function ColorRow({ label, value, badge, badgeOk, onChange }: ColorRowProps) {

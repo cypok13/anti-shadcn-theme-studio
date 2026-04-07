@@ -15,11 +15,15 @@ export function PreviewFrame({ presetId, mode, overrides, activeTab }: PreviewFr
   if (overrides?.secondary) params.set('secondary', overrides.secondary)
   if (overrides?.accent) params.set('accent', overrides.accent)
   if (overrides?.radius) params.set('radius', overrides.radius)
+  if (overrides?.fontHeading) params.set('fontHeading', overrides.fontHeading)
+  if (overrides?.fontBody) params.set('fontBody', overrides.fontBody)
+  if (overrides?.fontMono) params.set('fontMono', overrides.fontMono)
   if (activeTab) params.set('tab', activeTab)
 
   const src = `/preview?${params.toString()}`
   return (
     <iframe
+      key={src}
       src={src}
       style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
       title="Theme preview"

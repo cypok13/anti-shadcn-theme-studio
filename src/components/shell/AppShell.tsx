@@ -47,11 +47,35 @@ export function AppShell() {
         display: 'flex',
         height: '100vh',
         overflow: 'hidden',
-        background: 'hsl(var(--background, 5 0% 97%))',
-        color: 'hsl(var(--foreground, 0 0% 5%))',
+        background: `hsl(${tokens.background})`,
+        color: `hsl(${tokens.foreground})`,
         fontFamily: 'system-ui, sans-serif',
       }}
     >
+      <style>{`
+        :root {
+          --background: ${tokens.background};
+          --foreground: ${tokens.foreground};
+          --card: ${tokens.card};
+          --card-foreground: ${tokens.cardForeground};
+          --popover: ${tokens.popover};
+          --popover-foreground: ${tokens.popoverForeground};
+          --primary: ${tokens.primary};
+          --primary-foreground: ${tokens.primaryForeground};
+          --secondary: ${tokens.secondary};
+          --secondary-foreground: ${tokens.secondaryForeground};
+          --muted: ${tokens.muted};
+          --muted-foreground: ${tokens.mutedForeground};
+          --accent: ${tokens.accent};
+          --accent-foreground: ${tokens.accentForeground};
+          --destructive: ${tokens.destructive};
+          --destructive-foreground: ${tokens.destructiveForeground};
+          --border: ${tokens.border};
+          --input: ${tokens.input};
+          --ring: ${tokens.ring};
+          --radius: ${tokens.radius};
+        }
+      `}</style>
       {/* Sidebar */}
       <aside
         style={{
@@ -60,14 +84,14 @@ export function AppShell() {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          borderRight: '1px solid hsl(var(--border, 0 0% 20%))',
-          background: 'hsl(var(--background, 5 0% 97%))',
+          borderRight: `1px solid hsl(${tokens.border})`,
+          background: `hsl(${tokens.background})`,
         }}
       >
         <div
           style={{
             padding: '12px 16px',
-            borderBottom: '1px solid hsl(var(--border, 0 0% 20%))',
+            borderBottom: `1px solid hsl(${tokens.border})`,
           }}
         >
           <span style={{ fontFamily: 'monospace', fontSize: '14px', fontWeight: 700 }}>
@@ -92,13 +116,14 @@ export function AppShell() {
             accent: tokens.accent,
             radius: tokens.radius,
           }}
+          presetFonts={selectedPreset.fonts}
           onChange={setOverrides}
         />
 
         <div
           style={{
             padding: '12px',
-            borderTop: '1px solid hsl(var(--border, 0 0% 20%))',
+            borderTop: `1px solid hsl(${tokens.border})`,
             display: 'flex',
             gap: '8px',
           }}
@@ -110,10 +135,10 @@ export function AppShell() {
               fontSize: '12px',
               fontFamily: 'monospace',
               padding: '6px 0',
-              background: 'hsl(var(--primary, 0 0% 5%))',
-              color: 'hsl(var(--primary-foreground, 0 0% 100%))',
+              background: `hsl(${tokens.primary})`,
+              color: `hsl(${tokens.primaryForeground})`,
               border: 'none',
-              borderRadius: 'var(--radius, 0)',
+              borderRadius: tokens.radius,
               cursor: 'pointer',
             }}
           >
@@ -126,10 +151,10 @@ export function AppShell() {
               fontSize: '12px',
               fontFamily: 'monospace',
               padding: '6px 0',
-              background: 'hsl(var(--muted, 0 0% 88%))',
-              color: 'hsl(var(--muted-foreground, 0 0% 40%))',
+              background: `hsl(${tokens.muted})`,
+              color: `hsl(${tokens.mutedForeground})`,
               border: 'none',
-              borderRadius: 'var(--radius, 0)',
+              borderRadius: tokens.radius,
               cursor: 'pointer',
             }}
           >
@@ -149,7 +174,7 @@ export function AppShell() {
             onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
             style={{
               fontSize: '12px',
-              color: 'hsl(var(--muted-foreground, 0 0% 40%))',
+              color: `hsl(${tokens.mutedForeground})`,
               background: 'none',
               border: 'none',
               cursor: 'pointer',
@@ -159,12 +184,12 @@ export function AppShell() {
             {mode === 'light' ? '◐ Dark' : '○ Light'}
           </button>
           <a
-            href="https://github.com"
+            href="https://github.com/cypok13/anti-shadcn-theme-studio"
             target="_blank"
             rel="noopener noreferrer"
             style={{
               fontSize: '12px',
-              color: 'hsl(var(--muted-foreground, 0 0% 40%))',
+              color: `hsl(${tokens.mutedForeground})`,
               textDecoration: 'none',
             }}
             aria-label="GitHub"
@@ -179,8 +204,8 @@ export function AppShell() {
         <div
           style={{
             display: 'flex',
-            borderBottom: '1px solid hsl(var(--border, 0 0% 20%))',
-            background: 'hsl(var(--background, 5 0% 97%))',
+            borderBottom: `1px solid hsl(${tokens.border})`,
+            background: `hsl(${tokens.background})`,
             padding: '0 16px',
           }}
         >
@@ -195,11 +220,11 @@ export function AppShell() {
                 background: 'none',
                 border: 'none',
                 borderBottom: activeTab === tab
-                  ? '2px solid hsl(var(--primary, 0 0% 5%))'
+                  ? `2px solid hsl(${tokens.primary})`
                   : '2px solid transparent',
                 color: activeTab === tab
-                  ? 'hsl(var(--foreground, 0 0% 5%))'
-                  : 'hsl(var(--muted-foreground, 0 0% 40%))',
+                  ? `hsl(${tokens.foreground})`
+                  : `hsl(${tokens.mutedForeground})`,
                 cursor: 'pointer',
                 marginBottom: '-1px',
                 textTransform: 'capitalize',
