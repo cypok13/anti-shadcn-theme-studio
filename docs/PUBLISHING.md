@@ -1,33 +1,28 @@
 # Docs Publishing Policy
 
-This document defines what gets committed to the public repository.
+Defines what is allowed in this public repository.
 
-## What is public
-
-Everything in `docs/` is public **except** the files listed under "What is private" below.
-The goal is transparency: this project is built in public.
+## What belongs here
 
 | Path | Purpose |
 |------|---------|
-| `docs/build-log.md` | Development diary — source for case study on notjustsasha.com |
-| `docs/research/` | UX research, competitive audit, market analysis |
-| `docs/adr/` | Architecture Decision Records |
-| `docs/PLAN.md` | Research sprint plan and status |
-| `docs/product-spec.md` | Product decisions and feature list |
-| `docs/component-spec.md` | Component design specifications |
-| `docs/day-11-usability-findings.md` | AI persona usability testing results |
-| `docs/day4-demo/`, `docs/day5-demo/` | Prototype code from research sprint |
+| `src/` | Application source code |
+| `docs/PUBLISHING.md` | This policy document |
+| Root config files | `package.json`, `tsconfig.json`, `next.config.ts`, etc. |
 
-## What is private (gitignored)
+## What does NOT belong here
 
-| Path | Reason |
-|------|--------|
-| `docs/README.md` | Internal Obsidian note — project tracking, wiki links, internal status |
-| `docs/sessions/` | Internal session logs — Obsidian artifacts with workflow details |
+- Internal build logs, development diaries, session notes
+- Planning documents, sprint plans, research notes
+- Any file containing internal project identifiers (Linear tickets, branch names)
+- Any file written in Russian or other non-English languages
+- Obsidian notes (files with YAML frontmatter `tags:` / `type:` or `[[wiki links]]`)
 
-## Rule
+## Rule for contributors
 
-If a file in `docs/` has YAML frontmatter with `tags:` or `type:` fields, or contains
-Obsidian wiki links (`[[...]]`), it is an internal Obsidian note and must NOT be committed.
+All documentation committed to this repository must be:
+1. Written in English
+2. Relevant to end users or contributors of the project
+3. Free of internal project management references
 
-Add it to `.gitignore` before the first commit.
+If a doc is internal (planning, research, personal notes) — keep it out of this repo.
