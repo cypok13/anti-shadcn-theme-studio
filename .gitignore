@@ -25,6 +25,8 @@ dist/
 .env.test.local
 .env.production.local
 
-# Internal Obsidian notes — not for public repo
-docs/README.md
-docs/sessions/
+# docs/ — whitelist: only PUBLISHING.md is allowed in public repo.
+# Everything else (build logs, research, Russian-language files,
+# internal planning docs, Obsidian notes) stays out.
+docs/*
+!docs/PUBLISHING.md
