@@ -8,7 +8,7 @@ interface ComponentGalleryProps {
 
 export function ComponentGallery({ activeTab = 'components' }: ComponentGalleryProps) {
   return (
-    <div className="bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+    <div className="h-full overflow-y-auto bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
       {activeTab === 'components' && <ComponentsTab />}
       {activeTab === 'cards' && <CardsTab />}
       {activeTab === 'typography' && <TypographyTab />}
