@@ -42,6 +42,14 @@ function tokensToV3(tokens: ThemeTokens): string {
     `  --chart-3: ${tokens.chart3};`,
     `  --chart-4: ${tokens.chart4};`,
     `  --chart-5: ${tokens.chart5};`,
+    `  --sidebar-background: ${tokens.sidebarBackground};`,
+    `  --sidebar-foreground: ${tokens.sidebarForeground};`,
+    `  --sidebar-primary: ${tokens.sidebarPrimary};`,
+    `  --sidebar-primary-foreground: ${tokens.sidebarPrimaryForeground};`,
+    `  --sidebar-accent: ${tokens.sidebarAccent};`,
+    `  --sidebar-accent-foreground: ${tokens.sidebarAccentForeground};`,
+    `  --sidebar-border: ${tokens.sidebarBorder};`,
+    `  --sidebar-ring: ${tokens.sidebarRing};`,
   ].join('\n')
 }
 
@@ -53,6 +61,8 @@ function tokensToV4(tokens: ThemeTokens): string {
     'accent', 'accentForeground', 'destructive', 'destructiveForeground',
     'border', 'input', 'ring',
     'chart1', 'chart2', 'chart3', 'chart4', 'chart5',
+    'sidebarBackground', 'sidebarForeground', 'sidebarPrimary', 'sidebarPrimaryForeground',
+    'sidebarAccent', 'sidebarAccentForeground', 'sidebarBorder', 'sidebarRing',
   ]
 
   const cssName = (key: string): string =>

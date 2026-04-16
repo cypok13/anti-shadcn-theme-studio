@@ -24,6 +24,14 @@ export interface ThemeTokens {
   chart3: string
   chart4: string
   chart5: string
+  sidebarBackground: string
+  sidebarForeground: string
+  sidebarPrimary: string
+  sidebarPrimaryForeground: string
+  sidebarAccent: string
+  sidebarAccentForeground: string
+  sidebarBorder: string
+  sidebarRing: string
 }
 
 export interface ThemePreset {

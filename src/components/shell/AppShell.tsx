@@ -37,7 +37,7 @@ export function AppShell() {
       setShareCopied(true)
       setTimeout(() => setShareCopied(false), 2000)
     } catch {
-      // clipboard not available
+      setShareCopied(false)
     }
   }, [presetId, mode])
 
@@ -108,14 +108,9 @@ export function AppShell() {
         </div>
 
         <TokenEditor
-          primaryForeground={tokens.primaryForeground}
+          tokens={tokens}
+          presetTokens={mode === 'dark' ? selectedPreset.dark : selectedPreset.light}
           overrides={overrides}
-          defaults={{
-            primary: tokens.primary,
-            secondary: tokens.secondary,
-            accent: tokens.accent,
-            radius: tokens.radius,
-          }}
           presetFonts={selectedPreset.fonts}
           onChange={setOverrides}
         />
@@ -241,6 +236,7 @@ export function AppShell() {
             mode={mode ?? 'light'}
             overrides={overrides}
             activeTab={activeTab}
+            shadowStyle={overrides.shadowStyle ?? selectedPreset.shadowStyle}
           />
         </main>
       </div>

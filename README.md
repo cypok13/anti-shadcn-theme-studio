@@ -104,3 +104,25 @@ Not anti-shadcn/ui the library — it's great. Anti the sameness. Anti the beige
 ---
 
 Built by [@cypok13](https://github.com/cypok13)
+
+---
+
+## Dev Reference
+
+**Status:** Active research sprint (ALE-637)  
+**Live:** [theme-studio-beta.vercel.app](https://theme-studio-beta.vercel.app)  
+**GitHub:** [cypok13/anti-shadcn-theme-studio](https://github.com/cypok13/anti-shadcn-theme-studio)  
+**Linear:** ALE-637
+
+**Local dev:** `npm run dev` → http://localhost:3005
+
+**Tests:** `npx vitest` (26 unit tests)
+
+**Architecture constraints (CRITICAL):**
+- `AppShell.tsx`: ONLY inline styles — `style={{ background: \`hsl(${tokens.background})\` }}` — NO Tailwind className with CSS-var refs
+- `/preview` route: can use Tailwind className freely
+- `ThemeTokens`: HSL bare strings — `"210 40% 98%"` (no `hsl()` wrapper)
+- iframe uses `key={src}` for forced remount
+
+**Research docs:** `docs/PLAN.md` (sprint index) | `docs/build-log.md` (session journal)  
+After each sprint day: update `build-log.md` + `docs/research/day-N.md` + mark `PLAN.md` day as ✅

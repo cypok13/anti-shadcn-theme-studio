@@ -11,6 +11,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@types/culori": "^4.0.1",
+    "culori": "^4.0.2",
     "next": "^15",
     "nuqs": "^2",
     "react": "^19",

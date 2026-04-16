@@ -15,18 +15,59 @@ function safeRadius(value: string | undefined, fallback: string): string {
   return value && RADIUS_RE.test(value.trim()) ? value.trim() : fallback
 }
 
+const COLOR_PARAM_KEYS: (keyof ThemeTokens)[] = [
+  'background', 'foreground', 'card', 'cardForeground',
+  'popover', 'popoverForeground', 'primary', 'primaryForeground',
+  'secondary', 'secondaryForeground', 'muted', 'mutedForeground',
+  'accent', 'accentForeground', 'destructive', 'destructiveForeground',
+  'border', 'input', 'ring',
+  'chart1', 'chart2', 'chart3', 'chart4', 'chart5',
+  'sidebarBackground', 'sidebarForeground', 'sidebarPrimary', 'sidebarPrimaryForeground',
+  'sidebarAccent', 'sidebarAccentForeground', 'sidebarBorder', 'sidebarRing',
+]
+
 interface PreviewPageProps {
   searchParams: Promise<{
     theme?: string
     mode?: string
-    primary?: string
-    secondary?: string
-    accent?: string
     radius?: string
     tab?: string
     fontHeading?: string
     fontBody?: string
     fontMono?: string
+    shadow?: string
+    background?: string
+    foreground?: string
+    card?: string
+    cardForeground?: string
+    popover?: string
+    popoverForeground?: string
+    primary?: string
+    primaryForeground?: string
+    secondary?: string
+    secondaryForeground?: string
+    muted?: string
+    mutedForeground?: string
+    accent?: string
+    accentForeground?: string
+    destructive?: string
+    destructiveForeground?: string
+    border?: string
+    input?: string
+    ring?: string
+    chart1?: string
+    chart2?: string
+    chart3?: string
+    chart4?: string
+    chart5?: string
+    sidebarBackground?: string
+    sidebarForeground?: string
+    sidebarPrimary?: string
+    sidebarPrimaryForeground?: string
+    sidebarAccent?: string
+    sidebarAccentForeground?: string
+    sidebarBorder?: string
+    sidebarRing?: string
   }>
 }
 
@@ -39,11 +80,15 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
   const preset = PRESETS.find((p) => p.id === themeId) ?? PRESETS[0]
   const baseTokens: ThemeTokens = mode === 'light' ? preset.light : preset.dark
 
+  const colorPatches: Partial<ThemeTokens> = {}
+  for (const key of COLOR_PARAM_KEYS) {
+    const val = (params as Record<string, string | undefined>)[key]
+    if (val) colorPatches[key] = safeHsl(val, baseTokens[key])
+  }
+
   const tokens: ThemeTokens = {
     ...baseTokens,
-    primary: safeHsl(params.primary, baseTokens.primary),
-    secondary: safeHsl(params.secondary, baseTokens.secondary),
-    accent: safeHsl(params.accent, baseTokens.accent),
+    ...colorPatches,
     radius: safeRadius(params.radius, baseTokens.radius),
   }
 
@@ -64,10 +109,22 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
     code, pre, kbd, samp { font-family: ${fonts.mono}; }
   `
 
+  const shadowStyle = params.shadow ?? preset.shadowStyle ?? 'none'
+  const shadowMap: Record<string, string> = {
+    none: 'none',
+    flat: '1px 1px 0 hsl(var(--border))',
+    soft: '0 2px 8px hsl(var(--foreground) / 0.08)',
+    dramatic: '0 8px 24px hsl(var(--foreground) / 0.15)',
+    glow: '0 0 16px hsl(var(--primary) / 0.3)',
+  }
+  const shadowValue = shadowMap[shadowStyle] ?? 'none'
+  const shadowCss = `:root { --shadow-preset: ${shadowValue}; }`
+
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: css }} />
       <style dangerouslySetInnerHTML={{ __html: fontCss }} />
+      <style dangerouslySetInnerHTML={{ __html: shadowCss }} />
       <ComponentGallery activeTab={activeTab} />
     </>
   )

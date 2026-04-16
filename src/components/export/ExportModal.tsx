@@ -6,8 +6,49 @@ import type { TokenOverrides } from '@/components/tokens/TokenEditor'
 import { resolveCSS } from '@/lib/themes/resolve'
 import { generateClaudeMd, generateCursorRules } from '@/lib/themes/ai-rules'
 
+const REGISTRY_BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://theme-studio-beta.vercel.app'
+
 type Tab = 'css' | 'claude' | 'cursor' | 'cli'
 type CSSFormat = 'v3' | 'v4'
+type ColorFormat = 'hsl' | 'hex' | 'oklch'
+
+function hslToHex(hsl: string): string {
+  const parts = hsl.trim().split(/\s+/)
+  const h = parseFloat(parts[0] ?? '0')
+  const s = parseFloat(parts[1] ?? '0') / 100
+  const l = parseFloat(parts[2] ?? '0') / 100
+  const a = s * Math.min(l, 1 - l)
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+    return Math.round(255 * color).toString(16).padStart(2, '0')
+  }
+  return `#${f(0)}${f(8)}${f(4)}`
+}
+
+function hslToOklch(hsl: string): string {
+  const parts = hsl.trim().split(/\s+/)
+  if (parts.length < 3) return 'oklch(0.5 0 0)'
+  const h = parseFloat(parts[0])
+  const s = parseFloat(parts[1]) / 100
+  const l = parseFloat(parts[2]) / 100
+  const lOklch = 0.2126 + l * 0.7874 * (1 - s * 0.3)
+  const c = s * 0.15 * (1 - Math.abs(2 * l - 1))
+  return `oklch(${lOklch.toFixed(4)} ${c.toFixed(4)} ${h.toFixed(2)})`
+}
+
+function applyColorFormat(css: string, format: ColorFormat): string {
+  if (format === 'hsl') return css
+  const hslRe = /(\d+(?:\.\d+)?) (\d+(?:\.\d+)?)% (\d+(?:\.\d+)?%)/g
+  if (format === 'hex') {
+    return css.replace(hslRe, (_, hPart, sPart, lPart) =>
+      hslToHex(`${hPart} ${sPart}% ${lPart}`)
+    )
+  }
+  return css.replace(hslRe, (_, hPart, sPart, lPart) =>
+    hslToOklch(`${hPart} ${sPart}% ${lPart}`)
+  )
+}
 
 export interface ExportModalProps {
   preset: ThemePreset
@@ -32,16 +73,21 @@ function applyOverrides(preset: ThemePreset, overrides: TokenOverrides): ThemePr
 export function ExportModal({ preset, mode, overrides = {}, isOpen, onClose }: ExportModalProps) {
   const [activeTab, setActiveTab] = useState<Tab>('css')
   const [cssFormat, setCSSFormat] = useState<CSSFormat>('v3')
+  const [colorFormat, setColorFormat] = useState<ColorFormat>('hsl')
   const [copied, setCopied] = useState(false)
+  const [copyError, setCopyError] = useState(false)
 
   const effectivePreset = applyOverrides(preset, overrides)
 
   const getContent = useCallback((): string => {
-    if (activeTab === 'css') return resolveCSS(effectivePreset, mode, cssFormat)
+    if (activeTab === 'css') {
+      const raw = resolveCSS(effectivePreset, mode, cssFormat)
+      return applyColorFormat(raw, colorFormat)
+    }
     if (activeTab === 'claude') return generateClaudeMd(effectivePreset)
     if (activeTab === 'cursor') return generateCursorRules(effectivePreset)
-    return `npx shadcn@latest add https://themestudio.vercel.app/r/themes/${preset.id}`
-  }, [activeTab, effectivePreset, preset.id, mode, cssFormat])
+    return `npx shadcn@latest add ${REGISTRY_BASE_URL}/r/${preset.id}`
+  }, [activeTab, effectivePreset, preset.id, mode, cssFormat, colorFormat])
 
   const handleCopy = useCallback(async () => {
     try {
@@ -49,7 +95,8 @@ export function ExportModal({ preset, mode, overrides = {}, isOpen, onClose }: E
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // clipboard not available
+      setCopyError(true)
+      setTimeout(() => setCopyError(false), 3000)
     }
   }, [getContent])
 
@@ -64,11 +111,11 @@ export function ExportModal({ preset, mode, overrides = {}, isOpen, onClose }: E
 
   if (!isOpen) return null
 
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'css', label: 'CSS Variables' },
-    { id: 'claude', label: 'CLAUDE.md' },
-    { id: 'cursor', label: '.cursorrules' },
-    { id: 'cli', label: 'CLI' },
+  const tabs: { id: Tab; label: string; title: string }[] = [
+    { id: 'css', label: 'CSS Variables', title: 'Copy into your globals.css' },
+    { id: 'claude', label: 'AI Config', title: 'CLAUDE.md — paste into your project root for Claude Code' },
+    { id: 'cursor', label: 'AI Rules', title: '.cursorrules — paste into your project root for Cursor / Copilot' },
+    { id: 'cli', label: 'CLI Install', title: 'One-command install via shadcn CLI' },
   ]
 
   return (
@@ -97,6 +144,7 @@ export function ExportModal({ preset, mode, overrides = {}, isOpen, onClose }: E
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
+              title={tab.title}
               className={[
                 'px-3 py-1.5 text-xs font-mono transition-colors border-b-2 -mb-px',
                 activeTab === tab.id
@@ -110,34 +158,57 @@ export function ExportModal({ preset, mode, overrides = {}, isOpen, onClose }: E
         </div>
 
         {activeTab === 'css' && (
-          <div className="flex gap-2 mb-3">
-            {(['v3', 'v4'] as const).map((fmt) => (
-              <button
-                key={fmt}
-                onClick={() => setCSSFormat(fmt)}
-                className={[
-                  'px-2.5 py-1 text-xs font-mono rounded transition-colors',
-                  cssFormat === fmt
-                    ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]'
-                    : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
-                ].join(' ')}
-              >
-                {fmt === 'v3' ? 'Tailwind v3' : 'Tailwind v4'}
-              </button>
-            ))}
-          </div>
+          <>
+            <div className="flex gap-2 mb-2">
+              {(['v3', 'v4'] as const).map((fmt) => (
+                <button
+                  key={fmt}
+                  onClick={() => setCSSFormat(fmt)}
+                  className={[
+                    'px-2.5 py-1 text-xs font-mono rounded transition-colors',
+                    cssFormat === fmt
+                      ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]'
+                      : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
+                  ].join(' ')}
+                >
+                  {fmt === 'v3' ? 'Tailwind v3' : 'Tailwind v4'}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 mb-3">
+              {(['hsl', 'hex', 'oklch'] as const).map((fmt) => (
+                <button
+                  key={fmt}
+                  onClick={() => setColorFormat(fmt)}
+                  className={[
+                    'px-2.5 py-1 text-xs font-mono rounded transition-colors uppercase',
+                    colorFormat === fmt
+                      ? 'bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] ring-1 ring-[hsl(var(--border))]'
+                      : 'bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
+                  ].join(' ')}
+                >
+                  {fmt}
+                </button>
+              ))}
+            </div>
+          </>
         )}
 
         <pre className="bg-[hsl(var(--muted))] rounded p-4 text-xs overflow-auto max-h-80 font-mono text-[hsl(var(--foreground))] leading-relaxed">
           {getContent()}
         </pre>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex items-center justify-end gap-3 mt-4">
+          {copyError && (
+            <span className="text-xs text-[hsl(var(--destructive))]">
+              Copy failed — select and copy manually
+            </span>
+          )}
           <button
             onClick={handleCopy}
             className="px-4 py-2 text-xs font-mono bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] rounded-[var(--radius)] hover:opacity-90 transition-opacity"
           >
-            {copied ? 'Copied!' : 'Copy'}
+            {copied ? '✓ Copied!' : 'Copy'}
           </button>
         </div>
       </div>

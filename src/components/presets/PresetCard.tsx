@@ -23,29 +23,37 @@ export function PresetCard({ preset, isSelected, onClick }: PresetCardProps) {
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      aria-pressed={isSelected}
       className={[
         'w-full text-left p-2.5 rounded-[var(--radius)] border transition-all duration-150 cursor-pointer',
         'bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]',
         borderClass,
       ].join(' ')}
     >
-      <div className="flex gap-1 mb-2">
-        <div
-          className="w-4 h-4 rounded-sm"
-          style={{ background: `hsl(${preset.light.primary})` }}
-        />
-        <div
-          className="w-4 h-4 rounded-sm"
-          style={{ background: `hsl(${preset.light.secondary})` }}
-        />
-        <div
-          className="w-4 h-4 rounded-sm"
-          style={{ background: `hsl(${preset.light.accent})` }}
-        />
-        <div
-          className="w-4 h-4 rounded-sm border border-[hsl(var(--border))]"
-          style={{ background: `hsl(${preset.light.background})` }}
-        />
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex gap-1">
+          <div
+            className="w-4 h-4 rounded-sm"
+            style={{ background: `hsl(${preset.light.primary})` }}
+          />
+          <div
+            className="w-4 h-4 rounded-sm"
+            style={{ background: `hsl(${preset.light.secondary})` }}
+          />
+          <div
+            className="w-4 h-4 rounded-sm"
+            style={{ background: `hsl(${preset.light.accent})` }}
+          />
+          <div
+            className="w-4 h-4 rounded-sm border border-[hsl(var(--border))]"
+            style={{ background: `hsl(${preset.light.background})` }}
+          />
+        </div>
+        {isSelected && (
+          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] leading-none">
+            ✓ active
+          </span>
+        )}
       </div>
 
       <div className="flex items-start justify-between gap-1">
