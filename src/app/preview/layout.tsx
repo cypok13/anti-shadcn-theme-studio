@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 export default function PreviewLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0, background: 'hsl(var(--background))', color: 'hsl(var(--foreground))' }}>
+      <body style={{ margin: 0, padding: 0, background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', overflowY: 'auto' }}>
         {children}
       </body>
     </html>
