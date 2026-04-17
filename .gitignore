@@ -25,8 +25,9 @@ dist/
 .env.test.local
 .env.production.local
 
-# docs/ — whitelist: only PUBLISHING.md is allowed in public repo.
-# Everything else (build logs, research, Russian-language files,
-# internal planning docs, Obsidian notes) stays out.
+# docs/ — whitelist: only approved files committed to public repo.
 docs/*
 !docs/PUBLISHING.md
+!docs/COMPONENT-PIPELINE.md
+!docs/specs/
+!docs/specs/component-spec-template.md

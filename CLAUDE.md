@@ -24,12 +24,42 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 | `docs/research/ai-testing-protocol.md` | День 11: AI persona testing protocol |
 | `docs/research/sprint-details.md` | Дни 2-12: execution prompts |
 
-## Правило аудита (ОБЯЗАТЕЛЬНО)
+## Component Pipeline (ОБЯЗАТЕЛЬНО — читать перед любым компонентом)
 
-Перед началом любой реализации и при проверке "что сделано":
-1. Читать `docs/MISSING-REQUIREMENTS.md` → сводная таблица внизу
-2. НЕ ходить на tweakcn — всё зафиксировано в трекере
-3. После реализации — отметить `❌ → ✅` в сводной таблице
+Полный пайплайн: **`docs/COMPONENT-PIPELINE.md`** (включает Error Log + ARIA APG links)
+Шаблон спецификации: **`docs/specs/component-spec-template.md`**
+
+**Правило: 1 компонент на сессию, не больше.**
+
+### Обязательная последовательность (нельзя пропустить):
+
+0. **RESEARCH** — запустить researcher subagent (см. Step 0.5 в COMPONENT-PIPELINE.md). Найти ARIA APG pattern, Radix docs, shadcn docs, GitHub examples. Spec пишется ПОСЛЕ research.
+1. **SPEC** — заполнить `docs/specs/[name]-spec.md` из шаблона (ARIA APG → варианты → состояния → токены → тест-план). Файл должен существовать ДО написания кода.
+2. **IMPLEMENT** — только токены (`var(--token)`), никаких hex. `cursor-pointer` на всех интерактивных элементах. Полная кликабельная зона для checkbox/radio/switch. **Читать Error Log в COMPONENT-PIPELINE.md перед реализацией.**
+3. **LINT** — `npm run lint:ui` должен пройти без ошибок.
+4. **PLAYWRIGHT** — `npm run test:components` (с запущенным dev server) должен пройти. **Pipeline автономный — фиксить все провалы ДО передачи CEO.**
+5. **VISUAL GATE** — CEO смотрит на живой UI и явно апрувит. До апрува тикет не закрывается.
+6. **MERGE + DEPLOY** — только после visual gate.
+
+### Автоматические проверки (18 тестов, 4 gates):
+
+| Gate | Проверка | Команда | Блокирует |
+|------|---------|---------|-----------|
+| 0 | Runtime integrity: JS errors, hydration, div-in-button | `npm run test:components` | merge |
+| 1 | cursor, user-select, disabled cursor, inline hex, axe-core | `npm run test:components` | merge |
+| 2 | Реальные state changes: checkbox/radio/switch/tabs/select | `npm run test:components` | merge |
+| 3 | Keyboard: Tab достигает интерактивных элементов | `npm run test:components` | merge |
+| — | Hardcoded hex в ui/ | `npm run lint:ui` | commit |
+| — | Build | `npm run build` | deploy |
+
+### Критические правила кода (из Error Log):
+
+- **SVG**: всегда `stroke="currentColor"` + `className="text-[hsl(var(--token))]"` на `<svg>` — никогда `stroke="hsl(var(...))"` как SVG attribute
+- **Переключатель thumb**: `bg-[hsl(var(--primary-foreground))]` — никогда `bg-white` или `bg-black`
+- **Disabled кнопки**: `cursor-not-allowed` + `disabled` атрибут — никогда `pointer-events-none` (убивает cursor rendering)
+- **Input labels**: всегда `<label htmlFor="id">` + `<input id="id">` — orphan inputs = axe critical violation
+- **Nested layout**: только root `app/layout.tsx` содержит `<html><body>` — nested layouts возвращают fragment
+- **Новые семантические цвета** (success/warning/info): добавить CSS переменную в `globals.css`, потом использовать
 
 ## Правило: фиксация данных каждого дня спринта
 

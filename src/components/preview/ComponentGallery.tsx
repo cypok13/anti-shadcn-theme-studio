@@ -1,6 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
+import { CalendarCard } from './cards/CalendarCard'
+
+const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
+const ActivityGoalCard = dynamic(() => import('./cards/ActivityGoalCard').then(m => ({ default: m.ActivityGoalCard })), { ssr: false })
+const ExerciseMinutesCard = dynamic(() => import('./cards/ExerciseMinutesCard').then(m => ({ default: m.ExerciseMinutesCard })), { ssr: false })
+const CreateAccountCard = dynamic(() => import('./cards/CreateAccountCard').then(m => ({ default: m.CreateAccountCard })), { ssr: false })
+const DatePickerCard = dynamic(() => import('./cards/DatePickerCard').then(m => ({ default: m.DatePickerCard })), { ssr: false })
 
 interface ComponentGalleryProps {
   activeTab?: string
@@ -17,13 +25,13 @@ export function ComponentGallery({ activeTab = 'components' }: ComponentGalleryP
 }
 
 const btnBase =
-  'rounded-[var(--radius)] font-medium inline-flex items-center justify-center transition-[opacity,background-color,border-color] duration-150 ease-in-out hover:opacity-90 active:opacity-80 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]'
+  'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-[var(--radius)] font-medium inline-flex items-center justify-center transition-[opacity,background-color,border-color] duration-150 ease-in-out enabled:hover:opacity-90 enabled:active:opacity-80 enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]'
 
 const btnVariants = {
   primary: `${btnBase} bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]`,
   secondary: `${btnBase} bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]`,
-  outline: `${btnBase} border border-[hsl(var(--border))] bg-transparent text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))]`,
-  ghost: `${btnBase} bg-transparent text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent))] hover:text-[hsl(var(--accent-foreground))]`,
+  outline: `${btnBase} border border-[hsl(var(--border))] bg-transparent text-[hsl(var(--foreground))] enabled:hover:bg-[hsl(var(--primary))] enabled:hover:text-[hsl(var(--primary-foreground))] enabled:hover:border-[hsl(var(--primary))]`,
+  ghost: `${btnBase} bg-transparent text-[hsl(var(--foreground))] enabled:hover:bg-[hsl(var(--accent))] enabled:hover:text-[hsl(var(--accent-foreground))]`,
   destructive: `${btnBase} bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))]`,
 }
 
@@ -47,19 +55,22 @@ function CheckboxDemo() {
       <h4 className={sectionHeading}>Checkbox</h4>
       <div className="space-y-2">
         {Object.entries(checked).map(([key, val]) => (
-          <label key={key} className="flex items-center gap-2 cursor-pointer">
+          <label
+            key={key}
+            className="flex items-center gap-2 cursor-pointer select-none"
+            onClick={() => setChecked(prev => ({ ...prev, [key]: !prev[key] }))}
+          >
             <div
-              onClick={() => setChecked(prev => ({ ...prev, [key]: !prev[key] }))}
               className={[
-                'w-4 h-4 rounded-[2px] border flex items-center justify-center transition-colors cursor-pointer',
+                'w-4 h-4 rounded-[2px] border flex items-center justify-center transition-colors shrink-0',
                 val
                   ? 'bg-[hsl(var(--primary))] border-[hsl(var(--primary))]'
                   : 'bg-transparent border-[hsl(var(--border))]',
               ].join(' ')}
             >
               {val && (
-                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                  <path d="M1 4L3.5 6.5L9 1" stroke="hsl(var(--primary-foreground))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg width="10" height="8" viewBox="0 0 10 8" fill="none" className="text-[hsl(var(--primary-foreground))]">
+                  <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               )}
             </div>
@@ -78,22 +89,24 @@ function SwitchDemo() {
       <h4 className={sectionHeading}>Switch</h4>
       <div className="space-y-3">
         {(Object.entries(states) as [keyof typeof states, boolean][]).map(([key, val]) => (
-          <div key={key} className="flex items-center justify-between max-w-xs">
-            <span className="text-sm capitalize text-[hsl(var(--foreground))]">{key.replace(/([A-Z])/g, ' $1')}</span>
-            <button
-              onClick={() => setStates(prev => ({ ...prev, [key]: !prev[key] }))}
-              className={[
-                'relative w-9 h-5 rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]',
-                val ? 'bg-[hsl(var(--primary))]' : 'bg-[hsl(var(--muted))]',
-              ].join(' ')}
-              role="switch" aria-checked={val}
-            >
+          <button
+            key={key}
+            onClick={() => setStates(prev => ({ ...prev, [key]: !prev[key] }))}
+            className="flex items-center justify-between w-full max-w-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]"
+            role="switch"
+            aria-checked={val}
+          >
+            <span className="text-sm capitalize text-[hsl(var(--foreground))] select-none">{key.replace(/([A-Z])/g, ' $1')}</span>
+            <span className={[
+              'relative w-9 h-5 rounded-full transition-colors duration-200 shrink-0',
+              val ? 'bg-[hsl(var(--primary))]' : 'bg-[hsl(var(--muted))]',
+            ].join(' ')}>
               <span className={[
-                'absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200',
+                'absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-[hsl(var(--primary-foreground))] shadow-sm transition-transform duration-200',
                 val ? 'translate-x-4' : 'translate-x-0',
               ].join(' ')} />
-            </button>
-          </div>
+            </span>
+          </button>
         ))}
       </div>
     </section>
@@ -108,11 +121,14 @@ function RadioDemo() {
       <h4 className={sectionHeading}>Radio</h4>
       <div className="space-y-2">
         {options.map((opt) => (
-          <label key={opt} className="flex items-center gap-2 cursor-pointer">
+          <label
+            key={opt}
+            className="flex items-center gap-2 cursor-pointer select-none"
+            onClick={() => setSelected(opt)}
+          >
             <div
-              onClick={() => setSelected(opt)}
               className={[
-                'w-4 h-4 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors',
+                'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors shrink-0',
                 selected === opt
                   ? 'border-[hsl(var(--primary))]'
                   : 'border-[hsl(var(--border))]',
@@ -148,7 +164,7 @@ function TabsDemo() {
               key={tab}
               onClick={() => setActive(tab)}
               className={[
-                'flex-1 px-2 py-1 text-xs rounded-[calc(var(--radius)-2px)] transition-colors capitalize',
+                'cursor-pointer flex-1 px-2 py-1 text-xs rounded-[calc(var(--radius)-2px)] transition-colors capitalize',
                 active === tab
                   ? 'bg-[hsl(var(--background))] text-[hsl(var(--foreground))] shadow-sm font-medium'
                   : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
@@ -176,7 +192,7 @@ function SelectDemo() {
       <div className="relative max-w-xs">
         <button
           onClick={() => setIsOpen(o => !o)}
-          className="flex w-full items-center justify-between rounded-[var(--radius)] border border-[hsl(var(--input))] bg-transparent px-3 py-1.5 text-sm text-[hsl(var(--foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+          className="cursor-pointer flex w-full items-center justify-between rounded-[var(--radius)] border border-[hsl(var(--input))] bg-transparent px-3 py-1.5 text-sm text-[hsl(var(--foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
         >
           <span className={selected ? '' : 'text-[hsl(var(--muted-foreground))]'}>
             {selected ?? 'Select a role...'}
@@ -192,7 +208,7 @@ function SelectDemo() {
                 key={opt}
                 onClick={() => { setSelected(opt); setIsOpen(false) }}
                 className={[
-                  'w-full text-left px-3 py-2 text-sm transition-colors',
+                  'cursor-pointer w-full text-left px-3 py-2 text-sm transition-colors',
                   selected === opt
                     ? 'bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]'
                     : 'text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent)/0.5)] hover:text-[hsl(var(--accent-foreground))]',
@@ -235,16 +251,10 @@ function ComponentsTab() {
           </div>
         ))}
         <div className="flex flex-wrap gap-2 items-center pt-1">
-          <button
-            disabled
-            className={`${btnVariants.primary} ${btnSizes.default} opacity-50 cursor-not-allowed pointer-events-none`}
-          >
+          <button disabled className={`${btnVariants.primary} ${btnSizes.default}`}>
             Disabled
           </button>
-          <button
-            disabled
-            className={`${btnVariants.outline} ${btnSizes.default} opacity-50 cursor-not-allowed pointer-events-none`}
-          >
+          <button disabled className={`${btnVariants.outline} ${btnSizes.default}`}>
             Disabled
           </button>
         </div>
@@ -277,18 +287,18 @@ function ComponentsTab() {
       <section className="space-y-3">
         <h4 className={sectionHeading}>Badges</h4>
         <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] px-2.5 py-0.5 text-xs font-medium">
+          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] px-2.5 py-0.5 text-xs font-medium cursor-pointer select-none">
             Primary
           </span>
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] px-2.5 py-0.5 text-xs font-medium">
+          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] px-2.5 py-0.5 text-xs font-medium cursor-pointer select-none">
             Secondary
           </span>
-          <span className="inline-flex items-center rounded-[var(--radius)] border border-[hsl(var(--border))] text-[hsl(var(--foreground))] bg-transparent px-2.5 py-0.5 text-xs font-medium">
+          <span className="inline-flex items-center rounded-[var(--radius)] border border-[hsl(var(--border))] text-[hsl(var(--foreground))] bg-transparent px-2.5 py-0.5 text-xs font-medium cursor-pointer select-none">
             Outline
           </span>
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-green-100 text-green-800 px-2.5 py-0.5 text-xs font-medium border border-green-200">Success</span>
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-yellow-100 text-yellow-800 px-2.5 py-0.5 text-xs font-medium border border-yellow-200">Warning</span>
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))] px-2.5 py-0.5 text-xs font-medium border border-[hsl(var(--destructive)/0.3)]">Destructive</span>
+          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))] px-2.5 py-0.5 text-xs font-medium border border-[hsl(var(--success)/0.3)] cursor-pointer select-none">Success</span>
+          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning))] px-2.5 py-0.5 text-xs font-medium border border-[hsl(var(--warning)/0.3)] cursor-pointer select-none">Warning</span>
+          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))] px-2.5 py-0.5 text-xs font-medium border border-[hsl(var(--destructive)/0.3)] cursor-pointer select-none">Destructive</span>
         </div>
       </section>
 
@@ -420,27 +430,29 @@ function CookieSettingsCard() {
       </p>
       <div className="space-y-3">
         {(Object.entries(prefs) as [keyof typeof prefs, boolean][]).map(([key, val]) => (
-          <div key={key} className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium capitalize">{key}</p>
-              <p className="text-xs text-[hsl(var(--muted-foreground))]">
+          <button
+            key={key}
+            onClick={() => toggle(key)}
+            className="flex items-center justify-between w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]"
+            role="switch"
+            aria-checked={val}
+          >
+            <span className="flex flex-col items-start text-left">
+              <span className="text-sm font-medium capitalize select-none">{key}</span>
+              <span className="text-xs text-[hsl(var(--muted-foreground))] select-none">
                 {key === 'functional' ? 'Required for core features' : 'Help us improve the product'}
-              </p>
-            </div>
-            <button
-              onClick={() => toggle(key)}
-              className={[
-                'relative w-9 h-5 rounded-full transition-colors duration-200',
-                val ? 'bg-[hsl(var(--primary))]' : 'bg-[hsl(var(--muted))]',
-              ].join(' ')}
-              role="switch" aria-checked={val}
-            >
+              </span>
+            </span>
+            <span className={[
+              'relative w-9 h-5 rounded-full transition-colors duration-200 shrink-0 ml-4',
+              val ? 'bg-[hsl(var(--primary))]' : 'bg-[hsl(var(--muted))]',
+            ].join(' ')}>
               <span className={[
                 'absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200',
                 val ? 'translate-x-4' : 'translate-x-0',
               ].join(' ')} />
-            </button>
-          </div>
+            </span>
+          </button>
         ))}
       </div>
       <button className={`mt-4 w-full ${btnVariants.primary} ${btnSizes.default}`}>
@@ -548,6 +560,24 @@ function CardsTab() {
 
       {/* Card 6 — Team Members */}
       <TeamMembersCard />
+
+      {/* Card 7 — Stats with charts */}
+      <StatsCard />
+
+      {/* Card 8 — Activity Goal */}
+      <ActivityGoalCard />
+
+      {/* Card 9 — Calendar */}
+      <CalendarCard />
+
+      {/* Card 10 — Exercise Minutes */}
+      <ExerciseMinutesCard />
+
+      {/* Card 11 — Create Account */}
+      <CreateAccountCard />
+
+      {/* Card 12 — Date Picker with Range */}
+      <DatePickerCard />
     </div>
   )
 }
