@@ -5,6 +5,110 @@
 
 ---
 
+## Usage Guidelines
+
+### When to use Button
+
+- Use when: triggering an action (submit, save, delete, open modal, navigate with side effects)
+- Do NOT use when: pure navigation with no side effects → use `<Link>` or `<a>` instead
+- Do NOT use when: toggling binary state → use Switch or Checkbox instead
+
+### Variant decision tree
+
+```
+What's the hierarchy of this action?
+
+Primary CTA? (one per view max)
+└── variant="default"  →  "Save", "Create", "Confirm", "Send"
+
+Secondary / supporting action?
+├── Has clear boundary needed → variant="outline"  →  "Cancel", "Back", "Edit"
+├── Lower visual weight → variant="secondary"  →  "View details", "Export"
+└── Inline in text / nav → variant="ghost"  →  icon actions, toolbar buttons, table row actions
+
+Destructive (can't undo)?
+└── variant="destructive"  →  "Delete", "Remove", "Revoke" (always confirm before firing)
+
+Looks like a link, acts like a button?
+└── variant="link"  →  inline "Forgot password?", "Learn more" that trigger actions not navigation
+```
+
+### Size decision tree
+
+```
+Context?
+├── Default UI, forms, dialogs → size="default" (40px)
+├── Tight spaces: tables, cards, badges → size="sm" (36px)
+├── Hero sections, prominent CTAs → size="lg" (44px)
+└── Icon-only action (no label) → size="icon" (40×40px square)
+    └── MUST have aria-label prop — no exceptions
+```
+
+### Disabled state decision tree
+
+```
+Why is the button unavailable?
+
+Action is loading / in-flight?
+└── isLoading={true}  →  shows spinner, aria-disabled, stays in tab order
+
+Form is invalid?
+└── disabled={true}  →  removed from tab order (acceptable — user can't submit invalid form)
+
+Contextually unavailable (permission, plan, quota)?
+└── aria-disabled="true" + title/tooltip explaining why
+    →  stays in tab order so screen reader users understand it exists
+    →  NEVER disabled attr — users deserve to know why, not to find nothing
+```
+
+### Common patterns
+
+```tsx
+// Primary CTA
+<Button onClick={handleSave}>Save changes</Button>
+
+// Destructive with confirmation
+<Button variant="destructive" onClick={() => setConfirmOpen(true)}>
+  Delete account
+</Button>
+
+// Loading state (form submit)
+<Button isLoading={isSubmitting} disabled={isSubmitting} type="submit">
+  Create project
+</Button>
+
+// Icon-only toolbar action
+<Button variant="ghost" size="icon" aria-label="Copy to clipboard">
+  <CopyIcon aria-hidden="true" />
+</Button>
+
+// asChild with Next.js Link
+<Button asChild>
+  <Link href="/dashboard">Go to dashboard</Link>
+</Button>
+
+// Conditionally unavailable (no permission)
+<Button
+  variant="default"
+  aria-disabled="true"
+  title="Upgrade to Pro to unlock exports"
+  onClick={(e) => e.preventDefault()}
+>
+  Export CSV
+</Button>
+```
+
+### Anti-patterns
+
+- **Never use `default` for two equal actions** — one must be primary, one secondary/outline
+- **Never use `link` variant for navigation** — use `<Link>` from next/link instead
+- **Never use `disabled` for permission gates** — user loses discoverability; use `aria-disabled` + tooltip
+- **Never put an icon inside `size="default"` without a label** — use `size="icon"` for icon-only
+- **Never skip `aria-label` on icon-only buttons** — axe-core critical violation
+- **Never stack two `variant="default"` buttons side by side** — creates false hierarchy
+
+---
+
 ## Identity
 
 - **Component name:** Button

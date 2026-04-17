@@ -6,6 +6,47 @@
 
 ---
 
+## Usage Guidelines
+
+> Fill this in AFTER spec is complete. Required before visual gate.
+
+### When to use this component
+
+- Use when: (specific trigger / context / user need)
+- Do NOT use when: (anti-patterns — what to use instead)
+
+### Variant decision tree
+
+```
+Need an action?
+├── Primary CTA → variant="default"
+├── Secondary action → variant="secondary" or variant="outline"
+├── Inline action (no bg) → variant="ghost"
+├── Destructive action → variant="destructive"
+└── Navigation-style link → variant="link"
+```
+
+### State decision tree
+
+```
+Which disabled pattern?
+├── Form submitting → isLoading (stays clickable-looking, aria-disabled)
+├── Permanently unavailable → disabled attr (removed from tab order)
+└── Conditionally unavailable → aria-disabled="true" (stays in tab order, shows tooltip)
+```
+
+### Common patterns
+
+```tsx
+// (fill in with 2-3 most common usage examples from real screens)
+```
+
+### Anti-patterns
+
+- (what NOT to do, with reason)
+
+---
+
 ## Identity
 
 - **Component name:**
