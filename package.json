@@ -10,7 +10,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:components": "playwright test tests/component-qa.spec.ts",
-    "lint:ui": "eslint \"src/components/ui/**/*.tsx\" --max-warnings 0"
+    "lint:ui": "eslint \"src/components/ui/**/*.tsx\" --max-warnings 0",
+    "docs:tokens": "npx tsx scripts/generate-token-index.ts",
+    "docs:components": "npx tsx scripts/generate-component-index.ts",
+    "docs:sync": "npx tsx scripts/docs-sync.ts",
+    "docs:validate": "npx tsx scripts/validate-docs.ts"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
@@ -37,6 +41,7 @@
     "eslint-plugin-tailwindcss": "^3.18.3",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "tsx": "^4.19.0",
     "vitest": "^2"
   }
 }
