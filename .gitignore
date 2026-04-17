@@ -34,3 +34,4 @@ docs/*
 !docs/COMPONENT-INDEX.md
 !docs/specs/
 !docs/specs/component-spec-template.md
+.gitnexus
