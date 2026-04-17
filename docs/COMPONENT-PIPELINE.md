@@ -102,11 +102,24 @@ Fill from researcher output + APG + Radix docs:
 > **Implementation → `designer` subagent** (Design System specialist, token-aware):
 > ```
 > Agent(subagent_type="designer", prompt="""
-> Implement [ComponentName] per spec at docs/specs/[name]-spec.md.
-> Follow all rules in docs/COMPONENT-PIPELINE.md § 2 (spacing tokens, CSS tokens, ARIA).
-> File: src/components/ui/[name].tsx
-> No new dependencies without CEO approval.
+> Implement [ComponentName] component for theme-studio.
+>
+> Spec: docs/specs/[name]-spec.md — read it entirely before writing any code.
+> Pipeline rules: docs/COMPONENT-PIPELINE.md § 2 — mandatory.
 > Design system tokens: src/app/globals.css
+>
+> Deliverables:
+> 1. src/components/ui/[name].tsx — the component
+> 2. Update src/components/preview/ComponentGallery.tsx — replace any existing
+>    [Name]Demo with one that renders EVERY state from the spec § "Demo States" table.
+>    Each state must have a label string so CEO can identify it visually.
+>
+> Rules (non-negotiable):
+> - All colors via var(--token) — no hsl() literals, no hex
+> - All spacing on 4px scale (--space-0…--space-12) — no arbitrary px
+> - Icons inside 16px indicator: h-3 w-3 (--icon-indicator) — never h-3.5 or h-4
+> - No new npm dependencies without explicit CEO approval
+> - Read Error Log E-001–E-010 in COMPONENT-PIPELINE.md before implementing
 > """)
 > ```
 >
@@ -197,16 +210,31 @@ npm run test:components
 
 ```
 Agent(subagent_type="ux-reviewer", prompt="""
-Visual QA for [ComponentName] at localhost:3099/preview?tab=components.
-1. Screenshot all states: default, hover, focus-visible, disabled, dark mode
-2. Check visual proportions: icon padding, border radius, gap between label and control
-3. Verify WCAG contrast on all color combinations (normal + disabled)
-4. Check interaction flows: click zone covers full label row
-5. Report: PASS / FAIL with annotated screenshots. FAIL = merge blocked.
+Visual QA for [ComponentName] at http://localhost:3099/preview?tab=components.
+
+Required checks:
+1. Screenshot the [ComponentName] section — confirm ALL demo states from
+   docs/specs/[name]-spec.md § "Demo States" are visible and labelled.
+2. Visual proportions:
+   - Icon/indicator breathing room: icon must NOT touch container edges
+   - Gap between control and label text: visually comfortable
+   - Border radius consistent with design system
+3. State rendering:
+   - Unchecked/off: border visible, background transparent
+   - Checked/on: primary background, icon clearly visible
+   - Disabled: opacity-50, cursor-not-allowed on hover
+   - Focus-visible: ring visible on Tab
+4. WCAG contrast: text on background ≥ 4.5:1; icon on filled background ≥ 3:1
+5. Dark mode: navigate to a dark preset and screenshot same section
+
+Output format:
+- PASS or FAIL per check above
+- Annotated screenshot paths
+- FAIL on any check = merge is blocked
 """)
 ```
 
-`ux-reviewer` output is the input to CEO review. CEO does NOT verify from scratch.
+`ux-reviewer` output is the sole input to CEO review. CEO does NOT re-verify from scratch — only reviews the ux-reviewer report and screenshots.
 
 #### 5b. CEO explicit approval (after ux-reviewer PASS)
 

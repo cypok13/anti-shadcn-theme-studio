@@ -184,6 +184,24 @@ Which disabled pattern?
 
 ---
 
+## Demo States (required in ComponentGallery — written BEFORE implementation)
+
+> List every state that MUST appear in the ComponentGallery demo.
+> The `designer` subagent uses this list to implement CheckboxDemo / SwitchDemo / etc.
+> Visual gate is only valid if ALL states below are visible in the live UI.
+
+| State | Label in demo | Notes |
+|-------|--------------|-------|
+| default (unchecked / off) | e.g. "Unchecked" | Interactive — user can toggle |
+| checked / on | e.g. "Checked" | Interactive — user can toggle |
+| disabled unchecked | e.g. "Disabled unchecked" | Non-interactive, opacity-50 |
+| disabled checked | e.g. "Disabled checked" | Non-interactive, opacity-50 |
+| (add variant rows as needed) | | |
+
+> **GATE:** ComponentGallery demo must render every row above before Step 5 (Visual Gate).
+
+---
+
 ## Test Plan (written BEFORE implementation)
 
 - [ ] All variants render without errors

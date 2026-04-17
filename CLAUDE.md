@@ -105,7 +105,7 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **theme-studio** (444 symbols, 788 relationships, 34 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **theme-studio** (492 symbols, 842 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
