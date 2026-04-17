@@ -49,7 +49,7 @@ test.describe('Gate 1 — CSS & ARIA form', () => {
   })
 
   test('buttons have cursor:pointer', async ({ page }) => {
-    const buttons = page.locator('button:not([disabled])')
+    const buttons = page.locator('button:not([disabled]):not([aria-disabled="true"])')
     const count = await buttons.count()
     expect(count).toBeGreaterThan(0)
     for (let i = 0; i < count; i++) {

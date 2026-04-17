@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import { Loader2, Search, Trash2 } from 'lucide-react'
+import { Button } from '../ui/button'
 import { CalendarCard } from './cards/CalendarCard'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
@@ -24,22 +26,6 @@ export function ComponentGallery({ activeTab = 'components' }: ComponentGalleryP
   )
 }
 
-const btnBase =
-  'cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-[var(--radius)] font-medium inline-flex items-center justify-center transition-[opacity,background-color,border-color] duration-150 ease-in-out enabled:hover:opacity-90 enabled:active:opacity-80 enabled:active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]'
-
-const btnVariants = {
-  primary: `${btnBase} bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]`,
-  secondary: `${btnBase} bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]`,
-  outline: `${btnBase} border border-[hsl(var(--border))] bg-transparent text-[hsl(var(--foreground))] enabled:hover:bg-[hsl(var(--primary))] enabled:hover:text-[hsl(var(--primary-foreground))] enabled:hover:border-[hsl(var(--primary))]`,
-  ghost: `${btnBase} bg-transparent text-[hsl(var(--foreground))] enabled:hover:bg-[hsl(var(--accent))] enabled:hover:text-[hsl(var(--accent-foreground))]`,
-  destructive: `${btnBase} bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))]`,
-}
-
-const btnSizes = {
-  sm: 'px-3 py-1.5 text-xs',
-  default: 'px-4 py-2 text-sm',
-  lg: 'px-6 py-2.5 text-base',
-}
 
 const sectionHeading =
   'text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3'
@@ -224,41 +210,82 @@ function SelectDemo() {
   )
 }
 
-function ComponentsTab() {
-  const variantLabels: Array<keyof typeof btnVariants> = [
-    'primary',
-    'secondary',
-    'outline',
-    'ghost',
-    'destructive',
-  ]
+function ButtonsDemo() {
+  const [isLoading, setIsLoading] = useState(false)
 
+  const handleLoadingClick = () => {
+    setIsLoading(true)
+    setTimeout(() => setIsLoading(false), 2000)
+  }
+
+  return (
+    <section className="space-y-3">
+      <h4 className={sectionHeading}>Buttons</h4>
+
+      {/* Sizes */}
+      {(['sm', 'default', 'lg'] as const).map((size) => (
+        <div key={size} className="flex flex-wrap gap-2 items-center">
+          {(['default', 'secondary', 'outline', 'ghost', 'destructive'] as const).map((variant) => (
+            <Button key={variant} variant={variant} size={size}>
+              {variant.charAt(0).toUpperCase() + variant.slice(1)}
+            </Button>
+          ))}
+        </div>
+      ))}
+
+      {/* Extra variants */}
+      <div className="flex flex-wrap gap-2 items-center pt-1">
+        <Button variant="link">Link variant</Button>
+        <Button size="icon" aria-label="Search">
+          <Search size={16} aria-hidden="true" />
+        </Button>
+        <Button variant="destructive" size="icon" aria-label="Delete">
+          <Trash2 size={16} aria-hidden="true" />
+        </Button>
+      </div>
+
+      {/* States */}
+      <div className="flex flex-wrap gap-2 items-center pt-1">
+        {/* native disabled — убирает из tab order */}
+        <Button disabled>Disabled</Button>
+        <Button variant="outline" disabled>Disabled</Button>
+        {/* aria-disabled — остаётся в tab order, объясним почему */}
+        <Button aria-disabled="true" title="Заполните форму">
+          aria-disabled
+        </Button>
+        {/* loading */}
+        <Button isLoading={isLoading} onClick={handleLoadingClick}>
+          {isLoading ? null : 'Click to load'}
+        </Button>
+        <Button variant="outline" isLoading>
+          Loading…
+        </Button>
+      </div>
+
+      {/* Icon + text */}
+      <div className="flex flex-wrap gap-2 items-center">
+        <Button>
+          <Search size={16} aria-hidden="true" />
+          Search
+        </Button>
+        <Button variant="destructive">
+          <Trash2 size={16} aria-hidden="true" />
+          Delete
+        </Button>
+        <Button variant="outline">
+          <Loader2 size={16} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          Processing
+        </Button>
+      </div>
+    </section>
+  )
+}
+
+function ComponentsTab() {
   return (
     <div className="p-6 space-y-8">
       {/* Section 1 — Buttons */}
-      <section className="space-y-3">
-        <h4 className={sectionHeading}>Buttons</h4>
-        {(['sm', 'default', 'lg'] as const).map((size) => (
-          <div key={size} className="flex flex-wrap gap-2 items-center">
-            {variantLabels.map((variant) => (
-              <button
-                key={variant}
-                className={`${btnVariants[variant]} ${btnSizes[size]}`}
-              >
-                {variant.charAt(0).toUpperCase() + variant.slice(1)}
-              </button>
-            ))}
-          </div>
-        ))}
-        <div className="flex flex-wrap gap-2 items-center pt-1">
-          <button disabled className={`${btnVariants.primary} ${btnSizes.default}`}>
-            Disabled
-          </button>
-          <button disabled className={`${btnVariants.outline} ${btnSizes.default}`}>
-            Disabled
-          </button>
-        </div>
-      </section>
+      <ButtonsDemo />
 
       {/* Section 2 — Inputs */}
       <section className="space-y-3">
@@ -455,9 +482,7 @@ function CookieSettingsCard() {
           </button>
         ))}
       </div>
-      <button className={`mt-4 w-full ${btnVariants.primary} ${btnSizes.default}`}>
-        Save preferences
-      </button>
+      <Button className="mt-4 w-full">Save preferences</Button>
     </div>
   )
 }
@@ -489,9 +514,7 @@ function TeamMembersCard() {
           </div>
         ))}
       </div>
-      <button className={`mt-4 w-full ${btnVariants.outline} ${btnSizes.sm}`}>
-        Invite member
-      </button>
+      <Button variant="outline" size="sm" className="mt-4 w-full">Invite member</Button>
     </div>
   )
 }
@@ -506,9 +529,7 @@ function CardsTab() {
         <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">
           Build and deploy complex automation pipelines without writing a single line of code.
         </p>
-        <button className={`${btnVariants.primary} ${btnSizes.default}`}>
-          Learn more
-        </button>
+        <Button>Learn more</Button>
       </div>
 
       {/* Card 2 — Stats/Metric */}
@@ -537,9 +558,7 @@ function CardsTab() {
             </li>
           ))}
         </ul>
-        <button className={`w-full ${btnVariants.primary} ${btnSizes.default}`}>
-          Get started
-        </button>
+        <Button className="w-full">Get started</Button>
       </div>
 
       {/* Card 4 — Profile */}
@@ -550,8 +569,8 @@ function CardsTab() {
         <p className="font-semibold text-base">Alex Krasnov</p>
         <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">Design Engineer</p>
         <div className="flex gap-2">
-          <button className={`${btnVariants.outline} ${btnSizes.sm}`}>Follow</button>
-          <button className={`${btnVariants.outline} ${btnSizes.sm}`}>Message</button>
+          <Button variant="outline" size="sm">Follow</Button>
+          <Button variant="outline" size="sm">Message</Button>
         </div>
       </div>
 
