@@ -31,15 +31,28 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 
 **Правило: 1 компонент на сессию, не больше.**
 
+### Delegation rule (КРИТИЧНО — добавлено 2026-04-17)
+
+Оркестратор НЕ реализует компоненты сам. Прямая реализация → hallucinated values
+(нестандартные px, визуальные решения без референса — инцидент: h-3.5=14px в 16px боксе).
+
+| Этап | Субагент / скилл |
+|------|-----------------|
+| Research | `researcher` субагент |
+| Implementation | `designer` субагент (Design System specialist, token-aware) |
+| Visual QA | `/audit` скилл → `ux-reviewer` субагент (Playwright, живой UI) |
+| Acceptance criteria | `qa-engineer` субагент (`test:components` + spec Done When) |
+
 ### Обязательная последовательность (нельзя пропустить):
 
-0. **RESEARCH** — запустить researcher subagent (см. Step 0.5 в COMPONENT-PIPELINE.md). Найти ARIA APG pattern, Radix docs, shadcn docs, GitHub examples. Spec пишется ПОСЛЕ research.
-1. **SPEC** — заполнить `docs/specs/[name]-spec.md` из шаблона (ARIA APG → варианты → состояния → токены → тест-план). Файл должен существовать ДО написания кода.
-2. **IMPLEMENT** — только токены (`var(--token)`), никаких hex. `cursor-pointer` на всех интерактивных элементах. Полная кликабельная зона для checkbox/radio/switch. **Читать Error Log в COMPONENT-PIPELINE.md перед реализацией.**
-3. **LINT** — `npm run lint:ui` должен пройти без ошибок.
-4. **PLAYWRIGHT** — `npm run test:components` (с запущенным dev server) должен пройти. **Pipeline автономный — фиксить все провалы ДО передачи CEO.**
-5. **VISUAL GATE** — CEO смотрит на живой UI и явно апрувит. До апрува тикет не закрывается.
-6. **MERGE + DEPLOY** — только после visual gate.
+0. **RESEARCH** → `researcher` субагент. ARIA APG, Radix docs, shadcn, GitHub examples. Spec пишется ПОСЛЕ.
+1. **SPEC** — заполнить `docs/specs/[name]-spec.md` из шаблона. Файл существует ДО кода.
+2. **IMPLEMENT** → `designer` субагент. Токены только, spacing только 4px шкала. **Читать Error Log E-001–E-010 в COMPONENT-PIPELINE.md.**
+3. **LINT** — `npm run lint:ui` без ошибок.
+4. **PLAYWRIGHT** → `qa-engineer` субагент (`npm run test:components`). Фиксить все провалы ДО CEO.
+5. **VISUAL GATE** — сначала `ux-reviewer` субагент (Playwright QA), затем CEO апрувит явно.
+6. **DOCS SYNC** — `npm run docs:sync && npm run docs:validate` (exit 0 обязателен).
+7. **MERGE + DEPLOY** — только после шагов 5 и 6.
 
 ### Автоматические проверки (18 тестов, 4 gates):
 
@@ -52,7 +65,7 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 | — | Hardcoded hex в ui/ | `npm run lint:ui` | commit |
 | — | Build | `npm run build` | deploy |
 
-### Критические правила кода (из Error Log):
+### Критические правила кода (из Error Log E-001–E-010):
 
 - **SVG**: всегда `stroke="currentColor"` + `className="text-[hsl(var(--token))]"` на `<svg>` — никогда `stroke="hsl(var(...))"` как SVG attribute
 - **Переключатель thumb**: `bg-[hsl(var(--primary-foreground))]` — никогда `bg-white` или `bg-black`
@@ -60,6 +73,7 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 - **Input labels**: всегда `<label htmlFor="id">` + `<input id="id">` — orphan inputs = axe critical violation
 - **Nested layout**: только root `app/layout.tsx` содержит `<html><body>` — nested layouts возвращают fragment
 - **Новые семантические цвета** (success/warning/info): добавить CSS переменную в `globals.css`, потом использовать
+- **Spacing**: только 4px шкала — `p-[10px]`, `h-3.5` (14px) FORBIDDEN. Маппинг: `gap-2`=8px, `p-3`=12px, `p-4`=16px. Иконки в индикаторах: `h-3` (12px = `--icon-indicator`), не `h-3.5` или `h-4`
 
 ## Правило: фиксация данных каждого дня спринта
 
@@ -91,7 +105,7 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **theme-studio** (419 symbols, 760 relationships, 32 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **theme-studio** (492 symbols, 842 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Loader2, Search, Trash2 } from 'lucide-react'
 import { Button } from '../ui/button'
+import { Checkbox } from '../ui/checkbox'
 import { CalendarCard } from './cards/CalendarCard'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
@@ -31,38 +32,27 @@ const sectionHeading =
   'text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3'
 
 function CheckboxDemo() {
-  const [checked, setChecked] = useState<Record<string, boolean>>({
-    notifications: true,
-    updates: false,
-    marketing: false,
-  })
+  const [checked, setChecked] = useState({ a: true, b: false })
   return (
     <section className="space-y-3">
       <h4 className={sectionHeading}>Checkbox</h4>
       <div className="space-y-2">
-        {Object.entries(checked).map(([key, val]) => (
-          <label
-            key={key}
-            className="flex items-center gap-2 cursor-pointer select-none"
-            onClick={() => setChecked(prev => ({ ...prev, [key]: !prev[key] }))}
-          >
-            <div
-              className={[
-                'w-4 h-4 rounded-[2px] border flex items-center justify-center transition-colors shrink-0',
-                val
-                  ? 'bg-[hsl(var(--primary))] border-[hsl(var(--primary))]'
-                  : 'bg-transparent border-[hsl(var(--border))]',
-              ].join(' ')}
-            >
-              {val && (
-                <svg width="10" height="8" viewBox="0 0 10 8" fill="none" className="text-[hsl(var(--primary-foreground))]">
-                  <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              )}
-            </div>
-            <span className="text-sm capitalize text-[hsl(var(--foreground))]">{key}</span>
-          </label>
-        ))}
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <Checkbox checked={checked.a} onChange={() => setChecked(p => ({ ...p, a: !p.a }))} />
+          <span className="text-sm text-[hsl(var(--foreground))]">Checked</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <Checkbox checked={checked.b} onChange={() => setChecked(p => ({ ...p, b: !p.b }))} />
+          <span className="text-sm text-[hsl(var(--foreground))]">Unchecked</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
+          <Checkbox checked disabled />
+          <span className="text-sm text-[hsl(var(--foreground))]">Disabled checked</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
+          <Checkbox checked={false} disabled />
+          <span className="text-sm text-[hsl(var(--foreground))]">Disabled unchecked</span>
+        </label>
       </div>
     </section>
   )

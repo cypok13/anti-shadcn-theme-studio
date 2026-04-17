@@ -29,6 +29,30 @@
   --radius: 0.5rem;
   --overlay: 240 10% 4%;
 
+  /* ─── Spacing tokens (4px base scale) ───────────────────────────────── */
+  /* Rule: ALL component spacing must reference these tokens.              */
+  /* Arbitrary px values (e.g. p-[10px]) are forbidden.                   */
+  --space-0: 0px;    /* none */
+  --space-1: 2px;    /* hairline */
+  --space-2: 4px;    /* tight inline gap */
+  --space-3: 6px;    /* compact */
+  --space-4: 8px;    /* default tight */
+  --space-5: 12px;   /* comfortable */
+  --space-6: 16px;   /* default */
+  --space-7: 20px;   /* relaxed */
+  --space-8: 24px;   /* section gap */
+  --space-9: 32px;   /* layout gap */
+  --space-10: 48px;  /* section */
+  --space-11: 64px;  /* hero */
+  --space-12: 80px;  /* page */
+
+  /* ─── Icon size tokens ────────────────────────────────────────────────── */
+  /* Use for SVG icons only. Tailwind: h-3=12px, h-4=16px, h-5=20px, h-6=24px */
+  --icon-indicator: 12px; /* icon inside 16px indicator (checkbox, radio): h-3 */
+  --icon-sm: 16px;        /* inline icon, default: h-4 */
+  --icon-md: 20px;        /* prominent icon: h-5 */
+  --icon-lg: 24px;        /* large icon: h-6 */
+
   /* ─── Typography tokens ───────────────────────────────────────────────── */
   --font-sans: system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;

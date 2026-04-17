@@ -114,20 +114,16 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
   test('checkbox: clicking label text toggles checked state', async ({ page }) => {
     const labels = page.locator('section').filter({ hasText: 'Checkbox' }).locator('label')
     const first = labels.first()
-    const checkboxDiv = first.locator('div').first()
+    const input = first.locator('input[type="checkbox"]')
     const textSpan = first.locator('span').first()
 
-    const hasPrimaryBefore = await checkboxDiv.evaluate(el =>
-      getComputedStyle(el).backgroundColor
-    )
-    // Click the text span directly
+    const checkedBefore = await input.isChecked()
+    // Click the text span directly (not the indicator)
     await textSpan.click()
     await page.waitForTimeout(150)
 
-    const hasPrimaryAfter = await checkboxDiv.evaluate(el =>
-      getComputedStyle(el).backgroundColor
-    )
-    expect(hasPrimaryAfter).not.toBe(hasPrimaryBefore)
+    const checkedAfter = await input.isChecked()
+    expect(checkedAfter).not.toBe(checkedBefore)
   })
 
   test('radio: clicking label text selects the option', async ({ page }) => {
