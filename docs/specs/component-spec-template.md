@@ -92,6 +92,59 @@ Which disabled pattern?
 
 ---
 
+## Visual Design
+
+> Fill this section using only values from the spacing/sizing token scale.
+> NO hardcoded px values. NO arbitrary Tailwind values like p-[10px].
+>
+> Spacing token → Tailwind class mapping (4px base scale):
+> | Token        | px   | Tailwind |
+> |--------------|------|----------|
+> | --space-0    | 0    | gap-0 / p-0 |
+> | --space-1    | 2px  | (no direct class — use gap-px × 2) |
+> | --space-2    | 4px  | gap-1 / p-1 |
+> | --space-3    | 6px  | gap-1.5 / p-1.5 |
+> | --space-4    | 8px  | gap-2 / p-2 |
+> | --space-5    | 12px | gap-3 / p-3 |
+> | --space-6    | 16px | gap-4 / p-4 |
+> | --space-7    | 20px | gap-5 / p-5 |
+> | --space-8    | 24px | gap-6 / p-6 |
+> | --space-9    | 32px | gap-8 / p-8 |
+> | --space-10   | 48px | gap-12 / p-12 |
+>
+> Icon sizes: --icon-indicator(12px=h-3) --icon-sm(16px=h-4) --icon-md(20px=h-5) --icon-lg(24px=h-6)
+> FORBIDDEN: h-3.5 (14px), p-[10px], p-[13px] — not on scale
+
+### Dimensions
+
+| Property | Value | Token / Tailwind class |
+|----------|-------|------------------------|
+| Width | | |
+| Height | | |
+| Min touch target | 44×44px | wrapper padding |
+
+### Internal proportions
+
+| Property | Value | Token / class | Notes |
+|----------|-------|---------------|-------|
+| [icon / inner element] size | | | Must stay on 4px scale |
+| [padding / gap] | | | Cannot be arbitrary px |
+
+### Border & shape
+
+| Property | Value | Token |
+|----------|-------|-------|
+| Border radius | | `var(--radius)` or fixed px on 4px scale |
+| Border width | | |
+
+### Anti-patterns (visual)
+
+- DO NOT use arbitrary px values — every size must land on the 4px scale token
+- DO NOT size an icon to fill 100% of its container — always leave ≥1 step (≥2px) visual gap
+- DO NOT mix Tailwind's arbitrary values (`p-[13px]`) with the token scale
+
+---
+
 ## Token Compliance (NO hardcoded values)
 
 | CSS property | Token used |
@@ -148,10 +201,15 @@ Which disabled pattern?
 ## Spec Sign-off
 
 - [ ] Variants complete
-- [ ] All states addressed
+- [ ] All states addressed (write "N/A — reason" if not applicable, never leave blank)
+- [ ] Visual Design section filled with token-based values (no arbitrary px)
 - [ ] All CSS → tokens
 - [ ] ARIA specified
 - [ ] Test plan written
+
+> **GATE:** Если хотя бы один пункт выше не отмечен → `Spec complete: NO`.
+> `designer` субагент приступает к реализации ТОЛЬКО при `Spec complete: YES`.
+> Оркестратор ОБЯЗАН проверить этот статус перед Step 2.
 
 **Spec complete:** YES / NO
 

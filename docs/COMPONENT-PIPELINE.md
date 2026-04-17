@@ -94,6 +94,29 @@ Fill from researcher output + APG + Radix docs:
 
 ### 2. IMPLEMENT
 
+> **MANDATORY DELEGATION RULE (added 2026-04-17):**
+> The orchestrator MUST NOT implement components directly.
+> Direct implementation produces hallucinated values: non-standard px, invented spacing,
+> visual decisions without design reference (incident: h-3.5=14px in a 16px box).
+>
+> **Implementation → `designer` subagent** (Design System specialist, token-aware):
+> ```
+> Agent(subagent_type="designer", prompt="""
+> Implement [ComponentName] per spec at docs/specs/[name]-spec.md.
+> Follow all rules in docs/COMPONENT-PIPELINE.md § 2 (spacing tokens, CSS tokens, ARIA).
+> File: src/components/ui/[name].tsx
+> No new dependencies without CEO approval.
+> Design system tokens: src/app/globals.css
+> """)
+> ```
+>
+> **Visual validation (after implementation) → two steps:**
+> 1. `/audit` skill — technical: token compliance, a11y, theming hardcoded values
+> 2. `ux-reviewer` subagent — visual quality via Playwright: proportions, states, dark mode
+>
+> **Acceptance criteria verification → `qa-engineer` subagent**
+> (runs `npm run test:components` + verifies spec Done When checklist)
+
 Rules (non-negotiable — see Error Log below for why each exists):
 
 **Element semantics:**
@@ -101,6 +124,14 @@ Rules (non-negotiable — see Error Log below for why each exists):
 - `<label>` wraps full checkbox/radio/switch row — click zone = entire row
 - `role="switch"` + `aria-checked` for toggle switches (not `role="button"`)
 - `<input>` always has `id` + matching `<label htmlFor>` — no orphan inputs
+
+**Spacing tokens (added 2026-04-17):**
+- ALL spacing must land on the 4px scale: 0, 2, 4, 6, 8, 12, 16, 20, 24, 32, 48, 64, 80px
+- Token names: `--space-0` through `--space-12` (defined in globals.css)
+- Tailwind equivalent classes are acceptable: `gap-2`=8px, `p-3`=12px, `p-4`=16px etc.
+- FORBIDDEN: arbitrary px values like `p-[10px]`, `p-[13px]`, `h-3.5` (14px is NOT on scale)
+- Icon sizes inside indicators: use `--icon-indicator` (12px = `h-3`) for 16px containers
+- FORBIDDEN: sizing an icon to match its container (0px visual gap looks broken)
 
 **CSS tokens:**
 - All colors via `var(--token)` — never hardcoded hex, rgb(), or hsl() with literal values
@@ -158,20 +189,36 @@ npm run test:components
 
 ---
 
-### 5. VISUAL GATE (CEO, mandatory)
+### 5. VISUAL GATE (mandatory — two sub-steps, in order)
 
-Screenshot comparison vs reference (tweakcn or MUI).
-CEO explicitly approves before ticket → Done.
+**Blocks merge if either sub-step fails or is skipped.**
 
-Checklist for CEO visual review:
+#### 5a. ux-reviewer субагент (automated visual QA — mandatory first)
+
+```
+Agent(subagent_type="ux-reviewer", prompt="""
+Visual QA for [ComponentName] at localhost:3099/preview?tab=components.
+1. Screenshot all states: default, hover, focus-visible, disabled, dark mode
+2. Check visual proportions: icon padding, border radius, gap between label and control
+3. Verify WCAG contrast on all color combinations (normal + disabled)
+4. Check interaction flows: click zone covers full label row
+5. Report: PASS / FAIL with annotated screenshots. FAIL = merge blocked.
+""")
+```
+
+`ux-reviewer` output is the input to CEO review. CEO does NOT verify from scratch.
+
+#### 5b. CEO explicit approval (after ux-reviewer PASS)
+
+CEO visual checklist:
 - [ ] Hover state visible (cursor changes, bg changes)
 - [ ] Focus ring visible on Tab
-- [ ] All variants render correctly
+- [ ] All states render correctly (use demo that shows every state)
 - [ ] Dark mode renders correctly
-- [ ] Calendar has no CSS artifacts (no orange/amber bleeding from --accent token)
-- [ ] Switch thumbs show correct contrast against track (not bg-white)
-- [ ] No text selection on buttons/badges
-- [ ] Disabled state: cursor-not-allowed visible (not default arrow)
+- [ ] No text selection on interactive elements
+- [ ] Disabled state: cursor-not-allowed + reduced opacity
+
+**GATE:** Ticket moves to Done ONLY after CEO says "апрув" or equivalent explicit confirmation.
 
 ---
 
