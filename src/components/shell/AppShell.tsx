@@ -49,7 +49,7 @@ export function AppShell() {
         overflow: 'hidden',
         background: `hsl(${tokens.background})`,
         color: `hsl(${tokens.foreground})`,
-        fontFamily: 'system-ui, sans-serif',
+        fontFamily: selectedPreset.fonts.body,
       }}
     >
       <style>{`
@@ -74,6 +74,9 @@ export function AppShell() {
           --input: ${tokens.input};
           --ring: ${tokens.ring};
           --radius: ${tokens.radius};
+          --font-body: ${selectedPreset.fonts.body};
+          --font-heading: ${selectedPreset.fonts.heading};
+          --font-mono: ${selectedPreset.fonts.mono};
         }
       `}</style>
       {/* Sidebar */}

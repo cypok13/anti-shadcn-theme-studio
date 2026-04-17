@@ -103,10 +103,16 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
   const mergedPreset = { ...preset, light: tokens, dark: tokens, fonts }
   const css = resolveCSS(mergedPreset, mode, 'v3')
 
+  // Font tokens as CSS custom properties — allows components to use var(--font-body)
   const fontCss = `
-    body, * { font-family: ${fonts.body}; }
-    h1, h2, h3, h4, h5, h6 { font-family: ${fonts.heading}; }
-    code, pre, kbd, samp { font-family: ${fonts.mono}; }
+    :root {
+      --font-body: ${fonts.body};
+      --font-heading: ${fonts.heading};
+      --font-mono: ${fonts.mono};
+    }
+    body { font-family: var(--font-body); }
+    h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
+    code, pre, kbd, samp { font-family: var(--font-mono); }
   `
 
   const shadowStyle = params.shadow ?? preset.shadowStyle ?? 'none'

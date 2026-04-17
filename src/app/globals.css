@@ -1,35 +1,127 @@
 @import "tailwindcss";
 
+/* ─── Color tokens (Zinc Violet default) ─────────────────────────────────── */
+
 :root {
-  --background: 5 0% 97%;
-  --foreground: 0 0% 5%;
-  --card: 5 0% 94%;
-  --card-foreground: 0 0% 5%;
-  --popover: 5 0% 97%;
-  --popover-foreground: 0 0% 5%;
-  --primary: 0 0% 5%;
+  --background: 0 0% 100%;
+  --foreground: 240 10% 4%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 4%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 4%;
+  --primary: 262 80% 50%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 92%;
-  --secondary-foreground: 0 0% 5%;
-  --muted: 0 0% 88%;
-  --muted-foreground: 0 0% 40%;
-  --accent: 45 100% 51%;
-  --accent-foreground: 0 0% 5%;
+  --secondary: 240 5% 96%;
+  --secondary-foreground: 240 10% 4%;
+  --muted: 240 5% 96%;
+  --muted-foreground: 240 4% 46%;
+  --accent: 262 100% 97%;
+  --accent-foreground: 262 80% 40%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   --success: 142 71% 45%;
+  --success-foreground: 0 0% 100%;
   --warning: 38 92% 50%;
-  --border: 0 0% 20%;
-  --input: 0 0% 20%;
-  --ring: 45 100% 51%;
-  --radius: 0rem;
+  --warning-foreground: 0 0% 100%;
+  --border: 240 6% 90%;
+  --input: 240 6% 90%;
+  --ring: 262 80% 50%;
+  --radius: 0.5rem;
+  --overlay: 240 10% 4%;
+
+  /* ─── Typography tokens ───────────────────────────────────────────────── */
+  --font-sans: system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-body: var(--font-sans);
+  --font-heading: var(--font-sans);
+
+  /* ─── Motion tokens ───────────────────────────────────────────────────── */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ─── Shadow tokens ───────────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px hsl(var(--foreground) / 0.05);
+  --shadow-sm: 0 1px 3px hsl(var(--foreground) / 0.08), 0 1px 2px hsl(var(--foreground) / 0.06);
+  --shadow-md: 0 4px 6px -1px hsl(var(--foreground) / 0.08), 0 2px 4px -2px hsl(var(--foreground) / 0.06);
+  --shadow-lg: 0 10px 15px -3px hsl(var(--foreground) / 0.08), 0 4px 6px -4px hsl(var(--foreground) / 0.05);
+  --shadow-xl: 0 20px 25px -5px hsl(var(--foreground) / 0.08), 0 8px 10px -6px hsl(var(--foreground) / 0.05);
+
+  /* ─── Z-index scale ───────────────────────────────────────────────────── */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-overlay: 1030;
+  --z-modal: 1040;
+  --z-toast: 1050;
+  --z-tooltip: 1060;
+
+  color-scheme: light;
 }
+
+/* ─── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-normal: 0.01ms;
+    --duration-slow: 0.01ms;
+  }
+}
+
+/* ─── Base styles ────────────────────────────────────────────────────────── */
 
 * {
   border-color: hsl(var(--border));
 }
 
+html {
+  color-scheme: light;
+}
+
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+}
+
+/* ─── Selection ──────────────────────────────────────────────────────────── */
+
+::selection {
+  background-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.6);
 }
