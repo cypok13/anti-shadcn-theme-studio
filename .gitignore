@@ -29,5 +29,8 @@ dist/
 docs/*
 !docs/PUBLISHING.md
 !docs/COMPONENT-PIPELINE.md
+!docs/DOCS-ARCHITECTURE.md
+!docs/TOKEN-INDEX.md
+!docs/COMPONENT-INDEX.md
 !docs/specs/
 !docs/specs/component-spec-template.md

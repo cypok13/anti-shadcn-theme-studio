@@ -187,6 +187,28 @@ Linear ticket → Done only after visual gate approved.
 
 ---
 
+### 7. DOCUMENTATION SYNC (mandatory, before merge)
+
+Runs AFTER Visual Gate approval, BEFORE `git merge → main`.
+
+**Commands:**
+```bash
+npm run docs:sync        # регенерирует TOKEN-INDEX.md и COMPONENT-INDEX.md
+npm run docs:validate    # exit 1 если есть нарушения — фиксить до merge
+```
+
+**Manual checklist:**
+- [ ] `docs/specs/[name]-spec.md` — `Spec complete: YES` проставлен
+- [ ] `docs/IMPLEMENTATION-TRACKER.md` — строка компонента обновлена: `❌ → ✅`
+- [ ] `docs/COMPONENT-INDEX.md` — новый компонент появился (проверить git diff)
+- [ ] `docs/TOKEN-INDEX.md` — новые CSS vars из globals.css попали в индекс
+- [ ] Error Log — если в сессии найдена новая ошибка, E-0NN добавлен в COMPONENT-PIPELINE.md
+- [ ] Memory — `theme_studio_component_pipeline.md` обновлён если изменился Error Log
+
+**Gate:** `npm run docs:validate` → exit 0. При exit 1 — фиксить до merge.
+
+---
+
 ## Error Log — Do Not Repeat These
 
 Documented failures from Session A. Each rule above has a reason. Read before implementing.
@@ -287,6 +309,7 @@ Required sections:
 | Real interaction smoke tests | Playwright Gate 2 | Before merge | Merge |
 | ARIA violations (axe-core) | Playwright Gate 1 | Before merge | Merge |
 | Keyboard accessibility | Playwright Gate 3 | Before merge | Merge |
+| Docs: specs exist, indexes generated, no TODOs | `docs:validate` | Before merge | Merge |
 | Build passes | `npm run build` | Before deploy | Deploy |
 
 ---
