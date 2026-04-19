@@ -224,8 +224,13 @@ Required checks:
    - Checked/on: primary background, icon clearly visible
    - Disabled: opacity-50, cursor-not-allowed on hover
    - Focus-visible: ring visible on Tab
-4. WCAG contrast: text on background ≥ 4.5:1; icon on filled background ≥ 3:1
-5. Dark mode: navigate to a dark preset and screenshot same section
+4. **[EXCLUSIVE-SELECTION components — RadioGroup, Tabs, any mutual-exclusion pattern]**
+   Mutual exclusivity transition test (MANDATORY — static screenshot is NOT sufficient):
+   - Click item A → assert item A selected
+   - Click item B → assert item B `aria-checked/aria-selected="true"` AND item A `aria-checked/aria-selected="false"`
+   - A visual snapshot of "B selected" CANNOT confirm A deselected. Must check both.
+5. WCAG contrast: text on background ≥ 4.5:1; icon on filled background ≥ 3:1
+6. Dark mode: navigate to a dark preset and screenshot same section
 
 Output format:
 - PASS or FAIL per check above

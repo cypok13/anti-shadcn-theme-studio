@@ -213,6 +213,7 @@ Which disabled pattern?
 - [ ] Keyboard: Tab → focus visible, Enter/Space → action
 - [ ] Dark mode renders correctly
 - [ ] `npm run lint:ui` passes
+- [ ] **[EXCLUSIVE-SELECTION only — RadioGroup, Tabs, any mutual-exclusion pattern]** Click item A → click item B → verify item A `aria-checked/aria-selected` becomes `"false"`. A single "item B becomes selected" check is NOT sufficient — the cross-item deselection MUST be a separate assertion.
 
 ---
 

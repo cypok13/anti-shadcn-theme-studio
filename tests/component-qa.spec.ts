@@ -132,15 +132,34 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     const second = labels.nth(1)
     const textSpan = second.locator('span').first()
 
-    // option-b starts unselected: inner dot div should not be visible
-    const dotBefore = second.locator('div > div')
-    expect(await dotBefore.count()).toBe(0)
+    // option-b starts unselected: button aria-checked should be false
+    const radioBtn = second.locator('button[role="radio"]')
+    await expect(radioBtn).toHaveAttribute('aria-checked', 'false')
 
     await textSpan.click()
     await page.waitForTimeout(150)
 
-    // After click: option-b selected — inner dot div must appear and be visible
-    await expect(second.locator('div > div')).toBeVisible()
+    // After click: option-b selected — aria-checked must be true
+    await expect(radioBtn).toHaveAttribute('aria-checked', 'true')
+  })
+
+  test('radio: selecting new option deselects previously selected (mutual exclusivity)', async ({ page }) => {
+    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const labels = radioSection.locator('label')
+    const firstBtn = labels.nth(0).locator('button[role="radio"]')
+    const secondBtn = labels.nth(1).locator('button[role="radio"]')
+
+    // Initial state: first selected, second not
+    await expect(firstBtn).toHaveAttribute('aria-checked', 'true')
+    await expect(secondBtn).toHaveAttribute('aria-checked', 'false')
+
+    // Click second option
+    await labels.nth(1).locator('span').first().click()
+    await page.waitForTimeout(150)
+
+    // Mutual exclusivity: second selected AND first must now be deselected
+    await expect(secondBtn).toHaveAttribute('aria-checked', 'true')
+    await expect(firstBtn).toHaveAttribute('aria-checked', 'false')
   })
 
   test('switch: clicking full row toggles aria-checked', async ({ page }) => {

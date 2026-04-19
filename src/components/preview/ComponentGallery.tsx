@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic'
 import { Loader2, Search, Trash2 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
+import { Switch } from '../ui/switch'
+import { RadioGroup, RadioItem } from '../ui/radio-group'
 import { CalendarCard } from './cards/CalendarCard'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
@@ -59,65 +61,69 @@ function CheckboxDemo() {
 }
 
 function SwitchDemo() {
-  const [states, setStates] = useState({ darkMode: true, notifications: false, autoSave: true })
+  const [unchecked, setUnchecked] = useState(false)
+  const [checked, setChecked] = useState(true)
+  const [sm, setSm] = useState(false)
+  const [lg, setLg] = useState(false)
   return (
     <section className="space-y-3">
       <h4 className={sectionHeading}>Switch</h4>
-      <div className="space-y-3">
-        {(Object.entries(states) as [keyof typeof states, boolean][]).map(([key, val]) => (
-          <button
-            key={key}
-            onClick={() => setStates(prev => ({ ...prev, [key]: !prev[key] }))}
-            className="flex items-center justify-between w-full max-w-xs cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]"
-            role="switch"
-            aria-checked={val}
-          >
-            <span className="text-sm capitalize text-[hsl(var(--foreground))] select-none">{key.replace(/([A-Z])/g, ' $1')}</span>
-            <span className={[
-              'relative w-9 h-5 rounded-full transition-colors duration-200 shrink-0',
-              val ? 'bg-[hsl(var(--primary))]' : 'bg-[hsl(var(--muted))]',
-            ].join(' ')}>
-              <span className={[
-                'absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-[hsl(var(--primary-foreground))] shadow-sm transition-transform duration-200',
-                val ? 'translate-x-4' : 'translate-x-0',
-              ].join(' ')} />
-            </span>
-          </button>
-        ))}
+      <div className="space-y-2">
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <Switch checked={unchecked} onCheckedChange={setUnchecked} />
+          <span className="text-sm text-[hsl(var(--foreground))]">Unchecked</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <Switch checked={checked} onCheckedChange={setChecked} />
+          <span className="text-sm text-[hsl(var(--foreground))]">Checked</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
+          <Switch disabled />
+          <span className="text-sm text-[hsl(var(--foreground))]">Disabled (off)</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
+          <Switch disabled defaultChecked />
+          <span className="text-sm text-[hsl(var(--foreground))]">Disabled (on)</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <Switch size="sm" checked={sm} onCheckedChange={setSm} />
+          <span className="text-sm text-[hsl(var(--foreground))]">Small</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <Switch size="lg" checked={lg} onCheckedChange={setLg} />
+          <span className="text-sm text-[hsl(var(--foreground))]">Large</span>
+        </label>
       </div>
     </section>
   )
 }
 
 function RadioDemo() {
-  const [selected, setSelected] = useState('option-a')
-  const options = ['option-a', 'option-b', 'option-c']
+  const [plan, setPlan] = useState('free')
+  const [planSm, setPlanSm] = useState('monthly')
+
   return (
-    <section className="space-y-3">
+    <section className="space-y-4">
       <h4 className={sectionHeading}>Radio</h4>
-      <div className="space-y-2">
-        {options.map((opt) => (
-          <label
-            key={opt}
-            className="flex items-center gap-2 cursor-pointer select-none"
-            onClick={() => setSelected(opt)}
-          >
-            <div
-              className={[
-                'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors shrink-0',
-                selected === opt
-                  ? 'border-[hsl(var(--primary))]'
-                  : 'border-[hsl(var(--border))]',
-              ].join(' ')}
-            >
-              {selected === opt && (
-                <div className="w-2 h-2 rounded-full bg-[hsl(var(--primary))]" />
-              )}
-            </div>
-            <span className="text-sm capitalize text-[hsl(var(--foreground))]">{opt.replace('-', ' ')}</span>
-          </label>
-        ))}
-      </div>
+
+      {/* Group 1: md size, "Pro" pre-selected, one disabled item */}
+      <RadioGroup value={plan} onValueChange={setPlan} label="Choose a plan">
+        <RadioItem value="free">Free</RadioItem>
+        <RadioItem value="pro">Pro</RadioItem>
+        <RadioItem value="enterprise" disabled>Enterprise (contact sales)</RadioItem>
+      </RadioGroup>
+
+      {/* Group 2: entire group disabled */}
+      <RadioGroup value="basic" onValueChange={() => {}} label="Disabled group" disabled>
+        <RadioItem value="basic">Basic</RadioItem>
+        <RadioItem value="premium">Premium</RadioItem>
+      </RadioGroup>
+
+      {/* Group 3: size sm */}
+      <RadioGroup value={planSm} onValueChange={setPlanSm} label="Billing cycle" size="sm">
+        <RadioItem value="monthly">Monthly</RadioItem>
+        <RadioItem value="yearly">Yearly</RadioItem>
+      </RadioGroup>
     </section>
   )
 }
