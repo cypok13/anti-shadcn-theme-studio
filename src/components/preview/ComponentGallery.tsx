@@ -35,6 +35,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
 import { ComponentSection } from './ComponentSection'
+import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
@@ -54,17 +55,74 @@ export function ComponentGallery() {
               title="Button"
               docsHref="https://ui.shadcn.com/docs/components/button"
               tabs={[
-                { key: 'variants', label: 'Variants', content: <p className="text-sm text-[hsl(var(--muted-foreground))]">Variants demo — coming in Chunk 4</p> },
-                { key: 'sizes',    label: 'Sizes',    content: <p className="text-sm text-[hsl(var(--muted-foreground))]">Sizes demo — coming in Chunk 4</p> },
-                { key: 'states',   label: 'States',   content: <p className="text-sm text-[hsl(var(--muted-foreground))]">States demo — coming in Chunk 4</p> },
+                {
+                  key: 'variants',
+                  label: 'Variants',
+                  content: (
+                    <DemoRow>
+                      {(['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const).map((v) => (
+                        <Button key={v} variant={v}>{v.charAt(0).toUpperCase() + v.slice(1)}</Button>
+                      ))}
+                    </DemoRow>
+                  ),
+                },
+                {
+                  key: 'sizes',
+                  label: 'Sizes',
+                  content: (
+                    <DemoRow>
+                      {(['sm', 'default', 'lg', 'icon'] as const).map((s) => (
+                        <Button key={s} size={s}>{s === 'icon' ? <Search size={16} aria-hidden="true" /> : s}</Button>
+                      ))}
+                    </DemoRow>
+                  ),
+                },
+                {
+                  key: 'states',
+                  label: 'States',
+                  content: (
+                    <DemoRow>
+                      <Button disabled>Disabled</Button>
+                      <Button variant="outline" disabled>Disabled outline</Button>
+                      <Button isLoading>Loading</Button>
+                      <Button variant="outline" isLoading>Loading outline</Button>
+                    </DemoRow>
+                  ),
+                },
               ]}
             />
+
             <ComponentSection
               title="Checkbox"
               docsHref="https://ui.shadcn.com/docs/components/checkbox"
             >
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Demo — coming in Chunk 4</p>
+              <CheckboxDemo />
             </ComponentSection>
+
+            <ComponentSection
+              title="Dialog"
+              docsHref="https://ui.shadcn.com/docs/components/dialog"
+            >
+              <DialogDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Input"
+              docsHref="https://ui.shadcn.com/docs/components/input"
+            >
+              <InputDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Select"
+              docsHref="https://ui.shadcn.com/docs/components/select"
+            >
+              <SelectDemo />
+            </ComponentSection>
+
+            {/* Playwright test fixtures */}
+            <TabsDemo />
+            <TabsRadixDemo />
           </div>
         </div>
         {/* Right: sticky sidebar */}
@@ -83,27 +141,24 @@ const sectionHeading =
 function CheckboxDemo() {
   const [checked, setChecked] = useState({ a: true, b: false })
   return (
-    <section className="space-y-3">
-      <h4 className={sectionHeading}>Checkbox</h4>
-      <div className="space-y-2">
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <Checkbox checked={checked.a} onChange={() => setChecked(p => ({ ...p, a: !p.a }))} />
-          <span className="text-sm text-[hsl(var(--foreground))]">Checked</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <Checkbox checked={checked.b} onChange={() => setChecked(p => ({ ...p, b: !p.b }))} />
-          <span className="text-sm text-[hsl(var(--foreground))]">Unchecked</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
-          <Checkbox checked disabled />
-          <span className="text-sm text-[hsl(var(--foreground))]">Disabled checked</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
-          <Checkbox checked={false} disabled />
-          <span className="text-sm text-[hsl(var(--foreground))]">Disabled unchecked</span>
-        </label>
-      </div>
-    </section>
+    <div className="space-y-2">
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <Checkbox checked={checked.a} onChange={() => setChecked(p => ({ ...p, a: !p.a }))} />
+        <span className="text-sm text-[hsl(var(--foreground))]">Checked</span>
+      </label>
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <Checkbox checked={checked.b} onChange={() => setChecked(p => ({ ...p, b: !p.b }))} />
+        <span className="text-sm text-[hsl(var(--foreground))]">Unchecked</span>
+      </label>
+      <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
+        <Checkbox checked disabled />
+        <span className="text-sm text-[hsl(var(--foreground))]">Disabled checked</span>
+      </label>
+      <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
+        <Checkbox checked={false} disabled />
+        <span className="text-sm text-[hsl(var(--foreground))]">Disabled unchecked</span>
+      </label>
+    </div>
   )
 }
 
@@ -270,8 +325,7 @@ function SeparatorDemo() {
 
 function SelectDemo() {
   return (
-    <section className="space-y-6">
-      <h4 className={sectionHeading}>Select</h4>
+    <div className="space-y-6">
 
       {/* 1. Sizes */}
       <div className="space-y-2">
@@ -387,7 +441,7 @@ function SelectDemo() {
           <SelectItem value="us">United States</SelectItem>
         </SelectField>
       </div>
-    </section>
+    </div>
   )
 }
 
