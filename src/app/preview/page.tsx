@@ -31,7 +31,6 @@ interface PreviewPageProps {
     theme?: string
     mode?: string
     radius?: string
-    tab?: string
     fontHeading?: string
     fontBody?: string
     fontMono?: string
@@ -75,8 +74,6 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
   const params = await searchParams
   const themeId = params.theme ?? PRESETS[0].id
   const mode = params.mode === 'dark' ? 'dark' : 'light'
-  const activeTab = params.tab ?? 'components'
-
   const preset = PRESETS.find((p) => p.id === themeId) ?? PRESETS[0]
   const baseTokens: ThemeTokens = mode === 'light' ? preset.light : preset.dark
 
@@ -131,7 +128,7 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
       <style dangerouslySetInnerHTML={{ __html: css }} />
       <style dangerouslySetInnerHTML={{ __html: fontCss }} />
       <style dangerouslySetInnerHTML={{ __html: shadowCss }} />
-      <ComponentGallery activeTab={activeTab} />
+      <ComponentGallery />
     </>
   )
 }

@@ -41,17 +41,23 @@ const ExerciseMinutesCard = dynamic(() => import('./cards/ExerciseMinutesCard').
 const CreateAccountCard = dynamic(() => import('./cards/CreateAccountCard').then(m => ({ default: m.CreateAccountCard })), { ssr: false })
 const DatePickerCard = dynamic(() => import('./cards/DatePickerCard').then(m => ({ default: m.DatePickerCard })), { ssr: false })
 
-interface ComponentGalleryProps {
-  activeTab?: string
-}
-
-export function ComponentGallery({ activeTab = 'components' }: ComponentGalleryProps) {
+export function ComponentGallery() {
   return (
     <TooltipProvider>
-      <div className="h-full overflow-y-auto bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-        {activeTab === 'components' && <ComponentsTab />}
-        {activeTab === 'cards' && <CardsTab />}
-        {activeTab === 'typography' && <TypographyTab />}
+      <div className="flex h-full overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+        {/* Left: scrollable component list */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-4xl px-8 py-10 space-y-16">
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">Components scroll area — Chunk 1 placeholder</p>
+          </div>
+        </div>
+        {/* Right: sticky sidebar placeholder */}
+        <div className="w-[280px] shrink-0 border-l border-[hsl(var(--border))] bg-[hsl(var(--background))] overflow-y-auto">
+          <div className="p-4">
+            <p className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-widest">Theme Controls</p>
+            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">Sidebar coming in Chunk 3</p>
+          </div>
+        </div>
       </div>
     </TooltipProvider>
   )
@@ -1326,133 +1332,3 @@ function TeamMembersCard() {
   )
 }
 
-function CardsTab() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6">
-      {/* Card 1 — Feature */}
-      <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] p-6 [box-shadow:var(--shadow-preset,none)]">
-        <div className="w-10 h-10 rounded-[var(--radius)] bg-[hsl(var(--accent))] mb-4" />
-        <h3 className="font-semibold text-base mb-1">Automated Workflows</h3>
-        <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">
-          Build and deploy complex automation pipelines without writing a single line of code.
-        </p>
-        <Button>Learn more</Button>
-      </div>
-
-      {/* Card 2 — Stats/Metric */}
-      <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] p-6 [box-shadow:var(--shadow-preset,none)]">
-        <p className="text-xs uppercase tracking-wider text-[hsl(var(--muted-foreground))] mb-2">
-          Monthly Revenue
-        </p>
-        <p className="text-4xl font-bold tabular-nums mb-2">$48,290</p>
-        <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] px-2 py-0.5 text-xs font-medium">
-          +12.4%
-        </span>
-        <p className="text-xs text-[hsl(var(--muted-foreground))] mt-2">vs last month</p>
-      </div>
-
-      {/* Card 3 — Pricing */}
-      <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] p-6 [box-shadow:var(--shadow-preset,none)]">
-        <p className="text-xs uppercase tracking-wider text-[hsl(var(--muted-foreground))] mb-1">Pro Plan</p>
-        <p className="text-3xl font-bold mb-3">
-          $29<span className="text-base font-normal text-[hsl(var(--muted-foreground))]">/mo</span>
-        </p>
-        <ul className="space-y-1.5 text-sm mb-4">
-          {['Unlimited projects', 'Priority support', 'Custom domains', 'Advanced analytics'].map((feature) => (
-            <li key={feature} className="flex items-center gap-2">
-              <span className="text-[hsl(var(--accent-foreground))]">·</span>
-              <span className="text-[hsl(var(--foreground))]">{feature}</span>
-            </li>
-          ))}
-        </ul>
-        <Button className="w-full">Get started</Button>
-      </div>
-
-      {/* Card 4 — Profile */}
-      <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] p-6 flex flex-col items-center text-center">
-        <div className="w-14 h-14 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center mb-3">
-          <span className="text-xl font-semibold text-[hsl(var(--muted-foreground))]">A</span>
-        </div>
-        <p className="font-semibold text-base">Alex Krasnov</p>
-        <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">Design Engineer</p>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">Follow</Button>
-          <Button variant="outline" size="sm">Message</Button>
-        </div>
-      </div>
-
-      {/* Card 5 — Cookie Settings */}
-      <CookieSettingsCard />
-
-      {/* Card 6 — Team Members */}
-      <TeamMembersCard />
-
-      {/* Card 7 — Stats with charts */}
-      <StatsCard />
-
-      {/* Card 8 — Activity Goal */}
-      <ActivityGoalCard />
-
-      {/* Card 9 — Calendar */}
-      <CalendarCard />
-
-      {/* Card 10 — Exercise Minutes */}
-      <ExerciseMinutesCard />
-
-      {/* Card 11 — Create Account */}
-      <CreateAccountCard />
-
-      {/* Card 12 — Date Picker with Range */}
-      <DatePickerCard />
-    </div>
-  )
-}
-
-function TypographyTab() {
-  const label = 'text-xs uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-1'
-
-  return (
-    <div className="p-6 max-w-2xl space-y-8">
-      <div>
-        <p className={label}>Display</p>
-        <p className="text-4xl font-black leading-none">Concrete Brutalist</p>
-      </div>
-      <div>
-        <p className={label}>Heading 1</p>
-        <h1 className="text-3xl font-bold">Building better interfaces</h1>
-      </div>
-      <div>
-        <p className={label}>Heading 2</p>
-        <h2 className="text-2xl font-semibold">Design systems at scale</h2>
-      </div>
-      <div>
-        <p className={label}>Heading 3</p>
-        <h3 className="text-xl font-semibold">Component architecture</h3>
-      </div>
-      <div>
-        <p className={label}>Body</p>
-        <p className="text-base leading-relaxed">
-          Good design is as little design as possible. Less, but better — because it concentrates on the essential aspects, and the products are not burdened with non-essentials. Back to purity, back to simplicity.
-        </p>
-      </div>
-      <div>
-        <p className={label}>Small / Caption</p>
-        <p className="text-sm text-[hsl(var(--muted-foreground))]">
-          Supplemental metadata and captions
-        </p>
-      </div>
-      <div>
-        <p className={label}>Inline Code</p>
-        <code className="font-mono text-sm bg-[hsl(var(--muted))] px-1.5 py-0.5 rounded-[var(--radius)]">
-          const theme = useTheme()
-        </code>
-      </div>
-      <div>
-        <p className={label}>Blockquote</p>
-        <blockquote className="border-l-4 border-[hsl(var(--primary))] pl-4 italic text-[hsl(var(--muted-foreground))]">
-          Design is not just what it looks like and feels like. Design is how it works.
-        </blockquote>
-      </div>
-    </div>
-  )
-}

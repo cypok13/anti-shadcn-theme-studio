@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 export default function PreviewLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <style>{`html, body { height: 100%; overflow: hidden; }`}</style>
+      <style>{`html, body { height: 100%; }`}</style>
       {children}
     </>
   )
