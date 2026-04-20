@@ -34,6 +34,7 @@ import {
 import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
+import { ComponentSection } from './ComponentSection'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
 const ActivityGoalCard = dynamic(() => import('./cards/ActivityGoalCard').then(m => ({ default: m.ActivityGoalCard })), { ssr: false })
@@ -48,7 +49,21 @@ export function ComponentGallery() {
         {/* Left: scrollable component list */}
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-4xl px-20 pt-16 pb-24 space-y-24">
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">Components scroll area — Chunk 1 placeholder</p>
+            <ComponentSection
+              title="Button"
+              docsHref="https://ui.shadcn.com/docs/components/button"
+              tabs={[
+                { key: 'variants', label: 'Variants', content: <p className="text-sm text-[hsl(var(--muted-foreground))]">Variants demo — coming in Chunk 4</p> },
+                { key: 'sizes',    label: 'Sizes',    content: <p className="text-sm text-[hsl(var(--muted-foreground))]">Sizes demo — coming in Chunk 4</p> },
+                { key: 'states',   label: 'States',   content: <p className="text-sm text-[hsl(var(--muted-foreground))]">States demo — coming in Chunk 4</p> },
+              ]}
+            />
+            <ComponentSection
+              title="Checkbox"
+              docsHref="https://ui.shadcn.com/docs/components/checkbox"
+            >
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">Demo — coming in Chunk 4</p>
+            </ComponentSection>
           </div>
         </div>
         {/* Right: sticky sidebar */}
