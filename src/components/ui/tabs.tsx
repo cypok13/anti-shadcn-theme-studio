@@ -10,7 +10,7 @@ const tabsListVariants = cva(
     variants: {
       variant: {
         default: 'bg-[hsl(var(--muted))]',
-        line: 'gap-1 bg-transparent',
+        line: 'gap-1 bg-transparent border-b border-[hsl(var(--border))] w-full rounded-none p-0',
       },
     },
     defaultVariants: { variant: 'default' },
@@ -52,6 +52,9 @@ export function TabsTrigger({ className, ...props }: React.ComponentProps<typeof
         'focus-visible:border-[hsl(var(--ring))] focus-visible:ring-[3px] focus-visible:ring-[hsl(var(--ring)/0.5)] focus-visible:outline-none',
         'disabled:cursor-not-allowed disabled:opacity-50',
         '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',
+        // line variant overrides
+        'group-data-[variant=line]/tabs-list:rounded-none group-data-[variant=line]/tabs-list:border-0 group-data-[variant=line]/tabs-list:border-b-2 group-data-[variant=line]/tabs-list:border-transparent group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:shadow-none group-data-[variant=line]/tabs-list:h-9 group-data-[variant=line]/tabs-list:pb-2',
+        'group-data-[variant=line]/tabs-list:data-[state=active]:bg-transparent group-data-[variant=line]/tabs-list:data-[state=active]:border-[hsl(var(--primary))] group-data-[variant=line]/tabs-list:data-[state=active]:text-[hsl(var(--foreground))] group-data-[variant=line]/tabs-list:data-[state=active]:shadow-none',
         className
       )}
       {...props}

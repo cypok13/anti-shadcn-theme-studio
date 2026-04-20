@@ -58,22 +58,17 @@ export function ComponentGallery() {
                 {
                   key: 'variants',
                   label: 'Variants',
-                  content: (
-                    <DemoRow>
-                      {(['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'] as const).map((v) => (
-                        <Button key={v} variant={v}>{v.charAt(0).toUpperCase() + v.slice(1)}</Button>
-                      ))}
-                    </DemoRow>
-                  ),
+                  content: <ButtonVariantsGrid />,
                 },
                 {
                   key: 'sizes',
                   label: 'Sizes',
                   content: (
                     <DemoRow>
-                      {(['sm', 'default', 'lg', 'icon'] as const).map((s) => (
-                        <Button key={s} size={s}>{s === 'icon' ? <Search size={16} aria-hidden="true" /> : s}</Button>
+                      {(['sm', 'default', 'lg'] as const).map((s) => (
+                        <Button key={s} size={s}>{s}</Button>
                       ))}
+                      <Button size="icon" aria-label="Search"><Search size={16} aria-hidden="true" /></Button>
                     </DemoRow>
                   ),
                 },
@@ -137,6 +132,38 @@ export function ComponentGallery() {
 
 const sectionHeading =
   'text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3'
+
+const BTN_VARIANTS = ['default', 'secondary', 'outline', 'ghost', 'destructive'] as const
+const BTN_COLS = ['Normal', 'Disabled', 'Loading'] as const
+
+function ButtonVariantsGrid() {
+  return (
+    <div className="overflow-x-auto">
+      <table className="border-separate border-spacing-x-2 border-spacing-y-3">
+        <thead>
+          <tr>
+            <th className="w-24" />
+            {BTN_COLS.map((col) => (
+              <th key={col} className="text-xs font-normal text-[hsl(var(--muted-foreground))] pb-2 text-center px-2">
+                {col}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {BTN_VARIANTS.map((variant) => (
+            <tr key={variant}>
+              <td className="text-xs text-[hsl(var(--muted-foreground))] pr-4 capitalize">{variant}</td>
+              <td><Button variant={variant}>Button</Button></td>
+              <td><Button variant={variant} disabled>Button</Button></td>
+              <td><Button variant={variant} isLoading>Button</Button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
 
 function CheckboxDemo() {
   const [checked, setChecked] = useState({ a: true, b: false })

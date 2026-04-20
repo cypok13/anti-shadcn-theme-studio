@@ -14,7 +14,7 @@ export function SectionHeader({ title, docsHref }: SectionHeaderProps) {
           href={docsHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 text-sm text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors"
+          className="flex items-center gap-1 text-sm text-[hsl(var(--primary))] hover:text-[hsl(var(--primary)/0.8)] transition-colors"
         >
           View in docs
           <ExternalLink className="size-3" />
