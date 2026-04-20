@@ -212,17 +212,18 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
 
   test('select: clicking trigger opens dropdown', async ({ page }) => {
     const selectSection = page.locator('section').filter({ hasText: 'Select' })
-    const trigger = selectSection.locator('button').first()
+    const trigger = selectSection.locator('button[role="combobox"]').first()
 
-    // Dropdown should not be visible initially
-    const dropdownBefore = await selectSection.locator('.absolute').count()
+    // Trigger should start closed
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 
     await trigger.click()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(150)
 
-    // Dropdown should appear after click
-    const dropdownAfter = await selectSection.locator('.absolute').count()
-    expect(dropdownAfter).toBeGreaterThan(dropdownBefore)
+    // Radix renders dropdown via Portal into document.body — check aria-expanded and listbox
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    const listbox = page.locator('[role="listbox"]')
+    await expect(listbox).toBeVisible()
   })
 
   test('cards tab: cookie settings switch toggles', async ({ page }) => {

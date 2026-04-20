@@ -55,7 +55,7 @@ export const broadsheet: ThemePreset = {
     mutedForeground: '36 10% 56%',
     accent: '220 60% 60%',
     accentForeground: '0 0% 100%',
-    destructive: '0 75% 50%',
+    destructive: '0 75% 65%',
     destructiveForeground: '0 0% 100%',
     border: '30 8% 22%',
     input: '30 8% 22%',

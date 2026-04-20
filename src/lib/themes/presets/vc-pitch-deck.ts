@@ -55,7 +55,7 @@ export const vcPitchDeck: ThemePreset = {
     mutedForeground: '224 12% 62%',
     accent: '224 30% 22%',
     accentForeground: '224 70% 75%',
-    destructive: '0 63% 45%',
+    destructive: '0 84% 60%',
     destructiveForeground: '0 0% 98%',
     border: '224 20% 18%',
     input: '224 20% 18%',

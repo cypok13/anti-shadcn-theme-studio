@@ -55,7 +55,7 @@ export const zincViolet: ThemePreset = {
     mutedForeground: '240 5% 65%',
     accent: '262 30% 20%',
     accentForeground: '262 80% 80%',
-    destructive: '0 63% 31%',
+    destructive: '0 84% 60%',
     destructiveForeground: '0 0% 98%',
     border: '240 4% 38%',
     input: '240 4% 38%',

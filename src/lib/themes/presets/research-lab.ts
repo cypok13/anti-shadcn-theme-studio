@@ -55,7 +55,7 @@ export const researchLab: ThemePreset = {
     mutedForeground: '210 12% 58%',
     accent: '211 40% 20%',
     accentForeground: '211 85% 72%',
-    destructive: '0 63% 45%',
+    destructive: '0 84% 60%',
     destructiveForeground: '0 0% 100%',
     border: '215 18% 40%',
     input: '215 18% 40%',

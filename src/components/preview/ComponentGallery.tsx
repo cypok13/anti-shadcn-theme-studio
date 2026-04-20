@@ -9,6 +9,13 @@ import { Switch } from '../ui/switch'
 import { RadioGroup, RadioItem } from '../ui/radio-group'
 import { CalendarCard } from './cards/CalendarCard'
 import { Field, Input } from '../ui/input'
+import {
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectField,
+} from '../ui/select'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
 const ActivityGoalCard = dynamic(() => import('./cards/ActivityGoalCard').then(m => ({ default: m.ActivityGoalCard })), { ssr: false })
@@ -165,43 +172,163 @@ function TabsDemo() {
   )
 }
 
+const CircleIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="8" />
+  </svg>
+)
+
+const DotIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="4" />
+  </svg>
+)
+
+const SquareIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+  >
+    <rect x="4" y="4" width="16" height="16" rx="2" />
+  </svg>
+)
+
 function SelectDemo() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [selected, setSelected] = useState<string | null>(null)
-  const options = ['Design Engineer', 'Frontend Developer', 'Product Designer', 'Full Stack Developer']
   return (
-    <section className="space-y-3">
+    <section className="space-y-6">
       <h4 className={sectionHeading}>Select</h4>
-      <div className="relative max-w-xs">
-        <button
-          onClick={() => setIsOpen(o => !o)}
-          className="cursor-pointer flex w-full items-center justify-between rounded-[var(--radius)] border border-[hsl(var(--input))] bg-transparent px-3 py-1.5 text-sm text-[hsl(var(--foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+
+      {/* 1. Sizes */}
+      <div className="space-y-2">
+        <p className="text-xs text-[hsl(var(--muted-foreground))]">Sizes</p>
+        <div className="flex flex-col gap-3 max-w-xs">
+          <SelectField id="select-sm" label="Small" placeholder="Select option…" size="sm">
+            <SelectItem value="a">Option A</SelectItem>
+            <SelectItem value="b">Option B</SelectItem>
+            <SelectItem value="c">Option C</SelectItem>
+          </SelectField>
+          <SelectField id="select-md" label="Medium" placeholder="Select option…" size="md">
+            <SelectItem value="a">Option A</SelectItem>
+            <SelectItem value="b">Option B</SelectItem>
+            <SelectItem value="c">Option C</SelectItem>
+          </SelectField>
+          <SelectField id="select-lg" label="Large" placeholder="Select option…" size="lg">
+            <SelectItem value="a">Option A</SelectItem>
+            <SelectItem value="b">Option B</SelectItem>
+            <SelectItem value="c">Option C</SelectItem>
+          </SelectField>
+        </div>
+      </div>
+
+      {/* 2. With value */}
+      <div className="max-w-xs">
+        <SelectField id="select-value" label="With value" defaultValue="frontend" size="md">
+          <SelectItem value="design">Design Engineer</SelectItem>
+          <SelectItem value="frontend">Frontend Developer</SelectItem>
+          <SelectItem value="fullstack">Full Stack Developer</SelectItem>
+        </SelectField>
+      </div>
+
+      {/* 3. Disabled */}
+      <div className="max-w-xs">
+        <SelectField id="select-disabled" label="Disabled" placeholder="Not available" size="md" disabled>
+          <SelectItem value="a">Option A</SelectItem>
+        </SelectField>
+      </div>
+
+      {/* 4. Error */}
+      <div className="max-w-xs">
+        <SelectField
+          id="select-error"
+          label="Error"
+          placeholder="Select an option…"
+          size="md"
+          isError
+          errorMessage="Please select an option"
         >
-          <span className={selected ? '' : 'text-[hsl(var(--muted-foreground))]'}>
-            {selected ?? 'Select a role...'}
-          </span>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}>
-            <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-        {isOpen && (
-          <div className="absolute top-full left-0 right-0 mt-1 rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--popover))] shadow-lg z-10 overflow-hidden">
-            {options.map((opt) => (
-              <button
-                key={opt}
-                onClick={() => { setSelected(opt); setIsOpen(false) }}
-                className={[
-                  'cursor-pointer w-full text-left px-3 py-2 text-sm transition-colors',
-                  selected === opt
-                    ? 'bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]'
-                    : 'text-[hsl(var(--foreground))] hover:bg-[hsl(var(--accent)/0.5)] hover:text-[hsl(var(--accent-foreground))]',
-                ].join(' ')}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
-        )}
+          <SelectItem value="a">Option A</SelectItem>
+          <SelectItem value="b">Option B</SelectItem>
+        </SelectField>
+      </div>
+
+      {/* 5. With helper text */}
+      <div className="max-w-xs">
+        <SelectField
+          id="select-helper"
+          label="With helper text"
+          placeholder="Select option…"
+          size="md"
+          helperText="Choose your preferred option"
+        >
+          <SelectItem value="a">Option A</SelectItem>
+          <SelectItem value="b">Option B</SelectItem>
+          <SelectItem value="c">Option C</SelectItem>
+        </SelectField>
+      </div>
+
+      {/* 6. Grouped options */}
+      <div className="max-w-xs">
+        <SelectField id="select-grouped" label="Grouped" placeholder="Choose…" size="md">
+          <SelectGroup>
+            <SelectLabel>Colors</SelectLabel>
+            <SelectItem value="red">Red</SelectItem>
+            <SelectItem value="blue">Blue</SelectItem>
+            <SelectItem value="green">Green</SelectItem>
+          </SelectGroup>
+          <SelectSeparator />
+          <SelectGroup>
+            <SelectLabel>Sizes</SelectLabel>
+            <SelectItem value="xs">Extra Small</SelectItem>
+            <SelectItem value="sm">Small</SelectItem>
+            <SelectItem value="md">Medium</SelectItem>
+            <SelectItem value="lg">Large</SelectItem>
+          </SelectGroup>
+        </SelectField>
+      </div>
+
+      {/* 7. Items with icons */}
+      <div className="max-w-xs">
+        <SelectField id="select-icons" label="Items with icons" placeholder="Choose shape…" size="md">
+          <SelectItem value="circle" leadingIcon={<CircleIcon />}>Circle</SelectItem>
+          <SelectItem value="dot" leadingIcon={<DotIcon />}>Dot</SelectItem>
+          <SelectItem value="square" leadingIcon={<SquareIcon />}>Square</SelectItem>
+        </SelectField>
+      </div>
+
+      {/* 8. Long list (scroll) */}
+      <div className="max-w-xs">
+        <SelectField id="select-long" label="Long list" placeholder="Pick a country…" size="md">
+          <SelectItem value="ar">Argentina</SelectItem>
+          <SelectItem value="au">Australia</SelectItem>
+          <SelectItem value="br">Brazil</SelectItem>
+          <SelectItem value="ca">Canada</SelectItem>
+          <SelectItem value="cn">China</SelectItem>
+          <SelectItem value="fr">France</SelectItem>
+          <SelectItem value="de">Germany</SelectItem>
+          <SelectItem value="in">India</SelectItem>
+          <SelectItem value="it">Italy</SelectItem>
+          <SelectItem value="jp">Japan</SelectItem>
+          <SelectItem value="mx">Mexico</SelectItem>
+          <SelectItem value="us">United States</SelectItem>
+        </SelectField>
       </div>
     </section>
   )

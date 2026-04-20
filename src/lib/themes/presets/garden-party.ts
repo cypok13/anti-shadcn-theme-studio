@@ -55,7 +55,7 @@ export const gardenParty: ThemePreset = {
     mutedForeground: '140 8% 58%',
     accent: '152 30% 16%',
     accentForeground: '152 55% 65%',
-    destructive: '0 75% 52%',
+    destructive: '0 75% 65%',
     destructiveForeground: '0 0% 100%',
     border: '140 12% 20%',
     input: '140 12% 20%',

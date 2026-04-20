@@ -55,7 +55,7 @@ export const quietTokyo: ThemePreset = {
     mutedForeground: '220 10% 55%',
     accent: '15 50% 54%',
     accentForeground: '0 0% 100%',
-    destructive: '0 70% 52%',
+    destructive: '0 70% 65%',
     destructiveForeground: '0 0% 100%',
     border: '220 12% 24%',
     input: '220 12% 24%',
