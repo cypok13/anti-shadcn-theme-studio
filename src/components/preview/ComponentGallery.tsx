@@ -16,6 +16,7 @@ import {
   SelectSeparator,
   SelectField,
 } from '../ui/select'
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
 const ActivityGoalCard = dynamic(() => import('./cards/ActivityGoalCard').then(m => ({ default: m.ActivityGoalCard })), { ssr: false })
@@ -29,11 +30,13 @@ interface ComponentGalleryProps {
 
 export function ComponentGallery({ activeTab = 'components' }: ComponentGalleryProps) {
   return (
-    <div className="h-full overflow-y-auto bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-      {activeTab === 'components' && <ComponentsTab />}
-      {activeTab === 'cards' && <CardsTab />}
-      {activeTab === 'typography' && <TypographyTab />}
-    </div>
+    <TooltipProvider>
+      <div className="h-full overflow-y-auto bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+        {activeTab === 'components' && <ComponentsTab />}
+        {activeTab === 'cards' && <CardsTab />}
+        {activeTab === 'typography' && <TypographyTab />}
+      </div>
+    </TooltipProvider>
   )
 }
 
@@ -329,6 +332,130 @@ function SelectDemo() {
           <SelectItem value="mx">Mexico</SelectItem>
           <SelectItem value="us">United States</SelectItem>
         </SelectField>
+      </div>
+    </section>
+  )
+}
+
+const SettingsIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="h-4 w-4"
+    aria-hidden="true"
+  >
+    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+)
+
+function TooltipDemo() {
+  const triggerClass = [
+    'cursor-pointer rounded-[var(--radius)] border border-[hsl(var(--border))]',
+    'bg-[hsl(var(--background))] px-3 text-sm text-[hsl(var(--foreground))]',
+    'min-h-[44px] hover:bg-[hsl(var(--accent)/0.5)] focus-visible:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2',
+    'focus-visible:ring-offset-[hsl(var(--background))]',
+  ].join(' ')
+
+  return (
+    <section className="space-y-4 pb-24" data-section="tooltip">
+      <h4 className={sectionHeading}>Tooltip</h4>
+      <div className="space-y-4">
+
+        {/* 1. Default (top) */}
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className={triggerClass}>Hover me</button>
+            </TooltipTrigger>
+            <TooltipContent>This is a tooltip</TooltipContent>
+          </Tooltip>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Default (top)</span>
+        </div>
+
+        {/* 2. Right placement */}
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className={triggerClass}>Hover me (right)</button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Opens to the right</TooltipContent>
+          </Tooltip>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Right</span>
+        </div>
+
+        {/* 3. Bottom placement */}
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className={triggerClass}>Hover me (bottom)</button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Opens below</TooltipContent>
+          </Tooltip>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Bottom</span>
+        </div>
+
+        {/* 4. Left placement */}
+        <div className="flex items-center gap-2 pl-40">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className={triggerClass}>Hover me (left)</button>
+            </TooltipTrigger>
+            <TooltipContent side="left">Opens to the left</TooltipContent>
+          </Tooltip>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Left</span>
+        </div>
+
+        {/* 5. No arrow */}
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className={triggerClass}>No arrow</button>
+            </TooltipTrigger>
+            <TooltipContent showArrow={false}>No arrow tooltip</TooltipContent>
+          </Tooltip>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">No arrow</span>
+        </div>
+
+        {/* 6. Long text */}
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className={triggerClass}>Long text</button>
+            </TooltipTrigger>
+            <TooltipContent>This is a longer tooltip that tests the max-width constraint of 240 pixels</TooltipContent>
+          </Tooltip>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Long text (max-width 240px)</span>
+        </div>
+
+        {/* 7. Icon button */}
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className={[
+                  'cursor-pointer rounded-[var(--radius)]',
+                  'min-h-[44px] min-w-[44px] bg-transparent p-2 text-[hsl(var(--foreground))]',
+                  'hover:bg-[hsl(var(--accent)/0.5)] focus-visible:outline-none',
+                  'focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2',
+                  'focus-visible:ring-offset-[hsl(var(--background))]',
+                ].join(' ')}
+                aria-label="Settings"
+              >
+                <SettingsIcon />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Settings</TooltipContent>
+          </Tooltip>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Icon button</span>
+        </div>
+
       </div>
     </section>
   )
@@ -683,6 +810,9 @@ function ComponentsTab() {
 
       {/* Section 13 — Select */}
       <SelectDemo />
+
+      {/* Section 14 — Tooltip */}
+      <TooltipDemo />
     </div>
   )
 }
