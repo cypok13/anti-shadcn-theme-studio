@@ -28,14 +28,15 @@ test.describe('Gate 0 — Runtime integrity', () => {
   test('no block elements (div/section/article) inside button', async ({ page }) => {
     await page.goto(COMPONENTS_URL)
     await page.waitForLoadState('networkidle')
-    const invalid = await page.locator('button div, button section, button article').count()
+    // Exclude Vercel toolbar buttons (data-issues-open) — injected by Vercel dev overlay, not our code
+    const invalid = await page.locator('button:not([data-issues-open]) div, button:not([data-issues-open]) section, button:not([data-issues-open]) article').count()
     expect(invalid).toBe(0)
   })
 
   test('no block elements inside button on cards tab', async ({ page }) => {
     await page.goto(CARDS_URL)
     await page.waitForLoadState('networkidle')
-    const invalid = await page.locator('button div, button section, button article').count()
+    const invalid = await page.locator('button:not([data-issues-open]) div, button:not([data-issues-open]) section, button:not([data-issues-open]) article').count()
     expect(invalid).toBe(0)
   })
 })

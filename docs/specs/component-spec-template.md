@@ -57,6 +57,19 @@ Which disabled pattern?
 
 ---
 
+## Industry Parity Check (fill from researcher output — mandatory)
+
+> Compare against 4+ top DS (Material 3, Carbon, Spectrum, Fluent 2, Atlassian, shadcn).
+> Anything present in 3+ systems = REQUIRED variant/prop. Document gaps explicitly.
+
+| Feature / Prop | Material | Carbon | Spectrum | Fluent | Atlassian | shadcn | **Include?** | Reason if excluded |
+|----------------|----------|--------|----------|--------|-----------|--------|-------------|-------------------|
+| (fill from researcher gap table) | | | | | | | | |
+
+**GATE:** Spec is incomplete if this table is empty or skipped.
+
+---
+
 ## Variants (exhaustive — no "etc.")
 
 | Prop | Values | Default |
@@ -179,8 +192,9 @@ Which disabled pattern?
 
 ## Dark Mode
 
-- [ ] All tokens semantic (auto-switch via [data-theme="dark"])
+- [ ] All tokens semantic — dark mode activates via `?mode=dark` URL param (NOT CSS class toggle)
 - [ ] No hardcoded colors
+- [ ] Verified at `/preview?tab=components&mode=dark` — darker bg + lighter text visible
 
 ---
 
@@ -219,7 +233,8 @@ Which disabled pattern?
 
 ## Spec Sign-off
 
-- [ ] Variants complete
+- [ ] Industry Parity Check table filled (researcher gap table used as input)
+- [ ] Variants complete (including any props flagged as REQUIRED in parity check)
 - [ ] All states addressed (write "N/A — reason" if not applicable, never leave blank)
 - [ ] Visual Design section filled with token-based values (no arbitrary px)
 - [ ] All CSS → tokens
