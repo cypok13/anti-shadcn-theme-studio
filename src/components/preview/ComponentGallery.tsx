@@ -47,13 +47,13 @@ export function ComponentGallery() {
       <div className="flex h-full overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
         {/* Left: scrollable component list */}
         <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-4xl px-8 py-10 space-y-16">
+          <div className="mx-auto max-w-4xl px-20 pt-16 pb-24 space-y-24">
             <p className="text-sm text-[hsl(var(--muted-foreground))]">Components scroll area — Chunk 1 placeholder</p>
           </div>
         </div>
-        {/* Right: sticky sidebar placeholder */}
-        <div className="w-[280px] shrink-0 border-l border-[hsl(var(--border))] bg-[hsl(var(--background))] overflow-y-auto">
-          <div className="p-4">
+        {/* Right: sticky sidebar */}
+        <div className="w-[300px] shrink-0 overflow-y-auto p-4">
+          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] shadow-md p-5">
             <p className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-widest">Theme Controls</p>
             <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">Sidebar coming in Chunk 3</p>
           </div>
