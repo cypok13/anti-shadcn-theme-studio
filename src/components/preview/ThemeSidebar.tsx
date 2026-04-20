@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
 import { PRESETS } from '@/lib/themes/registry'
 import { Separator } from '../ui/separator'
+import { Button } from '../ui/button'
+import { cn } from '@/lib/utils'
 
 const RADIUS_OPTIONS = [
   { label: 'None', value: '0rem' },
@@ -15,12 +17,6 @@ const RADIUS_OPTIONS = [
 
 const labelClass =
   'text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-widest mb-3'
-
-const activeClass =
-  'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]'
-
-const inactiveClass =
-  'bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] hover:bg-[hsl(var(--accent))]'
 
 export function ThemeSidebar() {
   const router = useRouter()
@@ -50,16 +46,15 @@ export function ThemeSidebar() {
         <p className={labelClass}>Theme</p>
         <div className="flex flex-col gap-1">
           {PRESETS.map((preset) => (
-            <button
+            <Button
               key={preset.id}
+              variant={currentTheme === preset.id ? 'default' : 'ghost'}
+              size="sm"
               onClick={() => setParam('theme', preset.id)}
-              className={[
-                'cursor-pointer w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                currentTheme === preset.id ? activeClass : inactiveClass,
-              ].join(' ')}
+              className="w-full justify-start"
             >
               {preset.name}
-            </button>
+            </Button>
           ))}
         </div>
       </section>
@@ -71,16 +66,15 @@ export function ThemeSidebar() {
         <p className={labelClass}>Appearance</p>
         <div className="flex gap-2">
           {(['light', 'dark'] as const).map((mode) => (
-            <button
+            <Button
               key={mode}
+              variant={currentMode === mode ? 'default' : 'ghost'}
+              size="sm"
               onClick={() => setParam('mode', mode)}
-              className={[
-                'cursor-pointer flex-1 py-2 rounded-lg text-sm font-medium transition-colors capitalize',
-                currentMode === mode ? activeClass : inactiveClass,
-              ].join(' ')}
+              className="flex-1 capitalize"
             >
               {mode}
-            </button>
+            </Button>
           ))}
         </div>
       </section>
@@ -92,17 +86,14 @@ export function ThemeSidebar() {
         <p className={labelClass}>Radius</p>
         <div className="flex flex-col gap-1">
           {RADIUS_OPTIONS.map((opt) => {
-            const isActive = currentRadius
-              ? currentRadius === opt.value
-              : opt.value === '0.5rem'
+            const isActive = currentRadius ? currentRadius === opt.value : opt.value === '0.5rem'
             return (
-              <button
+              <Button
                 key={opt.value}
+                variant={isActive ? 'default' : 'ghost'}
+                size="sm"
                 onClick={() => setParam('radius', opt.value)}
-                className={[
-                  'cursor-pointer flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                  isActive ? activeClass : inactiveClass,
-                ].join(' ')}
+                className="w-full justify-start gap-3"
               >
                 <span
                   className="shrink-0 w-5 h-4 border-2 border-current"
@@ -110,8 +101,8 @@ export function ThemeSidebar() {
                   aria-hidden="true"
                 />
                 <span>{opt.label}</span>
-                <span className="ml-auto text-xs opacity-60">{opt.value}</span>
-              </button>
+                <span className={cn('ml-auto text-xs', isActive ? 'opacity-80' : 'opacity-50')}>{opt.value}</span>
+              </Button>
             )
           })}
         </div>
@@ -120,15 +111,9 @@ export function ThemeSidebar() {
       <Separator />
 
       {/* Copy Theme */}
-      <button
-        onClick={handleCopy}
-        className={[
-          'cursor-pointer w-full py-2 rounded-lg text-sm font-medium transition-colors',
-          inactiveClass,
-        ].join(' ')}
-      >
+      <Button variant="secondary" className="w-full" onClick={handleCopy}>
         Copy Theme URL
-      </button>
+      </Button>
     </div>
   )
 }
