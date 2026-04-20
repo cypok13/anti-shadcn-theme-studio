@@ -189,8 +189,9 @@ No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h
 
 ## Dark Mode
 
-- [x] All tokens semantic (auto-switch via CSS vars)
+- [x] All tokens semantic — dark mode activates via `?mode=dark` URL param (NOT CSS class toggle / NOT `data-theme`)
 - [x] No hardcoded colors
+- [x] Verified at `/preview?tab=components&mode=dark`
 
 ---
 

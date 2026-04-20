@@ -51,8 +51,20 @@ Research best practices for [ComponentName] component:
 
 5. Common bugs for this component type (search: "[ComponentName] accessibility bug OR common mistake")
 
+6. **Industry variant parity check** — compare against 4+ of these design systems:
+   - Material Design 3 (Google)
+   - Carbon Design System (IBM)
+   - Spectrum (Adobe)
+   - Fluent Design 2 (Microsoft)
+   - Atlassian Design System
+   - shadcn/ui
+
+   For each system find: what props, slots, and visual variants does their [ComponentName] expose?
+   Return a gap table: feature | how many DS have it | we have it?
+   Flag anything present in 3+ systems as REQUIRED for spec.
+
 Return: variant matrix, state matrix, required keyboard interactions, required ARIA, 
-3 most common implementation bugs specific to this component.
+3 most common implementation bugs, industry gap table.
 """)
 ```
 
@@ -230,7 +242,7 @@ Required checks:
    - Click item B → assert item B `aria-checked/aria-selected="true"` AND item A `aria-checked/aria-selected="false"`
    - A visual snapshot of "B selected" CANNOT confirm A deselected. Must check both.
 5. WCAG contrast: text on background ≥ 4.5:1; icon on filled background ≥ 3:1
-6. Dark mode: navigate to a dark preset and screenshot same section
+6. Dark mode: navigate to `/preview?tab=components&mode=dark` (NOT `classList.add('dark')` or `data-theme` — this app uses URL-based dark mode via `?mode=dark` query param, which triggers `resolveCSS(preset, 'dark')` server-side). Screenshot the same component section. Verify token colors visibly differ from light mode (darker backgrounds, lighter text).
 
 Output format:
 - PASS or FAIL per check above
@@ -247,7 +259,7 @@ CEO visual checklist:
 - [ ] Hover state visible (cursor changes, bg changes)
 - [ ] Focus ring visible on Tab
 - [ ] All states render correctly (use demo that shows every state)
-- [ ] Dark mode renders correctly
+- [ ] Dark mode renders correctly (verified via `/preview?tab=components&mode=dark`, NOT CSS class toggle)
 - [ ] No text selection on interactive elements
 - [ ] Disabled state: cursor-not-allowed + reduced opacity
 
@@ -362,6 +374,15 @@ Documented failures from Session A. Each rule above has a reason. Read before im
 **Root cause:** `<label>` element present visually but not associated via `htmlFor` + `id`.
 **Fix:** Always: `<label htmlFor="field-id">Label</label>` + `<input id="field-id" .../>`.
 **Prevention:** Gate 1 axe-core test catches this. Also: any orphan `<input>` (no `htmlFor`/`aria-label`) should fail lint.
+
+### E-011: Dark mode border tokens too low contrast — passes CI but fails visually
+
+**Symptom:** Components "work in dark mode" (tokens applied, no CI failures), but borders are invisible — `--border` at 16% lightness on `--background` at 4% = 1.34:1 contrast (WCAG 1.4.11 requires ≥3:1 for UI components).
+**Root cause:** Preset files define `dark.border` lightness too close to `dark.background`. CI tests don't compute contrast ratios — they only check that tokens are applied. ux-reviewer was testing wrong dark mode mechanism (`data-theme` class toggle) instead of correct URL param (`?mode=dark`), so visual gate never caught it.
+**Fix (two parts):**
+1. Preset files: increase `dark.border` lightness to ≥38% (vs background at 4%). Formula: contrast ≥ 3:1 requires lightness delta ≥ ~34 points at these values.
+2. Visual gate: always verify dark mode via `?mode=dark` URL param — NOT `classList.add('dark')`, NOT `data-theme`, NOT `prefers-color-scheme`.
+**Prevention:** Step 5 (Visual Gate) instructions must explicitly say: "Navigate to `/preview?tab=components&mode=dark`". Never accept "dark mode verified" without a screenshot from this URL.
 
 ---
 

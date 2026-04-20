@@ -206,8 +206,9 @@ Contextually unavailable (permission, plan, quota)?
 
 ## Dark Mode
 
-- [x] Все токены семантические (auto-switch via `[data-theme="dark"]`)
+- [x] Все токены семантические — dark mode активируется через `?mode=dark` URL param (NOT CSS class toggle / NOT `data-theme`)
 - [x] Нет hardcoded цветов
+- [x] Проверено на `/preview?tab=components&mode=dark`
 
 ---
 
