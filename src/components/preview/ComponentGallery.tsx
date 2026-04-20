@@ -35,6 +35,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
 import { ComponentSection } from './ComponentSection'
+import { ThemeSidebar } from './ThemeSidebar'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
 const ActivityGoalCard = dynamic(() => import('./cards/ActivityGoalCard').then(m => ({ default: m.ActivityGoalCard })), { ssr: false })
@@ -68,10 +69,7 @@ export function ComponentGallery() {
         </div>
         {/* Right: sticky sidebar */}
         <div className="w-[300px] shrink-0 overflow-y-auto p-4">
-          <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] shadow-md p-5">
-            <p className="text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-widest">Theme Controls</p>
-            <p className="mt-2 text-sm text-[hsl(var(--muted-foreground))]">Sidebar coming in Chunk 3</p>
-          </div>
+          <ThemeSidebar />
         </div>
       </div>
     </TooltipProvider>
