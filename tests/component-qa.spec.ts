@@ -193,11 +193,8 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
   })
 
   test('tabs: clicking a different tab switches content', async ({ page }) => {
-    const tabButtons = page.locator('[role="tablist"] button, .rounded-\\[var\\(--radius\\)\\].bg-\\[hsl\\(var\\(--muted\\)\\)\\] button').first().locator('..')
-    // Simpler: find the tabs container
-    const tabSection = page.locator('section').filter({ hasText: 'Tabs' })
+    const tabSection = page.locator('[data-section="tabs-original"]')
     const tabs = tabSection.locator('button')
-    const firstTab = tabs.first()
     const secondTab = tabs.nth(1)
 
     // Record content before
@@ -243,6 +240,96 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     expect(after).not.toBeNull()
     expect(after).not.toBe(before)
   })
+
+  test('dialog: clicking trigger opens dialog with role="dialog"', async ({ page }) => {
+    const dialogSection = page.locator('[data-section="dialog"]')
+    const trigger = dialogSection.getByRole('button', { name: 'Default dialog' })
+    await trigger.click()
+    await page.waitForTimeout(200)
+
+    const dialog = page.locator('[role="dialog"]')
+    await expect(dialog).toBeVisible()
+
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(200)
+
+    await expect(dialog).not.toBeVisible()
+  })
+
+  test('dialog scrollable: DialogBody has overflow-y scrolling and content exceeds visible height', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 600 })
+    const dialogSection = page.locator('[data-section="dialog"]')
+    const trigger = dialogSection.getByRole('button', { name: 'Scrollable' })
+    await trigger.click()
+    await page.waitForTimeout(200)
+
+    const dialog = page.locator('[role="dialog"]')
+    await expect(dialog).toBeVisible()
+
+    // Find the scrollable body: first child of the dialog that has overflow-y auto/scroll
+    const dialogBody = dialog.locator('.overflow-y-auto').first()
+    await expect(dialogBody).toBeVisible()
+
+    const overflowY = await dialogBody.evaluate(el => getComputedStyle(el).overflowY)
+    expect(['auto', 'scroll']).toContain(overflowY)
+
+    // The key assertion: scrollHeight > clientHeight means content actually overflows
+    // This would have caught the min-h-0 bug (flex-1 without min-h-0 collapses the container,
+    // making scrollHeight === clientHeight even with overflow content)
+    const isScrollable = await dialogBody.evaluate(el => el.scrollHeight > el.clientHeight)
+    expect(isScrollable).toBe(true)
+
+    await page.keyboard.press('Escape')
+  })
+
+  test('popover: trigger toggles aria-expanded and content visible via Portal', async ({ page }) => {
+    const popoverSection = page.locator('[data-section="popover"]')
+    const trigger = popoverSection.getByRole('button', { name: 'Default' })
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+
+    await trigger.click()
+    await page.waitForTimeout(200)
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    const content = page.locator('[role="dialog"]').first()
+    await expect(content).toBeVisible()
+
+    // Verify content is rendered in Portal (inside body), not inline in trigger's subtree
+    const isInBody = await content.evaluate(el => document.body.contains(el))
+    expect(isInBody).toBe(true)
+    const isInsideTrigger = await content.evaluate(el => {
+      const section = document.querySelector('[data-section="popover"]')
+      return section?.contains(el) ?? false
+    })
+    expect(isInsideTrigger).toBe(false)
+  })
+
+  test('popover: Escape closes and restores focus to trigger', async ({ page }) => {
+    const popoverSection = page.locator('[data-section="popover"]')
+    const trigger = popoverSection.getByRole('button', { name: 'Default' })
+    await trigger.click()
+    await page.waitForTimeout(200)
+    await expect(page.locator('[role="dialog"]').first()).toBeVisible()
+
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(200)
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await expect(trigger).toBeFocused()
+  })
+
+  test('popover: click outside closes popover', async ({ page }) => {
+    const popoverSection = page.locator('[data-section="popover"]')
+    const trigger = popoverSection.getByRole('button', { name: 'Default' })
+    await trigger.click()
+    await page.waitForTimeout(200)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    await page.mouse.click(10, 10)
+    await page.waitForTimeout(200)
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
 })
 
 // ─── Gate 3: Click zones (full-row coverage) ──────────────────────────────────
@@ -264,5 +351,210 @@ test.describe('Gate 3 — Full-row click zones', () => {
       }
     }
     expect(interactiveHits).toBeGreaterThanOrEqual(3)
+  })
+
+  test('dialog: Tab key cycles focus within dialog only', async ({ page }) => {
+    await page.goto(COMPONENTS_URL)
+    await page.waitForLoadState('networkidle')
+    const dialogSection = page.locator('[data-section="dialog"]')
+    const trigger = dialogSection.getByRole('button', { name: 'Default dialog' })
+    await trigger.click()
+    await page.waitForTimeout(200)
+
+    const dialog = page.locator('[role="dialog"]')
+    await expect(dialog).toBeVisible()
+
+    // Tab several times and verify focus never escapes the dialog
+    for (let i = 0; i < 6; i++) {
+      await page.keyboard.press('Tab')
+      const focusInsideDialog = await page.evaluate(() => {
+        const dialog = document.querySelector('[role="dialog"]')
+        return dialog ? dialog.contains(document.activeElement) : false
+      })
+      expect(focusInsideDialog).toBe(true)
+    }
+
+    await page.keyboard.press('Escape')
+  })
+
+})
+
+// ─── Gate 4: Badge-specific assertions ───────────────────────────────────────
+
+test.describe('Gate 4 — Badge', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto(COMPONENTS_URL)
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('badge: renders as <span> (not <div>)', async ({ page }) => {
+    const badge = page.locator('[data-slot="badge"]').first()
+    await expect(badge).toBeVisible()
+    const tagName = await badge.evaluate(el => el.tagName.toLowerCase())
+    expect(tagName).toBe('span')
+  })
+
+  test('badge: display is inline-flex (or flex when inside flex container)', async ({ page }) => {
+    // Inside a flex container, inline-flex is blockified to flex — both are valid
+    const badge = page.locator('[data-slot="badge"]').first()
+    const display = await badge.evaluate(el => getComputedStyle(el).display)
+    expect(['inline-flex', 'flex']).toContain(display)
+  })
+
+  test('badge: all 7 variants render with data-variant attribute', async ({ page }) => {
+    const variants = ['default', 'secondary', 'outline', 'destructive', 'success', 'warning', 'info']
+    for (const v of variants) {
+      await expect(page.locator(`[data-slot="badge"][data-variant="${v}"]`).first()).toBeVisible()
+    }
+  })
+
+  test('badge: whitespace is nowrap', async ({ page }) => {
+    const badge = page.locator('[data-slot="badge"]').first()
+    const ws = await badge.evaluate(el => getComputedStyle(el).whiteSpace)
+    expect(ws).toBe('nowrap')
+  })
+
+  test('badge: dot badge has aria-label', async ({ page }) => {
+    const dotBadge = page.locator('[data-slot="badge"][data-dot="true"]').first()
+    await expect(dotBadge).toBeVisible()
+    const ariaLabel = await dotBadge.getAttribute('aria-label')
+    expect(ariaLabel).toBeTruthy()
+  })
+
+  test('badge: text badges have height within expected range (18–28px)', async ({ page }) => {
+    // Exclude dot-only badges (no text) — they are tiny by design (6px dot)
+    const badges = page.locator('[data-slot="badge"]:not([data-dot="true"])')
+    const count = await badges.count()
+    expect(count).toBeGreaterThan(0)
+    for (let i = 0; i < count; i++) {
+      const box = await badges.nth(i).boundingBox()
+      if (box) {
+        expect(box.height).toBeGreaterThanOrEqual(18)
+        expect(box.height).toBeLessThanOrEqual(28)
+      }
+    }
+  })
+
+  test('badge: background resolves to rgb (CSS var resolves correctly)', async ({ page }) => {
+    const badge = page.locator('[data-slot="badge"][data-variant="default"]').first()
+    const bg = await badge.evaluate(el => getComputedStyle(el).backgroundColor)
+    expect(bg).toMatch(/^rgb/)
+  })
+})
+
+// ─── Gate 5: Separator-specific assertions ────────────────────────────────────
+
+test.describe('Gate 5 — Separator', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto(COMPONENTS_URL)
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('separator: decorative default has role="none"', async ({ page }) => {
+    const sep = page.locator('[data-slot="separator"]').first()
+    await expect(sep).toBeVisible()
+    await expect(sep).toHaveAttribute('role', 'none')
+  })
+
+  test('separator: horizontal has data-orientation="horizontal"', async ({ page }) => {
+    const sep = page.locator('[data-slot="separator"][data-orientation="horizontal"]').first()
+    await expect(sep).toBeVisible()
+    await expect(sep).toHaveAttribute('data-orientation', 'horizontal')
+  })
+
+  test('separator: horizontal is 1px tall and wider than tall', async ({ page }) => {
+    const sep = page.locator('[data-slot="separator"][data-orientation="horizontal"]').first()
+    const box = await sep.boundingBox()
+    expect(box?.height).toBe(1)
+    expect(box!.width).toBeGreaterThan(1)
+  })
+
+  test('separator: vertical has data-orientation="vertical" and is 1px wide', async ({ page }) => {
+    // Radix only sets aria-orientation on semantic (non-decorative) separators.
+    // Demo uses decorative=true (default), so check data-orientation instead.
+    const vSep = page.locator('[data-slot="separator"][data-orientation="vertical"]').first()
+    await expect(vSep).toBeVisible()
+    await expect(vSep).toHaveAttribute('data-orientation', 'vertical')
+    const box = await vSep.boundingBox()
+    expect(box?.width).toBe(1)
+    expect(box!.height).toBeGreaterThan(1)
+  })
+
+  test('separator: not interactive (no cursor:pointer, no tabindex)', async ({ page }) => {
+    const sep = page.locator('[data-slot="separator"]').first()
+    const cursor = await sep.evaluate(el => getComputedStyle(el).cursor)
+    expect(cursor).not.toBe('pointer')
+    await expect(sep).not.toHaveAttribute('tabindex')
+  })
+
+  test('separator: background resolves to rgb (CSS var works)', async ({ page }) => {
+    const sep = page.locator('[data-slot="separator"]').first()
+    const bg = await sep.evaluate(el => getComputedStyle(el).backgroundColor)
+    expect(bg).toMatch(/^rgb/)
+  })
+})
+
+// ─── Gate 6: Tabs-specific assertions ────────────────────────────────────────
+
+test.describe('Gate 6 — Tabs', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto(COMPONENTS_URL)
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('tabs: tablist role is visible', async ({ page }) => {
+    const tabSection = page.locator('[data-section="tabs-component"]')
+    await expect(tabSection.getByRole('tablist')).toBeVisible()
+  })
+
+  test('tabs: active tab has aria-selected="true" and data-state="active"', async ({ page }) => {
+    const tabSection = page.locator('[data-section="tabs-component"]')
+    const activeTab = tabSection.getByRole('tab', { selected: true })
+    await expect(activeTab).toHaveAttribute('aria-selected', 'true')
+    await expect(activeTab).toHaveAttribute('data-state', 'active')
+  })
+
+  test('tabs: inactive tab has aria-selected="false" and data-state="inactive"', async ({ page }) => {
+    const tabSection = page.locator('[data-section="tabs-component"]')
+    const inactiveTabs = tabSection.getByRole('tab', { selected: false })
+    await expect(inactiveTabs.first()).toHaveAttribute('aria-selected', 'false')
+    await expect(inactiveTabs.first()).toHaveAttribute('data-state', 'inactive')
+  })
+
+  test('tabs: clicking inactive tab makes it active', async ({ page }) => {
+    const tabSection = page.locator('[data-section="tabs-component"]')
+    const secondTab = tabSection.getByRole('tab').nth(1)
+    await secondTab.click()
+    await page.waitForTimeout(100)
+    await expect(secondTab).toHaveAttribute('aria-selected', 'true')
+    await expect(secondTab).toHaveAttribute('data-state', 'active')
+  })
+
+  test('tabs: tabpanel is visible', async ({ page }) => {
+    const tabSection = page.locator('[data-section="tabs-component"]')
+    await expect(tabSection.getByRole('tabpanel')).toBeVisible()
+  })
+
+  test('tabs: active tab has tabindex="0"', async ({ page }) => {
+    const tabSection = page.locator('[data-section="tabs-component"]')
+    const activeTab = tabSection.getByRole('tab', { selected: true })
+    // Radix roving focus sets tabindex=0 after the tablist receives focus
+    await activeTab.click()
+    await expect(activeTab).toHaveAttribute('tabindex', '0')
+  })
+
+  test('tabs: ArrowRight moves focus to next tab', async ({ page }) => {
+    const tabSection = page.locator('[data-section="tabs-component"]')
+    const firstTab = tabSection.getByRole('tab').first()
+    await firstTab.focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(tabSection.getByRole('tab').nth(1)).toBeFocused()
+  })
+
+  test('tabs: disabled tab has data-disabled attribute', async ({ page }) => {
+    const tabSection = page.locator('[data-section="tabs-component"]')
+    const disabledTab = tabSection.locator('[role="tab"][data-disabled]')
+    await expect(disabledTab).toBeVisible()
+    await expect(disabledTab).toBeDisabled()
   })
 })

@@ -16,7 +16,24 @@ import {
   SelectSeparator,
   SelectField,
 } from '../ui/select'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip'
+import {
+  Dialog,
+  DialogTrigger,
+  DialogPortal,
+  DialogOverlay,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+  DialogBody,
+} from '../ui/dialog'
+import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
+import { Badge } from '../ui/badge'
+import { Separator } from '../ui/separator'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
 const ActivityGoalCard = dynamic(() => import('./cards/ActivityGoalCard').then(m => ({ default: m.ActivityGoalCard })), { ssr: false })
@@ -148,7 +165,7 @@ function TabsDemo() {
     notifications: 'Configure how you receive notifications.',
   }
   return (
-    <section className="space-y-3">
+    <section className="space-y-3" data-section="tabs-original">
       <h4 className={sectionHeading}>Tabs</h4>
       <div className="max-w-sm">
         <div className="flex rounded-[var(--radius)] bg-[hsl(var(--muted))] p-1 gap-1">
@@ -213,6 +230,24 @@ const SquareIcon = () => (
     <rect x="4" y="4" width="16" height="16" rx="2" />
   </svg>
 )
+
+function SeparatorDemo() {
+  return (
+    <section className="space-y-4" data-section="separator">
+      <h4 className={sectionHeading}>Separator</h4>
+      <div className="space-y-4">
+        <Separator />
+        <div className="flex items-center gap-3 text-sm text-[hsl(var(--muted-foreground))]">
+          <span>Item A</span>
+          <Separator orientation="vertical" className="h-4" />
+          <span>Item B</span>
+          <Separator orientation="vertical" className="h-4" />
+          <span>Item C</span>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 function SelectDemo() {
   return (
@@ -332,6 +367,32 @@ function SelectDemo() {
           <SelectItem value="mx">Mexico</SelectItem>
           <SelectItem value="us">United States</SelectItem>
         </SelectField>
+      </div>
+    </section>
+  )
+}
+
+function TabsRadixDemo() {
+  return (
+    <section className="space-y-3" data-section="tabs-component">
+      <h4 className={sectionHeading}>Tabs</h4>
+      <div className="space-y-4">
+        <Tabs defaultValue="tab1">
+          <TabsList>
+            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value="tab3" disabled>Tab 3</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tab1">
+            <p className="text-sm text-[hsl(var(--muted-foreground))] pt-2">Content for Tab 1</p>
+          </TabsContent>
+          <TabsContent value="tab2">
+            <p className="text-sm text-[hsl(var(--muted-foreground))] pt-2">Content for Tab 2</p>
+          </TabsContent>
+          <TabsContent value="tab3">
+            <p className="text-sm text-[hsl(var(--muted-foreground))] pt-2">Content for Tab 3</p>
+          </TabsContent>
+        </Tabs>
       </div>
     </section>
   )
@@ -669,6 +730,396 @@ function InputDemo() {
   )
 }
 
+function DialogDemo() {
+  return (
+    <section className="space-y-4" data-section="dialog">
+      <h4 className={sectionHeading}>Dialog</h4>
+      <div className="flex flex-wrap gap-3">
+
+        {/* Demo 1 — Default */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Default dialog</Button>
+          </DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit profile</DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when done.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  Profile settings would go here.
+                </p>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="ghost">Cancel</Button>
+                </DialogClose>
+                <Button>Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+
+        {/* Demo 2 — Small */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Small (sm)</Button>
+          </DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay />
+            <DialogContent size="sm">
+              <DialogHeader>
+                <DialogTitle>Delete item</DialogTitle>
+                <DialogDescription>This cannot be undone.</DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  Are you sure you want to delete this item?
+                </p>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="ghost">Cancel</Button>
+                </DialogClose>
+                <Button variant="destructive">Delete</Button>
+              </DialogFooter>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+
+        {/* Demo 3 — Large */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Large (lg)</Button>
+          </DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay />
+            <DialogContent size="lg">
+              <DialogHeader>
+                <DialogTitle>Team settings</DialogTitle>
+                <DialogDescription>Configure your team preferences.</DialogDescription>
+              </DialogHeader>
+              <div className="py-4 space-y-3">
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  Use this space to manage your team&apos;s workspace, permissions, and
+                  notification settings. Changes take effect immediately.
+                </p>
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  You can invite up to 50 team members on the current plan. Upgrade to
+                  Enterprise for unlimited members.
+                </p>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="ghost">Cancel</Button>
+                </DialogClose>
+                <Button>Save settings</Button>
+              </DialogFooter>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+
+        {/* Demo 4 — No close button */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">No close button</Button>
+          </DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay />
+            <DialogContent showCloseButton={false}>
+              <DialogHeader>
+                <DialogTitle>Confirm action</DialogTitle>
+                <DialogDescription>
+                  Please confirm or cancel using the buttons below.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  No X button — dismiss via footer only.
+                </p>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="ghost">Cancel</Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button>Confirm</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+
+        {/* Demo 5 — Scrollable */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Scrollable</Button>
+          </DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay />
+            <DialogContent scrollable>
+              <DialogHeader className="bg-[hsl(var(--card))] px-6 pt-6 pb-4">
+                <DialogTitle>Terms of service</DialogTitle>
+                <DialogDescription>Please read carefully before accepting.</DialogDescription>
+              </DialogHeader>
+              <DialogBody>
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+                  incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+                  nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mt-4">
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                  fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                  culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mt-4">
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+                  doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore
+                  veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                </p>
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mt-4">
+                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed
+                  quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+                </p>
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mt-4">
+                  Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur,
+                  adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et
+                  dolore magnam aliquam quaerat voluptatem.
+                </p>
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mt-4">
+                  At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis
+                  praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias
+                  excepturi sint occaecati cupiditate non provident.
+                </p>
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mt-4">
+                  Similique sunt in culpa qui officia deserunt mollitia animi, id est laborum
+                  et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio.
+                </p>
+                <p className="text-sm text-[hsl(var(--muted-foreground))] mt-4">
+                  Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit
+                  quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est.
+                </p>
+              </DialogBody>
+              <DialogFooter className="bg-[hsl(var(--card))] px-6 py-4 border-t border-[hsl(var(--border))]">
+                <DialogClose asChild>
+                  <Button variant="ghost">Cancel</Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button>Accept</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+
+        {/* Demo 6 — Destructive */}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="destructive">Destructive dialog</Button>
+          </DialogTrigger>
+          <DialogPortal>
+            <DialogOverlay />
+            <DialogContent closeOnOutsideClick={false}>
+              <DialogHeader>
+                <DialogTitle>Delete account</DialogTitle>
+                <DialogDescription>
+                  All data will be permanently removed.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                  This action cannot be undone. Your account and all associated data will be
+                  permanently deleted.
+                </p>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  {/* eslint-disable-next-line jsx-a11y/no-autofocus */}
+                  <Button variant="ghost" autoFocus>Cancel</Button>
+                </DialogClose>
+                <Button variant="destructive">Delete account</Button>
+              </DialogFooter>
+            </DialogContent>
+          </DialogPortal>
+        </Dialog>
+
+      </div>
+    </section>
+  )
+}
+
+function PopoverDemo() {
+  const [controlled, setControlled] = useState(false)
+
+  const triggerClass = [
+    'cursor-pointer rounded-[var(--radius)] border border-[hsl(var(--border))]',
+    'bg-[hsl(var(--background))] px-3 text-sm text-[hsl(var(--foreground))]',
+    'min-h-[44px] hover:bg-[hsl(var(--accent)/0.5)] focus-visible:outline-none',
+    'focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2',
+    'focus-visible:ring-offset-[hsl(var(--background))]',
+  ].join(' ')
+
+  return (
+    <section className="space-y-4 pb-24" data-section="popover">
+      <h4 className={sectionHeading}>Popover</h4>
+      <div className="space-y-4">
+
+        {/* 1. Default (bottom, with arrow) */}
+        <div className="flex items-center gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className={triggerClass}>Default (bottom)</button>
+            </PopoverTrigger>
+            <PopoverContent showArrow>
+              <p className="text-sm text-[hsl(var(--popover-foreground))]">
+                This is a popover. It opens below the trigger by default.
+              </p>
+            </PopoverContent>
+          </Popover>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Default (bottom) with arrow</span>
+        </div>
+
+        {/* 2. Top placement */}
+        <div className="flex items-center gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className={triggerClass}>Top placement</button>
+            </PopoverTrigger>
+            <PopoverContent side="top" showArrow>
+              <p className="text-sm text-[hsl(var(--popover-foreground))]">
+                Opens above the trigger.
+              </p>
+            </PopoverContent>
+          </Popover>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">side=&quot;top&quot;</span>
+        </div>
+
+        {/* 3. With form fields */}
+        <div className="flex items-center gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className={triggerClass}>With form</button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[280px]">
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-[hsl(var(--popover-foreground))]">Edit username</p>
+                <Field
+                  id="popover-username"
+                  label="Username"
+                  inputProps={{ placeholder: 'Enter username', defaultValue: 'alex_k' }}
+                />
+                <button
+                  className={[
+                    'w-full min-h-[36px] px-3 rounded-[var(--radius)] text-sm font-medium',
+                    'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]',
+                    'hover:bg-[hsl(var(--primary)/0.9)] cursor-pointer',
+                    'focus-visible:outline-none focus-visible:ring-2',
+                    'focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2',
+                  ].join(' ')}
+                >
+                  Save changes
+                </button>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">With form fields</span>
+        </div>
+
+        {/* 4. No arrow */}
+        <div className="flex items-center gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className={triggerClass}>No arrow</button>
+            </PopoverTrigger>
+            <PopoverContent showArrow={false}>
+              <p className="text-sm text-[hsl(var(--popover-foreground))]">
+                Popover without the arrow indicator.
+              </p>
+            </PopoverContent>
+          </Popover>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">showArrow=&#123;false&#125;</span>
+        </div>
+
+        {/* 5. Controlled */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            className={[
+              'cursor-pointer rounded-[var(--radius)] border border-[hsl(var(--border))]',
+              'bg-[hsl(var(--background))] px-3 text-sm text-[hsl(var(--foreground))]',
+              'min-h-[44px] hover:bg-[hsl(var(--accent)/0.5)] focus-visible:outline-none',
+              'focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2',
+            ].join(' ')}
+            onClick={() => setControlled((v) => !v)}
+          >
+            {controlled ? 'Close popover' : 'Open popover'}
+          </button>
+          <Popover open={controlled} onOpenChange={setControlled}>
+            <PopoverTrigger asChild>
+              <button className={triggerClass}>Trigger</button>
+            </PopoverTrigger>
+            <PopoverContent showArrow>
+              <p className="text-sm text-[hsl(var(--popover-foreground))]">
+                This popover is controlled externally.
+              </p>
+            </PopoverContent>
+          </Popover>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Controlled — open/close via external button</span>
+        </div>
+
+        {/* 6. Right placement */}
+        <div className="flex items-center gap-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className={triggerClass}>Right placement</button>
+            </PopoverTrigger>
+            <PopoverContent side="right" showArrow>
+              <p className="text-sm text-[hsl(var(--popover-foreground))]">
+                Opens to the right of the trigger.
+              </p>
+            </PopoverContent>
+          </Popover>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">side=&quot;right&quot;</span>
+        </div>
+
+      </div>
+    </section>
+  )
+}
+
+function BadgeDemo() {
+  return (
+    <section className="space-y-3" data-section="badge">
+      <h4 className={sectionHeading}>Badge</h4>
+      <div className="space-y-2">
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="default">Default</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="outline">Outline</Badge>
+          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="success">Success</Badge>
+          <Badge variant="warning">Warning</Badge>
+          <Badge variant="info">Info</Badge>
+        </div>
+        <div className="flex flex-wrap gap-2 items-center">
+          <Badge variant="default" size="sm">sm</Badge>
+          <Badge variant="default" size="md">md</Badge>
+        </div>
+        <div className="flex flex-wrap gap-2 items-center">
+          <Badge variant="success" dot aria-label="Online" />
+          <Badge variant="destructive" dot aria-label="Offline" />
+          <Badge variant="warning" dot aria-label="Away" />
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function ComponentsTab() {
   return (
     <div className="p-6 space-y-8">
@@ -678,24 +1129,8 @@ function ComponentsTab() {
       {/* Section 2 — Inputs */}
       <InputDemo />
 
-      {/* Section 3 — Badges */}
-      <section className="space-y-3">
-        <h4 className={sectionHeading}>Badges</h4>
-        <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] px-2.5 py-0.5 text-xs font-medium cursor-pointer select-none">
-            Primary
-          </span>
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] px-2.5 py-0.5 text-xs font-medium cursor-pointer select-none">
-            Secondary
-          </span>
-          <span className="inline-flex items-center rounded-[var(--radius)] border border-[hsl(var(--border))] text-[hsl(var(--foreground))] bg-transparent px-2.5 py-0.5 text-xs font-medium cursor-pointer select-none">
-            Outline
-          </span>
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))] px-2.5 py-0.5 text-xs font-medium border border-[hsl(var(--success)/0.3)] cursor-pointer select-none">Success</span>
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning))] px-2.5 py-0.5 text-xs font-medium border border-[hsl(var(--warning)/0.3)] cursor-pointer select-none">Warning</span>
-          <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))] px-2.5 py-0.5 text-xs font-medium border border-[hsl(var(--destructive)/0.3)] cursor-pointer select-none">Destructive</span>
-        </div>
-      </section>
+      {/* Section 3 — Badge */}
+      <BadgeDemo />
 
       {/* Section 4 — Alerts */}
       <section className="space-y-3">
@@ -749,18 +1184,7 @@ function ComponentsTab() {
         </div>
       </section>
 
-      {/* Section 6 — Separator */}
-      <section className="space-y-3">
-        <h4 className={sectionHeading}>Separator</h4>
-        <div className="space-y-3 max-w-sm">
-          <div className="h-px w-full bg-[hsl(var(--border))]" />
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-[hsl(var(--border))]" />
-            <span className="text-xs text-[hsl(var(--muted-foreground))]">or continue with</span>
-            <div className="h-px flex-1 bg-[hsl(var(--border))]" />
-          </div>
-        </div>
-      </section>
+      {/* Section 6 — Separator (placeholder) */}
 
       {/* Section 7 — Avatar */}
       <section className="space-y-3">
@@ -805,14 +1229,26 @@ function ComponentsTab() {
       {/* Section 11 — Radio */}
       <RadioDemo />
 
-      {/* Section 12 — Tabs */}
+      {/* Section 12 — Separator */}
+      <SeparatorDemo />
+
+      {/* Section 13 — Tabs */}
       <TabsDemo />
 
-      {/* Section 13 — Select */}
+      {/* Section 14 — Select */}
       <SelectDemo />
 
-      {/* Section 14 — Tooltip */}
+      {/* Section 14b — Tabs (Radix) */}
+      <TabsRadixDemo />
+
+      {/* Section 15 — Tooltip */}
       <TooltipDemo />
+
+      {/* Section 16 — Dialog */}
+      <DialogDemo />
+
+      {/* Section 17 — Popover */}
+      <PopoverDemo />
     </div>
   )
 }
