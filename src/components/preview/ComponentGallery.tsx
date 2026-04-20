@@ -55,35 +55,8 @@ export function ComponentGallery() {
               title="Button"
               docsHref="https://ui.shadcn.com/docs/components/button"
               tabs={[
-                {
-                  key: 'variants',
-                  label: 'Variants',
-                  content: <ButtonVariantsGrid />,
-                },
-                {
-                  key: 'sizes',
-                  label: 'Sizes',
-                  content: (
-                    <DemoRow>
-                      {(['sm', 'default', 'lg'] as const).map((s) => (
-                        <Button key={s} size={s}>{s}</Button>
-                      ))}
-                      <Button size="icon" aria-label="Search"><Search size={16} aria-hidden="true" /></Button>
-                    </DemoRow>
-                  ),
-                },
-                {
-                  key: 'states',
-                  label: 'States',
-                  content: (
-                    <DemoRow>
-                      <Button disabled>Disabled</Button>
-                      <Button variant="outline" disabled>Disabled outline</Button>
-                      <Button isLoading>Loading</Button>
-                      <Button variant="outline" isLoading>Loading outline</Button>
-                    </DemoRow>
-                  ),
-                },
+                { key: 'variants', label: 'Variants', content: <ButtonVariantsGrid /> },
+                { key: 'sizes',    label: 'Sizes',    content: <ButtonSizesGrid /> },
               ]}
             />
 
@@ -134,18 +107,32 @@ const sectionHeading =
   'text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3'
 
 const BTN_VARIANTS = ['default', 'secondary', 'outline', 'ghost', 'destructive'] as const
-const BTN_COLS = ['Normal', 'Disabled', 'Loading'] as const
+const BTN_STATES = [
+  { label: 'Normal',   props: {} },
+  { label: 'Disabled', props: { disabled: true } },
+  { label: 'Loading',  props: { isLoading: true } },
+] as const
+
+const BTN_SIZES = ['sm', 'default', 'lg'] as const
+const BTN_SIZE_LABELS: Record<string, string> = { sm: 'Small', default: 'Medium', lg: 'Large' }
+const RADIUS_COLS = [
+  { label: 'None',   value: '0rem' },
+  { label: 'Small',  value: '0.3rem' },
+  { label: 'Medium', value: '0.5rem' },
+  { label: 'Large',  value: '0.75rem' },
+  { label: 'Full',   value: '9999px' },
+] as const
 
 function ButtonVariantsGrid() {
   return (
     <div className="overflow-x-auto">
-      <table className="border-separate border-spacing-x-2 border-spacing-y-3">
+      <table className="border-separate border-spacing-x-3 border-spacing-y-3">
         <thead>
           <tr>
-            <th className="w-24" />
-            {BTN_COLS.map((col) => (
-              <th key={col} className="text-xs font-normal text-[hsl(var(--muted-foreground))] pb-2 text-center px-2">
-                {col}
+            <th className="w-28" />
+            {BTN_STATES.map(({ label }) => (
+              <th key={label} className="text-xs font-normal text-[hsl(var(--muted-foreground))] pb-2 text-center px-2">
+                {label}
               </th>
             ))}
           </tr>
@@ -153,10 +140,45 @@ function ButtonVariantsGrid() {
         <tbody>
           {BTN_VARIANTS.map((variant) => (
             <tr key={variant}>
-              <td className="text-xs text-[hsl(var(--muted-foreground))] pr-4 capitalize">{variant}</td>
-              <td><Button variant={variant}>Button</Button></td>
-              <td><Button variant={variant} disabled>Button</Button></td>
-              <td><Button variant={variant} isLoading>Button</Button></td>
+              <td className="text-xs text-[hsl(var(--muted-foreground))] pr-4 capitalize align-middle">{variant}</td>
+              {BTN_STATES.map(({ label, props }) => (
+                <td key={label}>
+                  <Button variant={variant} {...props}>Button</Button>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function ButtonSizesGrid() {
+  return (
+    <div className="overflow-x-auto">
+      <table className="border-separate border-spacing-x-3 border-spacing-y-3">
+        <thead>
+          <tr>
+            <th className="w-20" />
+            {RADIUS_COLS.map(({ label }) => (
+              <th key={label} className="text-xs font-normal text-[hsl(var(--muted-foreground))] pb-2 text-center px-2">
+                {label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {BTN_SIZES.map((size) => (
+            <tr key={size}>
+              <td className="text-xs text-[hsl(var(--muted-foreground))] pr-4 align-middle">
+                {BTN_SIZE_LABELS[size]}
+              </td>
+              {RADIUS_COLS.map(({ label, value }) => (
+                <td key={label}>
+                  <Button size={size} style={{ borderRadius: value }}>Button</Button>
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>
