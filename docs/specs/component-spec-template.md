@@ -218,16 +218,44 @@ Which disabled pattern?
 
 ## Test Plan (written BEFORE implementation)
 
+### Universal gates (already in component-qa.spec.ts — no action needed)
+
 - [ ] All variants render without errors
-- [ ] `cursor:pointer` on interactive elements — Playwright
-- [ ] `cursor:not-allowed` on disabled — Playwright
-- [ ] No `style` with hex color — Playwright
-- [ ] Full-row click zone — Playwright
+- [ ] `cursor:pointer` on interactive elements
+- [ ] `cursor:not-allowed` on disabled
+- [ ] No `style` with hex color
 - [ ] axe-core: 0 critical violations
-- [ ] Keyboard: Tab → focus visible, Enter/Space → action
-- [ ] Dark mode renders correctly
 - [ ] `npm run lint:ui` passes
-- [ ] **[EXCLUSIVE-SELECTION only — RadioGroup, Tabs, any mutual-exclusion pattern]** Click item A → click item B → verify item A `aria-checked/aria-selected` becomes `"false"`. A single "item B becomes selected" check is NOT sufficient — the cross-item deselection MUST be a separate assertion.
+
+### Component-specific Playwright assertions (REQUIRED — fill during research)
+
+> These become new `test()` blocks in `component-qa.spec.ts`.
+> Written by researcher, reviewed in spec sign-off, implemented alongside the component.
+> Each assertion must be falsifiable: describe the exact DOM property or computed value to check.
+
+<!-- EXAMPLES — delete and replace with this component's assertions:
+
+Dialog scrollable:
+  - Open scrollable variant → `dialogBody.scrollHeight > dialogBody.clientHeight` === true
+  - Tab 6× inside open dialog → `document.activeElement` always inside `[role="dialog"]`
+  - Press Escape → `[role="dialog"]` not visible
+
+Tooltip:
+  - Every trigger `getBoundingClientRect().height >= 44` (WCAG 2.5.5)
+  - After hover → `getComputedStyle(content).opacity !== "0"` (catches missing animate package)
+
+Select:
+  - Click trigger → `aria-expanded="true"` + `[role="listbox"]` visible via Portal
+
+RadioGroup:
+  - Click item B → item A `aria-checked` becomes `"false"` (mutual exclusivity)
+-->
+
+- [ ] (assertion 1 — specific to this component)
+- [ ] (assertion 2)
+
+### Dark mode
+- [ ] Verified at `/preview?tab=components&mode=dark`
 
 ---
 

@@ -65,6 +65,16 @@ Research best practices for [ComponentName] component:
 
 Return: variant matrix, state matrix, required keyboard interactions, required ARIA, 
 3 most common implementation bugs, industry gap table.
+
+Also return: **component-specific Playwright assertions** — the exact DOM properties or
+computed values to check in Playwright tests. These are unique to this component's behavior.
+Examples of what to include:
+- Overlay/modal: scrollHeight > clientHeight for scrollable variants; focus trap assertion
+- Interactive disclosure: aria-expanded before/after click; Portal content visible
+- Exclusive selection: aria-checked="false" on previously selected item after new selection
+- Touch targets: getBoundingClientRect().height >= 44 for small controls
+- Animation: computed opacity/transform after state change (catches missing CSS packages)
+DO NOT include: cursor:pointer, no-hex-color, axe-core — these are universal gates already.
 """)
 ```
 
@@ -141,6 +151,27 @@ Fill from researcher output + APG + Radix docs:
 >
 > **Acceptance criteria verification → `qa-engineer` subagent**
 > (runs `npm run test:components` + verifies spec Done When checklist)
+
+---
+
+### HITL — Layout Composition Gate (БЛОКИРУЕТ реализацию)
+
+**Trigger:** любой demo-блок с табличным или grid-контентом, несколькими колонками, или элементами
+с фиксированной шириной (кнопки, теги, таблицы).
+
+**Правило:** перед реализацией composer ДОЛЖЕН:
+1. Оценить, поместится ли контент в `max-w-3xl` (768px) без горизонтального скролла
+2. Если есть риск — остановиться и предложить CEO **3 варианта** композиции:
+   - вариант A (убрать столбцы/уменьшить)
+   - вариант B (компактные элементы)
+   - вариант C (сменить layout: flex-wrap, стек, etc.)
+3. Дождаться явного подтверждения CEO перед тем как писать код
+
+**Не делать:** молча добавлять `overflow-x-auto` и считать задачу решённой — это маскирует проблему.
+
+Инцидент: ButtonSizesGrid — 5 колонок радиусов → горизонтальный скролл. Правильное решение: убрать ось радиусов и показывать только размеры.
+
+---
 
 Rules (non-negotiable — see Error Log below for why each exists):
 
