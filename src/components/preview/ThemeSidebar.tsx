@@ -14,15 +14,8 @@ import {
   SelectItem,
 } from '../ui/select'
 import { RadiusPicker } from './RadiusPicker'
+import { ShadowPicker } from './ShadowPicker'
 import { ExportTrigger } from './ExportTrigger'
-
-const SHADOW_OPTIONS = [
-  { label: 'None',     value: 'none' },
-  { label: 'Flat',     value: 'flat' },
-  { label: 'Soft',     value: 'soft' },
-  { label: 'Dramatic', value: 'dramatic' },
-  { label: 'Glow',     value: 'glow' },
-]
 
 const HEADING_OPTIONS = [
   { label: 'Inter',         value: 'var(--font-sans)' },
@@ -47,7 +40,7 @@ const MONO_OPTIONS = [
 ]
 
 const labelClass =
-  'text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-widest mb-3'
+  'text-xs font-medium text-[hsl(var(--muted-foreground))] uppercase tracking-widest mb-2'
 
 export function ThemeSidebar() {
   const router = useRouter()
@@ -56,12 +49,12 @@ export function ThemeSidebar() {
   const currentTheme  = searchParams.get('theme')  ?? PRESETS[0].id
   const currentMode   = searchParams.get('mode')   ?? 'light'
   const currentRadius = searchParams.get('radius') ?? '0.5rem'
+  const currentShadow = searchParams.get('shadow') ?? 'none'
 
   const currentPreset      = PRESETS.find((p) => p.id === currentTheme) ?? PRESETS[0]
   const currentFontHeading = searchParams.get('fontHeading') ?? currentPreset.fonts.heading
   const currentFontBody    = searchParams.get('fontBody')    ?? currentPreset.fonts.body
   const currentFontMono    = searchParams.get('fontMono')    ?? currentPreset.fonts.mono
-  const currentShadow      = searchParams.get('shadow') ?? 'none'
 
   const setParam = useCallback(
     (key: string, value: string) => {
@@ -77,21 +70,22 @@ export function ThemeSidebar() {
   }, [])
 
   return (
-    <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] shadow-md p-5 space-y-6">
+    <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] shadow-md overflow-y-auto max-h-[calc(100vh-64px)] p-4 space-y-4">
 
-      {/* Theme preset — button list */}
+      {/* Theme preset */}
       <section>
         <p className={labelClass}>Theme</p>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5">
           {PRESETS.map((preset) => (
             <Button
               key={preset.id}
               variant={currentTheme === preset.id ? 'default' : 'ghost'}
+              size="sm"
               onClick={() => setParam('theme', preset.id)}
-              className="w-full justify-start gap-2"
+              className="w-full justify-start gap-2 h-8 text-xs"
             >
               <span
-                className="w-3 h-3 rounded-full shrink-0"
+                className="w-2.5 h-2.5 rounded-full shrink-0"
                 style={{ background: `hsl(${preset.light.primary})` }}
                 aria-hidden="true"
               />
@@ -126,7 +120,7 @@ export function ThemeSidebar() {
 
       <Separator />
 
-      {/* Radius — visual picker */}
+      {/* Radius */}
       <section>
         <p className={labelClass}>Radius</p>
         <RadiusPicker value={currentRadius} onChange={(v) => setParam('radius', v)} />
@@ -134,73 +128,40 @@ export function ThemeSidebar() {
 
       <Separator />
 
-      {/* Typography — 3 DS Selects */}
+      {/* Shadow */}
       <section>
-        <p className={labelClass}>Typography</p>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[hsl(var(--muted-foreground))] w-14 shrink-0">Heading</span>
-            <div className="flex-1 min-w-0">
-              <Select value={currentFontHeading} onValueChange={(v) => setParam('fontHeading', v)}>
-                <SelectTrigger size="sm" aria-label="Heading font">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {HEADING_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[hsl(var(--muted-foreground))] w-14 shrink-0">Body</span>
-            <div className="flex-1 min-w-0">
-              <Select value={currentFontBody} onValueChange={(v) => setParam('fontBody', v)}>
-                <SelectTrigger size="sm" aria-label="Body font">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {BODY_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[hsl(var(--muted-foreground))] w-14 shrink-0">Mono</span>
-            <div className="flex-1 min-w-0">
-              <Select value={currentFontMono} onValueChange={(v) => setParam('fontMono', v)}>
-                <SelectTrigger size="sm" aria-label="Mono font">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {MONO_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
+        <p className={labelClass}>Shadow</p>
+        <ShadowPicker value={currentShadow} onChange={(v) => setParam('shadow', v)} />
       </section>
 
       <Separator />
 
-      {/* Shadow */}
+      {/* Typography */}
       <section>
-        <p className={labelClass}>Shadow</p>
-        <Select value={currentShadow} onValueChange={(v) => setParam('shadow', v)}>
-          <SelectTrigger size="sm" aria-label="Shadow style">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {SHADOW_OPTIONS.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <p className={labelClass}>Typography</p>
+        <div className="space-y-1.5">
+          {([
+            { key: 'fontHeading', label: 'Heading', value: currentFontHeading, options: HEADING_OPTIONS },
+            { key: 'fontBody',    label: 'Body',    value: currentFontBody,    options: BODY_OPTIONS },
+            { key: 'fontMono',    label: 'Mono',    value: currentFontMono,    options: MONO_OPTIONS },
+          ] as const).map(({ key, label, value, options }) => (
+            <div key={key} className="flex items-center gap-2">
+              <span className="text-xs text-[hsl(var(--muted-foreground))] w-12 shrink-0">{label}</span>
+              <div className="flex-1 min-w-0">
+                <Select value={value} onValueChange={(v) => setParam(key, v)}>
+                  <SelectTrigger size="sm" aria-label={`${label} font`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {options.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       <Separator />
@@ -209,7 +170,7 @@ export function ThemeSidebar() {
       <ExportTrigger />
 
       {/* Copy Theme */}
-      <Button variant="secondary" className="w-full" onClick={handleCopy}>
+      <Button variant="secondary" size="sm" className="w-full" onClick={handleCopy}>
         Copy Theme URL
       </Button>
 
@@ -218,7 +179,7 @@ export function ThemeSidebar() {
         href="https://github.com/cypok13/anti-shadcn-theme-studio"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors"
+        className="flex items-center justify-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors pb-1"
       >
         ↗ GitHub
       </a>
