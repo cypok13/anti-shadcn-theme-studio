@@ -1,7 +1,7 @@
 'use client'
 
-import { SectionHeader } from './SectionHeader'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs'
+import { useState } from 'react'
+import { ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type TabKey = 'variants' | 'sizes' | 'states'
@@ -20,34 +20,58 @@ interface ComponentSectionProps {
   className?: string
 }
 
-export function ComponentSection({
-  title,
-  docsHref,
-  tabs,
-  children,
-  className,
-}: ComponentSectionProps) {
+export function ComponentSection({ title, docsHref, tabs, children, className }: ComponentSectionProps) {
+  const [activeTab, setActiveTab] = useState<TabKey>(tabs?.[0]?.key ?? 'variants')
+
+  const activeContent = tabs?.find((t) => t.key === activeTab)?.content ?? children
+
   return (
-    <section className={cn('', className)}>
-      <SectionHeader title={title} docsHref={docsHref} />
-      {tabs ? (
-        <Tabs defaultValue={tabs[0].key}>
-          <TabsList variant="line" className="mb-6">
-            {tabs.map((t) => (
-              <TabsTrigger key={t.key} value={t.key}>
-                {t.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          {tabs.map((t) => (
-            <TabsContent key={t.key} value={t.key}>
-              {t.content}
-            </TabsContent>
+    <div className={cn(
+      'rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-8',
+      className
+    )}>
+      {/* Header */}
+      <div className="flex items-baseline justify-between mb-6">
+        <h2 className="text-2xl font-semibold text-[hsl(var(--foreground))]">{title}</h2>
+        {docsHref && (
+          <a
+            href={docsHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-sm text-[hsl(var(--primary))] hover:text-[hsl(var(--primary)/0.8)] transition-colors"
+          >
+            View in docs
+            <ExternalLink className="size-3" />
+          </a>
+        )}
+      </div>
+
+      {/* Inline tab pills */}
+      {tabs && tabs.length > 1 && (
+        <div className="flex gap-1 mb-4">
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={cn(
+                'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer',
+                activeTab === tab.key
+                  ? 'bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))]'
+                  : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] hover:bg-[hsl(var(--muted))]'
+              )}
+            >
+              {tab.label}
+            </button>
           ))}
-        </Tabs>
-      ) : (
-        children
+        </div>
       )}
-    </section>
+
+      {/* Demo area */}
+      <div className="rounded-xl bg-[hsl(var(--muted)/0.4)] p-6 min-h-[80px] flex items-start">
+        <div className="w-full">
+          {activeContent}
+        </div>
+      </div>
+    </div>
   )
 }

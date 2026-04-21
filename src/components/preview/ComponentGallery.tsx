@@ -50,7 +50,7 @@ export function ComponentGallery() {
       <div className="flex h-full overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
         {/* Left: scrollable component list */}
         <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-4xl px-20 pt-16 pb-24 space-y-24">
+          <div className="mx-auto max-w-3xl px-8 pt-8 pb-16 space-y-6">
             <ComponentSection
               title="Button"
               docsHref="https://ui.shadcn.com/docs/components/button"
