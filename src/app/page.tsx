@@ -1,10 +1,5 @@
-import { Suspense } from 'react'
-import { AppShell } from '@/components/shell/AppShell'
+import { redirect } from 'next/navigation'
 
 export default function HomePage() {
-  return (
-    <Suspense>
-      <AppShell />
-    </Suspense>
-  )
+  redirect('/preview')
 }
