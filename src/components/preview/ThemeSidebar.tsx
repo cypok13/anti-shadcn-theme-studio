@@ -14,6 +14,15 @@ import {
   SelectItem,
 } from '../ui/select'
 import { RadiusPicker } from './RadiusPicker'
+import { ExportTrigger } from './ExportTrigger'
+
+const SHADOW_OPTIONS = [
+  { label: 'None',     value: 'none' },
+  { label: 'Flat',     value: 'flat' },
+  { label: 'Soft',     value: 'soft' },
+  { label: 'Dramatic', value: 'dramatic' },
+  { label: 'Glow',     value: 'glow' },
+]
 
 const HEADING_OPTIONS = [
   { label: 'Inter',         value: 'var(--font-sans)' },
@@ -52,6 +61,7 @@ export function ThemeSidebar() {
   const currentFontHeading = searchParams.get('fontHeading') ?? currentPreset.fonts.heading
   const currentFontBody    = searchParams.get('fontBody')    ?? currentPreset.fonts.body
   const currentFontMono    = searchParams.get('fontMono')    ?? currentPreset.fonts.mono
+  const currentShadow      = searchParams.get('shadow') ?? 'none'
 
   const setParam = useCallback(
     (key: string, value: string) => {
@@ -178,10 +188,40 @@ export function ThemeSidebar() {
 
       <Separator />
 
+      {/* Shadow */}
+      <section>
+        <p className={labelClass}>Shadow</p>
+        <Select value={currentShadow} onValueChange={(v) => setParam('shadow', v)}>
+          <SelectTrigger size="sm" aria-label="Shadow style">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {SHADOW_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </section>
+
+      <Separator />
+
+      {/* Export */}
+      <ExportTrigger />
+
       {/* Copy Theme */}
       <Button variant="secondary" className="w-full" onClick={handleCopy}>
         Copy Theme URL
       </Button>
+
+      {/* GitHub */}
+      <a
+        href="https://github.com/cypok13/anti-shadcn-theme-studio"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors"
+      >
+        ↗ GitHub
+      </a>
 
     </div>
   )
