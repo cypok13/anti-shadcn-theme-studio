@@ -26,7 +26,7 @@ export function RadiusPicker({ value, onChange }: RadiusPickerProps) {
             aria-label={opt.label}
             onClick={() => onChange(opt.value)}
             className={[
-              'flex items-center justify-center rounded-lg transition-colors',
+              'flex items-center justify-center rounded-lg transition-colors cursor-pointer',
               'aspect-square w-full',
               'bg-[hsl(var(--background))]',
               selected
@@ -34,8 +34,9 @@ export function RadiusPicker({ value, onChange }: RadiusPickerProps) {
                 : 'border border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.4)]',
             ].join(' ')}
           >
-            <div
+            <span
               style={{
+                display: 'inline-block',
                 width: '20px',
                 height: '20px',
                 background: 'hsl(var(--primary)/0.15)',
