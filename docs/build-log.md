@@ -734,3 +734,51 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 
 **Следующий шаг:** Phase 1 coding — отдельный тикет ALE-XXX
 
+
+---
+
+## День 13 — Component Pipeline запуск (2026-04-17)
+
+**Ключевые инсайты:**
+
+1. **Компонентный пайплайн формализован** — создан `docs/COMPONENT-PIPELINE.md` с обязательной последовательностью: spec → implement → lint → playwright → visual gate → docs sync. Error Log E-001–E-010 зафиксирован прямо в пайплайне.
+
+2. **Инцидент делегирования (Checkbox, ALE-764)** — оркестратор реализовал компонент напрямую вместо делегирования дизайнеру. Результат: `h-3.5` (14px) в 16px боксе — нарушение 4px шкалы. Правило "orchestrator never implements" добавлено как блокирующее в CLAUDE.md.
+
+3. **Switch, Radio Group, Input, Select, Tabs, Dialog, Popover** — компоненты реализованы через designer субагент. Каждый прошёл playwright gate (18 автотестов, 4 gates).
+
+4. **ThemeSidebar redesign** — заменён нативный `<select>` на DS Select. Инцидент: нативные элементы были задеплоены в прод, CEO обнаружил баг визуально. Добавлено правило DS-only с проверочным grep перед деплоем.
+
+5. **ButtonSizesGrid** — убрана колонка Radius из грида кнопок (HITL layout gate: CEO предлагается 3 варианта при риске горизонтального скрола).
+
+**Linear:** ALE-764 (Checkbox), ALE-771 (Preview Redesign)
+
+---
+
+## День 14 — Preview UX Redesign: API/Usage/Code tabs, шрифты, синтаксис (2026-04-21)
+
+**Ключевые инсайты:**
+
+1. **ComponentSection: карточный layout SoT** — каждый компонент в отдельной карточке `rounded-2xl border p-8` с inline pill-табами. Sidebar стал sticky внутри единого scrollable root. Центрирование через `max-w-[1120px]`.
+
+2. **Button: 5 табов документации** — добавлены API (DocPropsTable: union type pills, required badge), Usage (Do/Don't grid с цветными border-l картами, variant guide), Code (shiki syntax highlighting). Паттерн повторяется для всех будущих компонентов.
+
+3. **RadiusPicker** — визуальный пикер с превью угла заменил Select в ThemeSidebar. Квадратные карточки, corner preview через border-top/left, selected state через `hsl(var(--primary))`.
+
+4. **Типографика: все шрифты загружены** — добавлен `geist` package (Geist Sans + Geist Mono), 8 шрифтов через `next/font/google` (JetBrains Mono, IBM Plex Mono, Fira Code, Syne, Manrope, IBM Plex Sans). Font values в URL через `var(--font-*)` токены. Баг: `FONT_SAFE_RE` вырезал скобки из `var()` — исправлено.
+
+5. **Syntax highlighting (shiki)** — `DocCodeBlock` получил подсветку синтаксиса через shiki dual-theme (`github-light` / `github-dark-dimmed`). Режим переключается через CSS inject в `page.tsx`. Загрузка лазивая — нет блокировки рендера.
+
+6. **DS compliance incidents** — 4 инцидента за сессию: нативный `<select>`, `#111113` хардкод в DocCodeBlock, `rgb()` в DoDontCard, `--foreground` вместо `--primary` в RadiusPicker. Введено правило двойного дизайнера (implement → token audit).
+
+7. **Удалены упоминания Radix/shadcn** — из prop descriptions, section titles, docsHref ссылок. Продукт — независимый DS инструмент, не враппер.
+
+**Артефакты:**
+- `src/components/preview/docs/` — DocCodeBlock, DocPropsTable, ButtonDocs (новые)
+- `src/components/preview/RadiusPicker.tsx` — новый
+- `src/app/layout.tsx` — 9 шрифтов через next/font
+- `package.json` — добавлен `shiki`, `geist`
+
+**Linear:** ALE-771
+
+**Следующий шаг:** Компонент Checkbox/Switch/Radio (ALE-753), Usage Guidelines (ALE-752)

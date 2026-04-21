@@ -36,12 +36,30 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 Оркестратор НЕ реализует компоненты сам. Прямая реализация → hallucinated values
 (нестандартные px, визуальные решения без референса — инцидент: h-3.5=14px в 16px боксе).
 
+> **БЛОКИРУЮЩЕЕ ПРАВИЛО (добавлено 2026-04-21):** Любая задача с вёрсткой (новый компонент,
+> стилевое изменение, цвет, отступы) требует ДВУХ шагов делегирования — реализация + токен-аудит.
+> Деплой без второго шага ЗАПРЕЩЁН.
+
 | Этап | Субагент / скилл |
 |------|-----------------|
 | Research | `researcher` субагент |
 | Implementation | `designer` субагент (Design System specialist, token-aware) |
+| **Token/DS diff** | **`designer` субагент #2 — аудит токенов, нативных элементов, 4px spacing** |
 | Visual QA | `/audit` скилл → `ux-reviewer` субагент (Playwright, живой UI) |
 | Acceptance criteria | `qa-engineer` субагент (`test:components` + spec Done When) |
+
+**Шаблон вызова аудит-дизайнера (шаг Token/DS diff):**
+```
+Agent(subagent_type="designer", prompt="""
+Audit changed files for DS compliance — do NOT change logic.
+Files: [list]
+Check: (1) hardcoded hex/rgba → must be hsl(var(--token))
+       (2) native <select>/<input> outside DS utility → must use src/components/ui/
+       (3) spacing off 4px scale → flag
+       (4) border/shadow not using DS token → flag
+Report violations as file:line. Zero violations → "PASS".
+""")
+```
 
 ### Обязательная последовательность (нельзя пропустить):
 
@@ -75,6 +93,34 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 - **Новые семантические цвета** (success/warning/info): добавить CSS переменную в `globals.css`, потом использовать
 - **Spacing**: только 4px шкала — `p-[10px]`, `h-3.5` (14px) FORBIDDEN. Маппинг: `gap-2`=8px, `p-3`=12px, `p-4`=16px. Иконки в индикаторах: `h-3` (12px = `--icon-indicator`), не `h-3.5` или `h-4`
 
+## Правило: build-log обновляется КАЖДУЮ сессию (ОБЯЗАТЕЛЬНО)
+
+> **БЛОКИРУЮЩЕЕ ПРАВИЛО** — сессия не считается завершённой без записи в build-log.
+
+`docs/build-log.md` — источник для кейс-стади на notjustsasha.com. Без актуального лога кейс не написать.
+
+**Когда обновлять:** в конце каждой рабочей сессии, перед `/session-end`.
+
+**Что писать:**
+```markdown
+## День N — Краткое название (YYYY-MM-DD)
+
+1. **Инсайт / решение** — что сделали, почему важно, какой инцидент был
+2. ...
+
+**Артефакты:** список новых/изменённых файлов
+**Linear:** тикеты сессии
+**Следующий шаг:** что дальше
+```
+
+**Правила:**
+- Нумерация дней сквозная (текущий максимум — смотреть в конец файла)
+- Минимум 3 пункта на сессию
+- Писать инсайты, а не changelog — что узнали, что сломалось, какое решение выбрали
+- Инциденты и pivot-решения особенно важны для кейса
+
+---
+
 ## Правило: фиксация данных каждого дня спринта
 
 **Обязательно** после завершения каждого дня research sprint:
@@ -105,7 +151,7 @@ Next.js 15 App Router, Tailwind v4, TypeScript, zero backend, Vercel free tier.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **theme-studio** (537 symbols, 892 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **theme-studio** (819 symbols, 1209 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
