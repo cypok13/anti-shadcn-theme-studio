@@ -35,7 +35,7 @@ export function DocCodeBlock({ code, label, language = 'tsx' }: DocCodeBlockProp
         </button>
       </div>
       <pre className="overflow-x-auto p-4 leading-relaxed">
-        <code className="text-[hsl(var(--foreground))]" style={{ fontFamily: "'Geist Mono', 'JetBrains Mono', monospace", fontSize: '13px' }}>
+        <code className="text-[hsl(var(--foreground))]" style={{ fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
           {code}
         </code>
       </pre>
