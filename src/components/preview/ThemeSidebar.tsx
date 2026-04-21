@@ -2,17 +2,40 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
+import { Sun, Moon } from 'lucide-react'
 import { PRESETS } from '@/lib/themes/registry'
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
-import { cn } from '@/lib/utils'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '../ui/select'
+import { RadiusPicker } from './RadiusPicker'
 
-const RADIUS_OPTIONS = [
-  { label: 'None', value: '0rem' },
-  { label: 'Small', value: '0.3rem' },
-  { label: 'Medium', value: '0.5rem' },
-  { label: 'Large', value: '0.75rem' },
-  { label: 'Full', value: '1rem' },
+const HEADING_OPTIONS = [
+  { label: 'Inter',         value: "'Inter', sans-serif" },
+  { label: 'Geist Sans',    value: "'Geist', 'Geist Sans', sans-serif" },
+  { label: 'Space Grotesk', value: "'Space Grotesk', sans-serif" },
+  { label: 'Syne',          value: "'Syne', sans-serif" },
+  { label: 'Mona Sans',     value: "'Mona Sans', sans-serif" },
+]
+
+const BODY_OPTIONS = [
+  { label: 'Inter',         value: "'Inter', sans-serif" },
+  { label: 'DM Sans',       value: "'DM Sans', sans-serif" },
+  { label: 'Manrope',       value: "'Manrope', sans-serif" },
+  { label: 'IBM Plex Sans', value: "'IBM Plex Sans', sans-serif" },
+  { label: 'Geist Sans',    value: "'Geist', 'Geist Sans', sans-serif" },
+]
+
+const MONO_OPTIONS = [
+  { label: 'JetBrains Mono', value: "'JetBrains Mono', monospace" },
+  { label: 'Geist Mono',     value: "'Geist Mono', monospace" },
+  { label: 'IBM Plex Mono',  value: "'IBM Plex Mono', monospace" },
+  { label: 'Fira Code',      value: "'Fira Code', monospace" },
 ]
 
 const labelClass =
@@ -22,9 +45,14 @@ export function ThemeSidebar() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const currentTheme = searchParams.get('theme') ?? PRESETS[0].id
-  const currentMode = searchParams.get('mode') ?? 'light'
-  const currentRadius = searchParams.get('radius') ?? null
+  const currentTheme  = searchParams.get('theme')  ?? PRESETS[0].id
+  const currentMode   = searchParams.get('mode')   ?? 'light'
+  const currentRadius = searchParams.get('radius') ?? '0.5rem'
+
+  const currentPreset      = PRESETS.find((p) => p.id === currentTheme) ?? PRESETS[0]
+  const currentFontHeading = searchParams.get('fontHeading') ?? currentPreset.fonts.heading
+  const currentFontBody    = searchParams.get('fontBody')    ?? currentPreset.fonts.body
+  const currentFontMono    = searchParams.get('fontMono')    ?? currentPreset.fonts.mono
 
   const setParam = useCallback(
     (key: string, value: string) => {
@@ -41,7 +69,8 @@ export function ThemeSidebar() {
 
   return (
     <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] shadow-md p-5 space-y-6">
-      {/* Theme preset */}
+
+      {/* Theme preset — button list */}
       <section>
         <p className={labelClass}>Theme</p>
         <div className="flex flex-col gap-1">
@@ -49,10 +78,14 @@ export function ThemeSidebar() {
             <Button
               key={preset.id}
               variant={currentTheme === preset.id ? 'default' : 'ghost'}
-              size="sm"
               onClick={() => setParam('theme', preset.id)}
-              className="w-full justify-start"
+              className="w-full justify-start gap-2"
             >
+              <span
+                className="w-3 h-3 rounded-full shrink-0"
+                style={{ background: `hsl(${preset.light.primary})` }}
+                aria-hidden="true"
+              />
               {preset.name}
             </Button>
           ))}
@@ -71,8 +104,11 @@ export function ThemeSidebar() {
               variant={currentMode === mode ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setParam('mode', mode)}
-              className="flex-1 capitalize"
+              className="flex-1 capitalize gap-1.5"
             >
+              {mode === 'light'
+                ? <Sun  className="size-3.5" aria-hidden="true" />
+                : <Moon className="size-3.5" aria-hidden="true" />}
               {mode}
             </Button>
           ))}
@@ -81,30 +117,63 @@ export function ThemeSidebar() {
 
       <Separator />
 
-      {/* Radius */}
+      {/* Radius — visual picker */}
       <section>
         <p className={labelClass}>Radius</p>
-        <div className="flex flex-col gap-1">
-          {RADIUS_OPTIONS.map((opt) => {
-            const isActive = currentRadius ? currentRadius === opt.value : opt.value === '0.5rem'
-            return (
-              <Button
-                key={opt.value}
-                variant={isActive ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setParam('radius', opt.value)}
-                className="w-full justify-start gap-3"
-              >
-                <span
-                  className="shrink-0 w-5 h-4 border-2 border-current"
-                  style={{ borderRadius: opt.value === '1rem' ? '8px' : opt.value }}
-                  aria-hidden="true"
-                />
-                <span>{opt.label}</span>
-                <span className={cn('ml-auto text-xs', isActive ? 'opacity-80' : 'opacity-50')}>{opt.value}</span>
-              </Button>
-            )
-          })}
+        <RadiusPicker value={currentRadius} onChange={(v) => setParam('radius', v)} />
+      </section>
+
+      <Separator />
+
+      {/* Typography — 3 DS Selects */}
+      <section>
+        <p className={labelClass}>Typography</p>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[hsl(var(--muted-foreground))] w-14 shrink-0">Heading</span>
+            <div className="flex-1 min-w-0">
+              <Select value={currentFontHeading} onValueChange={(v) => setParam('fontHeading', v)}>
+                <SelectTrigger size="sm" aria-label="Heading font">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {HEADING_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[hsl(var(--muted-foreground))] w-14 shrink-0">Body</span>
+            <div className="flex-1 min-w-0">
+              <Select value={currentFontBody} onValueChange={(v) => setParam('fontBody', v)}>
+                <SelectTrigger size="sm" aria-label="Body font">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {BODY_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[hsl(var(--muted-foreground))] w-14 shrink-0">Mono</span>
+            <div className="flex-1 min-w-0">
+              <Select value={currentFontMono} onValueChange={(v) => setParam('fontMono', v)}>
+                <SelectTrigger size="sm" aria-label="Mono font">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {MONO_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -114,6 +183,7 @@ export function ThemeSidebar() {
       <Button variant="secondary" className="w-full" onClick={handleCopy}>
         Copy Theme URL
       </Button>
+
     </div>
   )
 }

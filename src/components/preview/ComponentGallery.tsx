@@ -35,6 +35,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
 import { ComponentSection } from './ComponentSection'
+import { ButtonApiTab, ButtonUsageTab, ButtonCodeTab } from './docs/ButtonDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 
@@ -47,16 +48,18 @@ const DatePickerCard = dynamic(() => import('./cards/DatePickerCard').then(m => 
 export function ComponentGallery() {
   return (
     <TooltipProvider>
-      <div className="flex h-full overflow-hidden bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-        {/* Left: scrollable component list */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-3xl px-8 pt-8 pb-16 space-y-6">
+      <div className="h-full overflow-y-auto bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
+        <div className="mx-auto max-w-[1120px] flex items-start gap-12 px-8 pt-8 pb-16">
+          <div className="flex-1 min-w-0 space-y-6">
             <ComponentSection
               title="Button"
               docsHref="https://ui.shadcn.com/docs/components/button"
               tabs={[
                 { key: 'variants', label: 'Variants', content: <ButtonVariantsGrid /> },
                 { key: 'sizes',    label: 'Sizes',    content: <ButtonSizesGrid /> },
+                { key: 'api',      label: 'API',      content: <ButtonApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <ButtonUsageTab /> },
+                { key: 'code',     label: 'Code',     content: <ButtonCodeTab /> },
               ]}
             />
 
@@ -92,10 +95,9 @@ export function ComponentGallery() {
             <TabsDemo />
             <TabsRadixDemo />
           </div>
-        </div>
-        {/* Right: sticky sidebar */}
-        <div className="w-[300px] shrink-0 overflow-y-auto p-4">
-          <ThemeSidebar />
+          <div className="w-[280px] shrink-0 sticky top-8">
+            <ThemeSidebar />
+          </div>
         </div>
       </div>
     </TooltipProvider>
@@ -156,33 +158,13 @@ function ButtonVariantsGrid() {
 
 function ButtonSizesGrid() {
   return (
-    <div className="overflow-x-auto">
-      <table className="border-separate border-spacing-x-3 border-spacing-y-3">
-        <thead>
-          <tr>
-            <th className="w-20" />
-            {RADIUS_COLS.map(({ label }) => (
-              <th key={label} className="text-xs font-normal text-[hsl(var(--muted-foreground))] pb-2 text-center px-2">
-                {label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {BTN_SIZES.map((size) => (
-            <tr key={size}>
-              <td className="text-xs text-[hsl(var(--muted-foreground))] pr-4 align-middle">
-                {BTN_SIZE_LABELS[size]}
-              </td>
-              {RADIUS_COLS.map(({ label, value }) => (
-                <td key={label}>
-                  <Button size={size} style={{ borderRadius: value }}>Button</Button>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="flex items-end gap-6">
+      {BTN_SIZES.map((size) => (
+        <div key={size} className="flex flex-col items-center gap-2">
+          <Button size={size}>Button</Button>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">{BTN_SIZE_LABELS[size]}</span>
+        </div>
+      ))}
     </div>
   )
 }

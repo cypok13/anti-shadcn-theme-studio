@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { ExternalLink } from 'lucide-react'
+// import { ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-type TabKey = 'variants' | 'sizes' | 'states'
+type TabKey = string
 
 interface Tab {
   key: TabKey
@@ -20,7 +20,7 @@ interface ComponentSectionProps {
   className?: string
 }
 
-export function ComponentSection({ title, docsHref, tabs, children, className }: ComponentSectionProps) {
+export function ComponentSection({ title, docsHref: _docsHref, tabs, children, className }: ComponentSectionProps) {
   const [activeTab, setActiveTab] = useState<TabKey>(tabs?.[0]?.key ?? 'variants')
 
   const activeContent = tabs?.find((t) => t.key === activeTab)?.content ?? children
@@ -33,9 +33,9 @@ export function ComponentSection({ title, docsHref, tabs, children, className }:
       {/* Header */}
       <div className="flex items-baseline justify-between mb-6">
         <h2 className="text-2xl font-semibold text-[hsl(var(--foreground))]">{title}</h2>
-        {docsHref && (
+        {/* {_docsHref && (
           <a
-            href={docsHref}
+            href={_docsHref}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-sm text-[hsl(var(--primary))] hover:text-[hsl(var(--primary)/0.8)] transition-colors"
@@ -43,7 +43,7 @@ export function ComponentSection({ title, docsHref, tabs, children, className }:
             View in docs
             <ExternalLink className="size-3" />
           </a>
-        )}
+        )} */}
       </div>
 
       {/* Inline tab pills */}
@@ -67,8 +67,8 @@ export function ComponentSection({ title, docsHref, tabs, children, className }:
       )}
 
       {/* Demo area */}
-      <div className="rounded-xl bg-[hsl(var(--muted)/0.4)] p-6 min-h-[80px] flex items-start">
-        <div className="w-full">
+      <div className="rounded-xl bg-[hsl(var(--muted)/0.4)] p-6 min-h-[80px]">
+        <div className="w-full overflow-x-auto">
           {activeContent}
         </div>
       </div>
