@@ -114,8 +114,8 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
 
   // shiki dual-theme: activate light or dark token set based on current mode
   const shikiModeCss = mode === 'dark'
-    ? `.shiki span { color: var(--shiki-dark) !important; } .shiki { color: var(--shiki-dark) !important; }`
-    : `.shiki span { color: var(--shiki-light) !important; } .shiki { color: var(--shiki-light) !important; }`
+    ? `:root { color-scheme: dark; } .shiki span { color: var(--shiki-dark) !important; } .shiki { color: var(--shiki-dark) !important; }`
+    : `:root { color-scheme: light; } .shiki span { color: var(--shiki-light) !important; } .shiki { color: var(--shiki-light) !important; }`
 
   const shadowStyle = params.shadow ?? preset.shadowStyle ?? 'none'
   const shadowMap: Record<string, string> = {

@@ -38,7 +38,7 @@ function TypePills({ type }: { type: string }) {
 export function DocPropsTable({ rows }: DocPropsTableProps) {
   return (
     <div className="rounded-lg border border-[hsl(var(--border))] overflow-hidden text-sm">
-      <div className="grid grid-cols-[160px_1fr_120px_1fr] gap-4 px-4 py-2.5 bg-[hsl(var(--muted)/0.5)] border-b border-[hsl(var(--border))]">
+      <div className="grid grid-cols-[160px_1fr_120px_1fr] gap-4 px-4 py-2 bg-[hsl(var(--muted)/0.5)] border-b border-[hsl(var(--border))]">
         {['Prop', 'Type', 'Default', 'Description'].map((h) => (
           <span key={h} className="text-xs font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground))]">
             {h}
@@ -53,7 +53,7 @@ export function DocPropsTable({ rows }: DocPropsTableProps) {
           <div className="flex items-center gap-1.5">
             <code className="text-xs font-mono font-medium text-[hsl(var(--primary))]">{row.name}</code>
             {row.required && (
-              <span className="text-[10px] font-medium px-1 py-0.5 rounded bg-red-500/10 text-red-500 leading-none">req</span>
+              <span className="text-xs font-medium px-1 py-0.5 rounded bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))] leading-none">req</span>
             )}
           </div>
           <div className="flex items-start pt-0.5">

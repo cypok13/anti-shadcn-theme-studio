@@ -121,12 +121,12 @@ export function ButtonUsageTab() {
           {VARIANT_GUIDE.map((row, i) => (
             <div
               key={row.variant}
-              className={`flex items-center gap-4 px-4 py-2.5 ${i < VARIANT_GUIDE.length - 1 ? 'border-b border-[hsl(var(--border))]' : ''}`}
+              className={`flex items-center gap-4 px-4 py-2 ${i < VARIANT_GUIDE.length - 1 ? 'border-b border-[hsl(var(--border))]' : ''}`}
             >
               <div className="flex items-center gap-2 w-36 shrink-0">
                 <code className="font-mono text-xs text-[hsl(var(--primary))]">{row.variant}</code>
                 {row.badge && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-medium leading-none">
+                  <span className="text-xs px-1.5 py-0.5 rounded-full bg-[hsl(var(--primary)/0.1)] text-[hsl(var(--primary))] font-medium leading-none">
                     {row.badge}
                   </span>
                 )}
