@@ -18,7 +18,7 @@ const BUTTON_PROPS = [
     name: 'asChild',
     type: 'boolean',
     default: 'false',
-    description: 'Merges props onto the child element (e.g. Next.js <Link>). Uses Radix Slot under the hood.',
+    description: 'Merges props onto the child element — renders as the child instead of a <button> (e.g. wrap a Next.js <Link>).',
   },
   {
     name: 'isLoading',

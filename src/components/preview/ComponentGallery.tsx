@@ -53,7 +53,6 @@ export function ComponentGallery() {
           <div className="flex-1 min-w-0 space-y-6">
             <ComponentSection
               title="Button"
-              docsHref="https://ui.shadcn.com/docs/components/button"
               tabs={[
                 { key: 'variants', label: 'Variants', content: <ButtonVariantsGrid /> },
                 { key: 'sizes',    label: 'Sizes',    content: <ButtonSizesGrid /> },
@@ -65,35 +64,31 @@ export function ComponentGallery() {
 
             <ComponentSection
               title="Checkbox"
-              docsHref="https://ui.shadcn.com/docs/components/checkbox"
             >
               <CheckboxDemo />
             </ComponentSection>
 
             <ComponentSection
               title="Dialog"
-              docsHref="https://ui.shadcn.com/docs/components/dialog"
             >
               <DialogDemo />
             </ComponentSection>
 
             <ComponentSection
               title="Input"
-              docsHref="https://ui.shadcn.com/docs/components/input"
             >
               <InputDemo />
             </ComponentSection>
 
             <ComponentSection
               title="Select"
-              docsHref="https://ui.shadcn.com/docs/components/select"
             >
               <SelectDemo />
             </ComponentSection>
 
             {/* Playwright test fixtures */}
             <TabsDemo />
-            <TabsRadixDemo />
+            <TabsPrimitiveDemo />
           </div>
           <div className="w-[280px] shrink-0 sticky top-8">
             <ThemeSidebar />
@@ -476,7 +471,7 @@ function SelectDemo() {
   )
 }
 
-function TabsRadixDemo() {
+function TabsPrimitiveDemo() {
   return (
     <section className="space-y-3" data-section="tabs-component">
       <h4 className={sectionHeading}>Tabs</h4>
@@ -1342,8 +1337,8 @@ function ComponentsTab() {
       {/* Section 14 — Select */}
       <SelectDemo />
 
-      {/* Section 14b — Tabs (Radix) */}
-      <TabsRadixDemo />
+      {/* Section 14b — Tabs (primitive) */}
+      <TabsPrimitiveDemo />
 
       {/* Section 15 — Tooltip */}
       <TooltipDemo />
