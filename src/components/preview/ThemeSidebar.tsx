@@ -16,26 +16,22 @@ import {
 import { RadiusPicker } from './RadiusPicker'
 
 const HEADING_OPTIONS = [
-  { label: 'Inter',         value: "'Inter', sans-serif" },
-  { label: 'Geist Sans',    value: "'Geist', 'Geist Sans', sans-serif" },
-  { label: 'Space Grotesk', value: "'Space Grotesk', sans-serif" },
-  { label: 'Syne',          value: "'Syne', sans-serif" },
-  { label: 'Mona Sans',     value: "'Mona Sans', sans-serif" },
+  { label: 'Inter',         value: 'var(--font-sans)' },
+  { label: 'Space Grotesk', value: 'var(--font-grotesk)' },
+  { label: 'Syne',          value: 'var(--font-syne)' },
 ]
 
 const BODY_OPTIONS = [
-  { label: 'Inter',         value: "'Inter', sans-serif" },
-  { label: 'DM Sans',       value: "'DM Sans', sans-serif" },
-  { label: 'Manrope',       value: "'Manrope', sans-serif" },
-  { label: 'IBM Plex Sans', value: "'IBM Plex Sans', sans-serif" },
-  { label: 'Geist Sans',    value: "'Geist', 'Geist Sans', sans-serif" },
+  { label: 'Inter',         value: 'var(--font-sans)' },
+  { label: 'DM Sans',       value: 'var(--font-dm)' },
+  { label: 'Manrope',       value: 'var(--font-manrope)' },
+  { label: 'IBM Plex Sans', value: 'var(--font-ibm-plex-sans)' },
 ]
 
 const MONO_OPTIONS = [
-  { label: 'JetBrains Mono', value: "'JetBrains Mono', monospace" },
-  { label: 'Geist Mono',     value: "'Geist Mono', monospace" },
-  { label: 'IBM Plex Mono',  value: "'IBM Plex Mono', monospace" },
-  { label: 'Fira Code',      value: "'Fira Code', monospace" },
+  { label: 'JetBrains Mono', value: 'var(--font-jetbrains-mono)' },
+  { label: 'IBM Plex Mono',  value: 'var(--font-ibm-plex-mono)' },
+  { label: 'Fira Code',      value: 'var(--font-fira-code)' },
 ]
 
 const labelClass =

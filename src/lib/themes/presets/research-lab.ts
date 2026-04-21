@@ -76,9 +76,9 @@ export const researchLab: ThemePreset = {
     sidebarRing: '211 85% 60%',
   },
   fonts: {
-    heading: "var(--font-grotesk), 'Space Grotesk', sans-serif",
-    body: "var(--font-sans), 'Inter', sans-serif",
-    mono: "'JetBrains Mono', 'Fira Code', monospace",
+    heading: 'var(--font-grotesk)',
+    body: 'var(--font-sans)',
+    mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.25rem',
   shadowStyle: 'soft',

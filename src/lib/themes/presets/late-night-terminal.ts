@@ -76,9 +76,9 @@ export const lateNightTerminal: ThemePreset = {
     sidebarRing: '120 60% 50%',
   },
   fonts: {
-    heading: "'JetBrains Mono', 'Fira Code', monospace",
-    body: "'JetBrains Mono', 'Fira Code', monospace",
-    mono: "'JetBrains Mono', 'Fira Code', monospace",
+    heading: 'var(--font-jetbrains-mono)',
+    body: 'var(--font-jetbrains-mono)',
+    mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.25rem',
   shadowStyle: 'glow',

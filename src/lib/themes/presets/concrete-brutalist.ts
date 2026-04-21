@@ -76,9 +76,9 @@ export const concreteBrutalist: ThemePreset = {
     sidebarRing: '44 96% 53%',
   },
   fonts: {
-    heading: "var(--font-grotesk), 'Space Grotesk', sans-serif",
-    body: "'JetBrains Mono', 'Fira Code', monospace",
-    mono: "'JetBrains Mono', 'Fira Code', monospace",
+    heading: 'var(--font-grotesk)',
+    body: 'var(--font-jetbrains-mono)',
+    mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0rem',
   shadowStyle: 'none',

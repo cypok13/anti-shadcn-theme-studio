@@ -76,9 +76,9 @@ export const broadsheet: ThemePreset = {
     sidebarRing: '220 60% 60%',
   },
   fonts: {
-    heading: "var(--font-dm), 'DM Sans', sans-serif",
-    body: "var(--font-sans), 'Inter', sans-serif",
-    mono: "'JetBrains Mono', 'Fira Code', monospace",
+    heading: 'var(--font-dm)',
+    body: 'var(--font-sans)',
+    mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.125rem',
   shadowStyle: 'flat',
