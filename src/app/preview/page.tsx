@@ -5,7 +5,7 @@ import type { ThemeTokens } from '@/lib/themes/types'
 
 const HSL_RE = /^\d+(\.\d+)? \d+(\.\d+)?% \d+(\.\d+)?%$/
 const RADIUS_RE = /^\d+(\.\d+)?(rem|px|em|%)$/
-const FONT_SAFE_RE = /[^a-zA-Z0-9,.' -]/g
+const FONT_SAFE_RE = /[^a-zA-Z0-9,.'() -]/g
 
 function safeHsl(value: string | undefined, fallback: string): string {
   return value && HSL_RE.test(value.trim()) ? value.trim() : fallback
