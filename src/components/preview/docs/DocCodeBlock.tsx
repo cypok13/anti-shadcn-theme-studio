@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Check, Copy } from 'lucide-react'
 
 interface DocCodeBlockProps {
@@ -11,6 +11,21 @@ interface DocCodeBlockProps {
 
 export function DocCodeBlock({ code, label, language = 'tsx' }: DocCodeBlockProps) {
   const [copied, setCopied] = useState(false)
+  const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    import('shiki').then(({ codeToHtml }) =>
+      codeToHtml(code, {
+        lang: language ?? 'tsx',
+        themes: { light: 'github-light', dark: 'github-dark-dimmed' },
+        defaultColor: false,
+      })
+    ).then((result) => {
+      if (!cancelled) setHighlightedHtml(result)
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [code, language])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code)
@@ -34,11 +49,21 @@ export function DocCodeBlock({ code, label, language = 'tsx' }: DocCodeBlockProp
           {copied ? 'Copied' : 'Copy'}
         </button>
       </div>
-      <pre className="overflow-x-auto p-4 leading-relaxed">
-        <code className="text-[hsl(var(--foreground))]" style={{ fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
-          {code}
-        </code>
-      </pre>
+      {/* shiki output is from hardcoded strings only — not user input, XSS-safe */}
+      {highlightedHtml ? (
+        <div
+          className="[&_.shiki]:bg-transparent [&_.shiki]:m-0 [&_.shiki]:p-4 [&_.shiki]:overflow-x-auto [&_.shiki]:leading-relaxed [&_code]:font-[inherit] [&_pre]:font-[inherit]"
+          style={{ fontFamily: 'var(--font-mono)', fontSize: '13px' }}
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+        />
+      ) : (
+        <pre className="overflow-x-auto p-4 leading-relaxed">
+          <code className="text-[hsl(var(--foreground))]" style={{ fontFamily: 'var(--font-mono)', fontSize: '13px' }}>
+            {code}
+          </code>
+        </pre>
+      )}
     </div>
   )
 }

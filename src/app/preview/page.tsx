@@ -112,6 +112,11 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
     code, pre, kbd, samp { font-family: var(--font-mono); }
   `
 
+  // shiki dual-theme: activate light or dark token set based on current mode
+  const shikiModeCss = mode === 'dark'
+    ? `.shiki span { color: var(--shiki-dark) !important; } .shiki { color: var(--shiki-dark) !important; }`
+    : `.shiki span { color: var(--shiki-light) !important; } .shiki { color: var(--shiki-light) !important; }`
+
   const shadowStyle = params.shadow ?? preset.shadowStyle ?? 'none'
   const shadowMap: Record<string, string> = {
     none: 'none',
@@ -128,6 +133,7 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
       <style dangerouslySetInnerHTML={{ __html: css }} />
       <style dangerouslySetInnerHTML={{ __html: fontCss }} />
       <style dangerouslySetInnerHTML={{ __html: shadowCss }} />
+      <style dangerouslySetInnerHTML={{ __html: shikiModeCss }} />
       <ComponentGallery />
     </>
   )
