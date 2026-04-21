@@ -23,35 +23,32 @@ export function RadiusPicker({ value, onChange }: RadiusPickerProps) {
             key={opt.value}
             role="radio"
             aria-checked={selected}
+            aria-label={opt.label}
             onClick={() => onChange(opt.value)}
             className={[
-              'flex flex-col items-center gap-1.5 rounded-lg p-2 transition-colors',
+              'flex items-center justify-center rounded-lg transition-colors',
+              'aspect-square w-full',
               'bg-[hsl(var(--background))]',
               selected
-                ? 'border-2 border-[hsl(var(--foreground))]'
-                : 'border border-[hsl(var(--border))] hover:border-[hsl(var(--foreground)/0.4)]',
+                ? 'border-2 border-[hsl(var(--primary))]'
+                : 'border border-[hsl(var(--border))] hover:border-[hsl(var(--primary)/0.4)]',
             ].join(' ')}
           >
-            <div className="w-8 h-8 flex items-start justify-start">
-              <div
-                style={{
-                  width: '20px',
-                  height: '20px',
-                  background: 'hsl(var(--primary)/0.15)',
-                  borderTop: '2px solid hsl(var(--primary)/0.6)',
-                  borderLeft: '2px solid hsl(var(--primary)/0.6)',
-                  borderRight: 'none',
-                  borderBottom: 'none',
-                  borderTopLeftRadius: opt.radius,
-                  borderTopRightRadius: 0,
-                  borderBottomLeftRadius: 0,
-                  borderBottomRightRadius: 0,
-                }}
-              />
-            </div>
-            <span className="text-[10px] leading-none text-[hsl(var(--muted-foreground))]">
-              {opt.label}
-            </span>
+            <div
+              style={{
+                width: '20px',
+                height: '20px',
+                background: 'hsl(var(--primary)/0.15)',
+                borderTop: '2px solid hsl(var(--primary)/0.6)',
+                borderLeft: '2px solid hsl(var(--primary)/0.6)',
+                borderRight: 'none',
+                borderBottom: 'none',
+                borderTopLeftRadius: opt.radius,
+                borderTopRightRadius: 0,
+                borderBottomLeftRadius: 0,
+                borderBottomRightRadius: 0,
+              }}
+            />
           </button>
         )
       })}
