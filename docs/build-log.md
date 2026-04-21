@@ -782,3 +782,35 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 **Linear:** ALE-771
 
 **Следующий шаг:** Компонент Checkbox/Switch/Radio (ALE-753), Usage Guidelines (ALE-752)
+
+---
+
+## День 15 — Radix UI Removal + Test Suite Reorganization (2026-04-21)
+
+**Ключевые инсайты:**
+
+1. **Как Radix попал в проект** — оригинальный MVP (ALE-637) имел нулевые Radix зависимости. Субагент-имплементор прочитал "исследуй Radix как референс" в COMPONENT-PIPELINE.md как "установи и используй". Пакеты накопились незакоммиченными. Обнаружено при попытке добавить `@radix-ui/react-checkbox` для Checkbox.
+
+2. **Стратегия замены** — единственная новая зависимость: `@floating-ui/react-dom` (~3KB) только для позиционирования Tooltip/Popover/Select. Нативный `<dialog>` для Dialog (focus trap, scroll lock бесплатно с Chrome 37+). Custom React state machine для Tabs (~45 строк). Bundle: −28KB gzipped (176KB → 148KB).
+
+3. **Focus trap без Radix** — нативный `<dialog>` + `showModal()` отклонён в пользу `<div role="dialog">` с ручным focus trap через `useEffect` + `querySelectorAll(FOCUSABLE_SELECTORS)`. Причина: паттерн `DialogPortal/DialogOverlay/DialogContent` уже существовал, переход на нативный `<dialog>` требовал рефактора API.
+
+4. **ShadowPicker** — визуальный пикер по аналогии с RadiusPicker: 5 карточек (None/Flat/Soft/Dramatic/Glow), inline preview через `boxShadow` на `<span>`. Shadow применяется к demo-областям ComponentSection через `[box-shadow:var(--shadow-preset,none)]`.
+
+5. **Тест-сьют: скрытый долг** — 15 тестов висели в `test.skip` не потому что компоненты сломаны, а потому что `ComponentsTab()` существовала как приватная функция и не рендерилась в `ComponentGallery()` return. Решение: expose всех в галерею. Результат: 42/42 тестов, 0 skip.
+
+6. **Архитектура тестов** — Gate 0/1 кросс-компонентные (JS ошибки, CSS токены, axe-core — нужны для регрессий при изменении темы). Gate 2+ компонентные. При разработке: `npm run test:component -- <name>` вместо полного прогона.
+
+7. **Popover a11y gap** — `PopoverContent` не имел `role` атрибута. Исправлено: `role="dialog"` — соответствует WAI-ARIA spec для интерактивного popover контента.
+
+**Артефакты:**
+- `src/components/ui/` — все 8 компонентов переписаны без Radix: separator, button, badge, tabs, dialog, tooltip, popover, select
+- `src/components/preview/ShadowPicker.tsx` — новый
+- `src/components/preview/ThemeSidebar.tsx` — компактный, ShadowPicker, scrollable
+- `src/components/preview/ComponentGallery.tsx` — все demo функции экспонированы
+- `tests/component-qa.spec.ts` — убраны дубли, 0 skip, добавлен test:component script
+- `docs/adr/` — ALE-777 зафиксирован как архитектурное решение
+
+**Linear:** ALE-777
+
+**Следующий шаг:** Checkbox компонент (ALE-764), затем Switch/Radio (ALE-753)
