@@ -19,24 +19,15 @@ export function DocCodeBlock({ code, label, language = 'tsx' }: DocCodeBlockProp
   }
 
   return (
-    <div
-      className="rounded-lg overflow-hidden text-sm"
-      style={{
-        background: '#111113',
-        border: '1px solid rgba(255,255,255,0.08)',
-      }}
-    >
-      <div
-        className="flex items-center justify-between px-4 py-2"
-        style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-      >
-        <span className="font-mono text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+    <div className="rounded-lg overflow-hidden text-sm border border-[hsl(var(--border))] bg-[hsl(var(--muted))]">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-[hsl(var(--border))] bg-[hsl(var(--muted)/0.6)]">
+        <span className="font-mono text-xs text-[hsl(var(--muted-foreground))]">
           {label ?? language}
         </span>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs transition-colors"
-          style={{ color: copied ? 'rgba(74,222,128,0.9)' : 'rgba(255,255,255,0.4)' }}
+          className="flex items-center gap-1.5 text-xs transition-colors text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+          style={copied ? { color: 'hsl(var(--primary))' } : undefined}
           aria-label="Copy code"
         >
           {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
@@ -44,7 +35,7 @@ export function DocCodeBlock({ code, label, language = 'tsx' }: DocCodeBlockProp
         </button>
       </div>
       <pre className="overflow-x-auto p-4 leading-relaxed">
-        <code style={{ color: '#e4e4e7', fontFamily: "'Geist Mono', 'JetBrains Mono', monospace", fontSize: '13px' }}>
+        <code className="text-[hsl(var(--foreground))]" style={{ fontFamily: "'Geist Mono', 'JetBrains Mono', monospace", fontSize: '13px' }}>
           {code}
         </code>
       </pre>
