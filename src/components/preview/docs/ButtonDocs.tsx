@@ -54,16 +54,21 @@ export function ButtonApiTab() {
 function DoDontCard({ type, title, children }: { type: 'do' | 'dont'; title: string; children: React.ReactNode }) {
   return (
     <div
-      className="rounded-lg p-4 text-sm"
-      style={{
-        borderLeft: `3px solid ${type === 'do' ? 'rgb(34,197,94)' : 'rgb(239,68,68)'}`,
-        background: type === 'do' ? 'rgba(34,197,94,0.05)' : 'rgba(239,68,68,0.05)',
-      }}
+      className={[
+        'rounded-lg p-4 text-sm',
+        type === 'do'
+          ? 'border-l-[3px] border-l-[hsl(var(--success,142_71%_45%))] bg-[hsl(var(--success,142_71%_45%)/0.06)]'
+          : 'border-l-[3px] border-l-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)]',
+      ].join(' ')}
     >
       <div className="flex items-center gap-1.5 mb-2">
         <span
-          className="text-xs font-bold uppercase tracking-wider"
-          style={{ color: type === 'do' ? 'rgb(34,197,94)' : 'rgb(239,68,68)' }}
+          className={[
+            'text-xs font-bold uppercase tracking-wider',
+            type === 'do'
+              ? 'text-[hsl(var(--success,142_71%_45%))]'
+              : 'text-[hsl(var(--destructive))]',
+          ].join(' ')}
         >
           {type === 'do' ? '✓ Do' : "✕ Don't"}
         </span>
