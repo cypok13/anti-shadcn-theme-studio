@@ -1,8 +1,7 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
-const COMPONENTS_URL = '/preview?tab=components'
-const CARDS_URL = '/preview?tab=cards'
+const BASE_URL = '/preview'
 
 // ─── Gate 0: Runtime integrity ───────────────────────────────────────────────
 
@@ -11,41 +10,26 @@ test.describe('Gate 0 — Runtime integrity', () => {
     const errors: string[] = []
     page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()) })
     page.on('pageerror', err => errors.push(err.message))
-    await page.goto(COMPONENTS_URL)
-    await page.waitForLoadState('networkidle')
-    expect(errors).toHaveLength(0)
-  })
-
-  test('no JS errors or React hydration failures on cards tab', async ({ page }) => {
-    const errors: string[] = []
-    page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()) })
-    page.on('pageerror', err => errors.push(err.message))
-    await page.goto(CARDS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
     expect(errors).toHaveLength(0)
   })
 
   test('no block elements (div/section/article) inside button', async ({ page }) => {
-    await page.goto(COMPONENTS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
     // Exclude Vercel toolbar buttons (data-issues-open) — injected by Vercel dev overlay, not our code
     const invalid = await page.locator('button:not([data-issues-open]) div, button:not([data-issues-open]) section, button:not([data-issues-open]) article').count()
     expect(invalid).toBe(0)
   })
 
-  test('no block elements inside button on cards tab', async ({ page }) => {
-    await page.goto(CARDS_URL)
-    await page.waitForLoadState('networkidle')
-    const invalid = await page.locator('button:not([data-issues-open]) div, button:not([data-issues-open]) section, button:not([data-issues-open]) article').count()
-    expect(invalid).toBe(0)
-  })
 })
 
 // ─── Gate 1: CSS / ARIA form ─────────────────────────────────────────────────
 
 test.describe('Gate 1 — CSS & ARIA form', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(COMPONENTS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
   })
 
@@ -92,23 +76,13 @@ test.describe('Gate 1 — CSS & ARIA form', () => {
     expect(critical).toHaveLength(0)
   })
 
-  test('axe-core: zero critical violations on cards tab', async ({ page }) => {
-    await page.goto(CARDS_URL)
-    await page.waitForLoadState('networkidle')
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .exclude('.recharts-wrapper')
-      .analyze()
-    const critical = results.violations.filter(v => v.impact === 'critical')
-    expect(critical).toHaveLength(0)
-  })
 })
 
 // ─── Gate 2: Interaction — controls actually work ─────────────────────────────
 
 test.describe('Gate 2 — Interaction smoke tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(COMPONENTS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
   })
 
@@ -127,8 +101,7 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     expect(checkedAfter).not.toBe(checkedBefore)
   })
 
-  test.skip('radio: clicking label text selects the option', async ({ page }) => {
-    // Radio component not rendered in ComponentGallery — skipped until added back
+  test('radio: clicking label text selects the option', async ({ page }) => {
     const labels = page.locator('section').filter({ hasText: 'Radio' }).locator('label')
     // option-b (index 1) starts unselected — click it and verify it becomes selected
     const second = labels.nth(1)
@@ -145,8 +118,7 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     await expect(radioBtn).toHaveAttribute('aria-checked', 'true')
   })
 
-  test.skip('radio: selecting new option deselects previously selected (mutual exclusivity)', async ({ page }) => {
-    // Radio component not rendered in ComponentGallery — skipped until added back
+  test('radio: selecting new option deselects previously selected (mutual exclusivity)', async ({ page }) => {
     const radioSection = page.locator('section').filter({ hasText: 'Radio' })
     const labels = radioSection.locator('label')
     const firstBtn = labels.nth(0).locator('button[role="radio"]')
@@ -165,8 +137,7 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     await expect(firstBtn).toHaveAttribute('aria-checked', 'false')
   })
 
-  test.skip('switch: clicking full row toggles aria-checked', async ({ page }) => {
-    // Switch component not rendered in ComponentGallery — skipped until added back
+  test('switch: clicking full row toggles aria-checked', async ({ page }) => {
     const switches = page.locator('[role="switch"]')
     const count = await switches.count()
     expect(count).toBeGreaterThan(0)
@@ -181,8 +152,7 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     expect(after).not.toBe(before)
   })
 
-  test.skip('switch: clicking label text (not the toggle) also toggles', async ({ page }) => {
-    // Switch component not rendered in ComponentGallery — skipped until added back
+  test('switch: clicking label text (not the toggle) also toggles', async ({ page }) => {
     const switchSection = page.locator('section').filter({ hasText: 'Switch' })
     const sw = switchSection.locator('[role="switch"]').first()
     const before = await sw.getAttribute('aria-checked')
@@ -202,12 +172,12 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     const secondTab = tabs.nth(1)
 
     // Record content before
-    const contentBefore = await tabSection.locator('.border').last().innerText()
+    const contentBefore = await tabSection.locator('p').last().innerText()
 
     await secondTab.click()
     await page.waitForTimeout(100)
 
-    const contentAfter = await tabSection.locator('.border').last().innerText()
+    const contentAfter = await tabSection.locator('p').last().innerText()
     expect(contentAfter).not.toBe(contentBefore)
   })
 
@@ -270,10 +240,9 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     await page.keyboard.press('Escape')
   })
 
-  test.skip('popover: trigger toggles aria-expanded and content visible via Portal', async ({ page }) => {
-    // Popover component not rendered in ComponentGallery — skipped until added back
+  test('popover: trigger toggles aria-expanded and content visible via Portal', async ({ page }) => {
     const popoverSection = page.locator('[data-section="popover"]')
-    const trigger = popoverSection.getByRole('button', { name: 'Default' })
+    const trigger = popoverSection.getByRole('button', { name: 'Default (bottom)' })
     await expect(trigger).toHaveAttribute('aria-expanded', 'false')
 
     await trigger.click()
@@ -293,10 +262,9 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     expect(isInsideTrigger).toBe(false)
   })
 
-  test.skip('popover: Escape closes and restores focus to trigger', async ({ page }) => {
-    // Popover component not rendered in ComponentGallery — skipped until added back
+  test('popover: Escape closes and restores focus to trigger', async ({ page }) => {
     const popoverSection = page.locator('[data-section="popover"]')
-    const trigger = popoverSection.getByRole('button', { name: 'Default' })
+    const trigger = popoverSection.getByRole('button', { name: 'Default (bottom)' })
     await trigger.click()
     await page.waitForTimeout(200)
     await expect(page.locator('[role="dialog"]').first()).toBeVisible()
@@ -308,10 +276,9 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
     await expect(trigger).toBeFocused()
   })
 
-  test.skip('popover: click outside closes popover', async ({ page }) => {
-    // Popover component not rendered in ComponentGallery — skipped until added back
+  test('popover: click outside closes popover', async ({ page }) => {
     const popoverSection = page.locator('[data-section="popover"]')
-    const trigger = popoverSection.getByRole('button', { name: 'Default' })
+    const trigger = popoverSection.getByRole('button', { name: 'Default (bottom)' })
     await trigger.click()
     await page.waitForTimeout(200)
     await expect(trigger).toHaveAttribute('aria-expanded', 'true')
@@ -327,7 +294,7 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
 
 test.describe('Gate 3 — Full-row click zones', () => {
   test('interactive elements in cards are focusable via keyboard', async ({ page }) => {
-    await page.goto(CARDS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
 
     // Tab through 6 elements and verify focus lands on semantic interactive controls (not divs/spans)
@@ -345,7 +312,7 @@ test.describe('Gate 3 — Full-row click zones', () => {
   })
 
   test('dialog: Tab key cycles focus within dialog only', async ({ page }) => {
-    await page.goto(COMPONENTS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
     const dialogSection = page.locator('[data-section="dialog"]')
     const trigger = dialogSection.getByRole('button', { name: 'Default dialog' })
@@ -374,45 +341,45 @@ test.describe('Gate 3 — Full-row click zones', () => {
 
 test.describe('Gate 4 — Badge', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(COMPONENTS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
   })
 
-  test.skip('badge: renders as <span> (not <div>)', async ({ page }) => {
+  test('badge: renders as <span> (not <div>)', async ({ page }) => {
     const badge = page.locator('[data-slot="badge"]').first()
     await expect(badge).toBeVisible()
     const tagName = await badge.evaluate(el => el.tagName.toLowerCase())
     expect(tagName).toBe('span')
   })
 
-  test.skip('badge: display is inline-flex (or flex when inside flex container)', async ({ page }) => {
+  test('badge: display is inline-flex (or flex when inside flex container)', async ({ page }) => {
     // Inside a flex container, inline-flex is blockified to flex — both are valid
     const badge = page.locator('[data-slot="badge"]').first()
     const display = await badge.evaluate(el => getComputedStyle(el).display)
     expect(['inline-flex', 'flex']).toContain(display)
   })
 
-  test.skip('badge: all 7 variants render with data-variant attribute', async ({ page }) => {
+  test('badge: all 7 variants render with data-variant attribute', async ({ page }) => {
     const variants = ['default', 'secondary', 'outline', 'destructive', 'success', 'warning', 'info']
     for (const v of variants) {
       await expect(page.locator(`[data-slot="badge"][data-variant="${v}"]`).first()).toBeVisible()
     }
   })
 
-  test.skip('badge: whitespace is nowrap', async ({ page }) => {
+  test('badge: whitespace is nowrap', async ({ page }) => {
     const badge = page.locator('[data-slot="badge"]').first()
     const ws = await badge.evaluate(el => getComputedStyle(el).whiteSpace)
     expect(ws).toBe('nowrap')
   })
 
-  test.skip('badge: dot badge has aria-label', async ({ page }) => {
+  test('badge: dot badge has aria-label', async ({ page }) => {
     const dotBadge = page.locator('[data-slot="badge"][data-dot="true"]').first()
     await expect(dotBadge).toBeVisible()
     const ariaLabel = await dotBadge.getAttribute('aria-label')
     expect(ariaLabel).toBeTruthy()
   })
 
-  test.skip('badge: text badges have height within expected range (18–28px)', async ({ page }) => {
+  test('badge: text badges have height within expected range (18–28px)', async ({ page }) => {
     // Exclude dot-only badges (no text) — they are tiny by design (6px dot)
     const badges = page.locator('[data-slot="badge"]:not([data-dot="true"])')
     const count = await badges.count()
@@ -426,7 +393,7 @@ test.describe('Gate 4 — Badge', () => {
     }
   })
 
-  test.skip('badge: background resolves to rgb (CSS var resolves correctly)', async ({ page }) => {
+  test('badge: background resolves to rgb (CSS var resolves correctly)', async ({ page }) => {
     const badge = page.locator('[data-slot="badge"][data-variant="default"]').first()
     const bg = await badge.evaluate(el => getComputedStyle(el).backgroundColor)
     expect(bg).toMatch(/^rgb/)
@@ -437,7 +404,7 @@ test.describe('Gate 4 — Badge', () => {
 
 test.describe('Gate 5 — Separator', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(COMPONENTS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
   })
 
@@ -460,8 +427,7 @@ test.describe('Gate 5 — Separator', () => {
     expect(box!.width).toBeGreaterThan(1)
   })
 
-  test.skip('separator: vertical has data-orientation="vertical" and is 1px wide', async ({ page }) => {
-    // Vertical separator not rendered in ComponentGallery — skipped until added back
+  test('separator: vertical has data-orientation="vertical" and is 1px wide', async ({ page }) => {
     // Radix only sets aria-orientation on semantic (non-decorative) separators.
     // Demo uses decorative=true (default), so check data-orientation instead.
     const vSep = page.locator('[data-slot="separator"][data-orientation="vertical"]').first()
@@ -490,7 +456,7 @@ test.describe('Gate 5 — Separator', () => {
 
 test.describe('Gate 6 — Tabs', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(COMPONENTS_URL)
+    await page.goto(BASE_URL)
     await page.waitForLoadState('networkidle')
   })
 

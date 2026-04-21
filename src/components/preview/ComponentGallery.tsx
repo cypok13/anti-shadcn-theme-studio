@@ -86,6 +86,42 @@ export function ComponentGallery() {
               <SelectDemo />
             </ComponentSection>
 
+            <ComponentSection
+              title="Switch"
+            >
+              <SwitchDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Radio"
+            >
+              <RadioDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Badge"
+            >
+              <BadgeDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Separator"
+            >
+              <SeparatorDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Tooltip"
+            >
+              <TooltipDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Popover"
+            >
+              <PopoverDemo />
+            </ComponentSection>
+
             {/* Playwright test fixtures */}
             <TabsDemo />
             <TabsPrimitiveDemo />
