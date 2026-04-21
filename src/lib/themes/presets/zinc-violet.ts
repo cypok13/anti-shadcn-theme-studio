@@ -76,9 +76,9 @@ export const zincViolet: ThemePreset = {
     sidebarRing: '262 80% 70%',
   },
   fonts: {
-    heading: "'Inter', 'Helvetica Neue', sans-serif",
-    body: "'Inter', system-ui, sans-serif",
-    mono: "'JetBrains Mono', 'Fira Code', monospace",
+    heading: 'var(--font-sans)',
+    body: 'var(--font-sans)',
+    mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.5rem',
   shadowStyle: 'soft',

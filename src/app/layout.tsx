@@ -1,5 +1,17 @@
 import type { Metadata } from 'next'
-import { Inter, Space_Grotesk, DM_Sans } from 'next/font/google'
+import {
+  Inter,
+  Space_Grotesk,
+  DM_Sans,
+  Syne,
+  Manrope,
+  IBM_Plex_Sans,
+  JetBrains_Mono,
+  IBM_Plex_Mono,
+  Fira_Code,
+} from 'next/font/google'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import './globals.css'
 
@@ -21,6 +33,44 @@ const dmSans = DM_Sans({
   display: 'swap',
 })
 
+const syne = Syne({
+  subsets: ['latin'],
+  variable: '--font-syne',
+  display: 'swap',
+})
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
+  display: 'swap',
+})
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-ibm-plex-sans',
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+})
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-ibm-plex-mono',
+  display: 'swap',
+})
+
+const firaCode = Fira_Code({
+  subsets: ['latin'],
+  variable: '--font-fira-code',
+  display: 'swap',
+})
+
 export const metadata: Metadata = {
   title: 'Anti-shadcn Theme Studio',
   description: 'Generate personality-first shadcn themes with AI rules',
@@ -28,7 +78,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} ${dmSans.variable}`}>
+    <html lang="en" className={[
+      inter.variable, spaceGrotesk.variable, dmSans.variable,
+      syne.variable, manrope.variable, ibmPlexSans.variable,
+      jetbrainsMono.variable, ibmPlexMono.variable, firaCode.variable,
+      GeistSans.variable, GeistMono.variable,
+    ].join(' ')}>
       <body style={{ height: '100vh', overflow: 'hidden', margin: 0, padding: 0 }}>
         <NuqsAdapter>{children}</NuqsAdapter>
       </body>

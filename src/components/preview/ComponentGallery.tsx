@@ -34,6 +34,10 @@ import {
 import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
+import { ComponentSection } from './ComponentSection'
+import { ButtonApiTab, ButtonUsageTab, ButtonCodeTab } from './docs/ButtonDocs'
+import { DemoRow } from './DemoRow'
+import { ThemeSidebar } from './ThemeSidebar'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
 const ActivityGoalCard = dynamic(() => import('./cards/ActivityGoalCard').then(m => ({ default: m.ActivityGoalCard })), { ssr: false })
@@ -41,17 +45,55 @@ const ExerciseMinutesCard = dynamic(() => import('./cards/ExerciseMinutesCard').
 const CreateAccountCard = dynamic(() => import('./cards/CreateAccountCard').then(m => ({ default: m.CreateAccountCard })), { ssr: false })
 const DatePickerCard = dynamic(() => import('./cards/DatePickerCard').then(m => ({ default: m.DatePickerCard })), { ssr: false })
 
-interface ComponentGalleryProps {
-  activeTab?: string
-}
-
-export function ComponentGallery({ activeTab = 'components' }: ComponentGalleryProps) {
+export function ComponentGallery() {
   return (
     <TooltipProvider>
       <div className="h-full overflow-y-auto bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-        {activeTab === 'components' && <ComponentsTab />}
-        {activeTab === 'cards' && <CardsTab />}
-        {activeTab === 'typography' && <TypographyTab />}
+        <div className="mx-auto max-w-[1120px] flex items-start gap-12 px-8 pt-8 pb-16">
+          <div className="flex-1 min-w-0 space-y-6">
+            <ComponentSection
+              title="Button"
+              tabs={[
+                { key: 'variants', label: 'Variants', content: <ButtonVariantsGrid /> },
+                { key: 'sizes',    label: 'Sizes',    content: <ButtonSizesGrid /> },
+                { key: 'api',      label: 'API',      content: <ButtonApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <ButtonUsageTab /> },
+                { key: 'code',     label: 'Code',     content: <ButtonCodeTab /> },
+              ]}
+            />
+
+            <ComponentSection
+              title="Checkbox"
+            >
+              <CheckboxDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Dialog"
+            >
+              <DialogDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Input"
+            >
+              <InputDemo />
+            </ComponentSection>
+
+            <ComponentSection
+              title="Select"
+            >
+              <SelectDemo />
+            </ComponentSection>
+
+            {/* Playwright test fixtures */}
+            <TabsDemo />
+            <TabsPrimitiveDemo />
+          </div>
+          <div className="w-[280px] shrink-0 sticky top-8">
+            <ThemeSidebar />
+          </div>
+        </div>
       </div>
     </TooltipProvider>
   )
@@ -61,30 +103,88 @@ export function ComponentGallery({ activeTab = 'components' }: ComponentGalleryP
 const sectionHeading =
   'text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3'
 
+const BTN_VARIANTS = ['default', 'secondary', 'outline', 'ghost', 'destructive'] as const
+const BTN_STATES = [
+  { label: 'Normal',   props: {} },
+  { label: 'Disabled', props: { disabled: true } },
+  { label: 'Loading',  props: { isLoading: true } },
+] as const
+
+const BTN_SIZES = ['sm', 'default', 'lg'] as const
+const BTN_SIZE_LABELS: Record<string, string> = { sm: 'Small', default: 'Medium', lg: 'Large' }
+const RADIUS_COLS = [
+  { label: 'None',   value: '0rem' },
+  { label: 'Small',  value: '0.3rem' },
+  { label: 'Medium', value: '0.5rem' },
+  { label: 'Large',  value: '0.75rem' },
+  { label: 'Full',   value: '9999px' },
+] as const
+
+function ButtonVariantsGrid() {
+  return (
+    <div className="overflow-x-auto">
+      <table className="border-separate border-spacing-x-3 border-spacing-y-3">
+        <thead>
+          <tr>
+            <th className="w-28" />
+            {BTN_STATES.map(({ label }) => (
+              <th key={label} className="text-xs font-normal text-[hsl(var(--muted-foreground))] pb-2 text-center px-2">
+                {label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {BTN_VARIANTS.map((variant) => (
+            <tr key={variant}>
+              <td className="text-xs text-[hsl(var(--muted-foreground))] pr-4 capitalize align-middle">{variant}</td>
+              {BTN_STATES.map(({ label, props }) => (
+                <td key={label}>
+                  <Button variant={variant} {...props}>Button</Button>
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function ButtonSizesGrid() {
+  return (
+    <div className="flex items-end gap-6">
+      {BTN_SIZES.map((size) => (
+        <div key={size} className="flex flex-col items-center gap-2">
+          <Button size={size}>Button</Button>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">{BTN_SIZE_LABELS[size]}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function CheckboxDemo() {
   const [checked, setChecked] = useState({ a: true, b: false })
   return (
-    <section className="space-y-3">
-      <h4 className={sectionHeading}>Checkbox</h4>
-      <div className="space-y-2">
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <Checkbox checked={checked.a} onChange={() => setChecked(p => ({ ...p, a: !p.a }))} />
-          <span className="text-sm text-[hsl(var(--foreground))]">Checked</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <Checkbox checked={checked.b} onChange={() => setChecked(p => ({ ...p, b: !p.b }))} />
-          <span className="text-sm text-[hsl(var(--foreground))]">Unchecked</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
-          <Checkbox checked disabled />
-          <span className="text-sm text-[hsl(var(--foreground))]">Disabled checked</span>
-        </label>
-        <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
-          <Checkbox checked={false} disabled />
-          <span className="text-sm text-[hsl(var(--foreground))]">Disabled unchecked</span>
-        </label>
-      </div>
-    </section>
+    <div className="space-y-2">
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <Checkbox checked={checked.a} onChange={() => setChecked(p => ({ ...p, a: !p.a }))} />
+        <span className="text-sm text-[hsl(var(--foreground))]">Checked</span>
+      </label>
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <Checkbox checked={checked.b} onChange={() => setChecked(p => ({ ...p, b: !p.b }))} />
+        <span className="text-sm text-[hsl(var(--foreground))]">Unchecked</span>
+      </label>
+      <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
+        <Checkbox checked disabled />
+        <span className="text-sm text-[hsl(var(--foreground))]">Disabled checked</span>
+      </label>
+      <label className="flex items-center gap-2 cursor-not-allowed select-none opacity-50">
+        <Checkbox checked={false} disabled />
+        <span className="text-sm text-[hsl(var(--foreground))]">Disabled unchecked</span>
+      </label>
+    </div>
   )
 }
 
@@ -251,8 +351,7 @@ function SeparatorDemo() {
 
 function SelectDemo() {
   return (
-    <section className="space-y-6">
-      <h4 className={sectionHeading}>Select</h4>
+    <div className="space-y-6">
 
       {/* 1. Sizes */}
       <div className="space-y-2">
@@ -368,11 +467,11 @@ function SelectDemo() {
           <SelectItem value="us">United States</SelectItem>
         </SelectField>
       </div>
-    </section>
+    </div>
   )
 }
 
-function TabsRadixDemo() {
+function TabsPrimitiveDemo() {
   return (
     <section className="space-y-3" data-section="tabs-component">
       <h4 className={sectionHeading}>Tabs</h4>
@@ -1238,8 +1337,8 @@ function ComponentsTab() {
       {/* Section 14 — Select */}
       <SelectDemo />
 
-      {/* Section 14b — Tabs (Radix) */}
-      <TabsRadixDemo />
+      {/* Section 14b — Tabs (primitive) */}
+      <TabsPrimitiveDemo />
 
       {/* Section 15 — Tooltip */}
       <TooltipDemo />
@@ -1326,133 +1425,3 @@ function TeamMembersCard() {
   )
 }
 
-function CardsTab() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6">
-      {/* Card 1 — Feature */}
-      <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] p-6 [box-shadow:var(--shadow-preset,none)]">
-        <div className="w-10 h-10 rounded-[var(--radius)] bg-[hsl(var(--accent))] mb-4" />
-        <h3 className="font-semibold text-base mb-1">Automated Workflows</h3>
-        <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">
-          Build and deploy complex automation pipelines without writing a single line of code.
-        </p>
-        <Button>Learn more</Button>
-      </div>
-
-      {/* Card 2 — Stats/Metric */}
-      <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] p-6 [box-shadow:var(--shadow-preset,none)]">
-        <p className="text-xs uppercase tracking-wider text-[hsl(var(--muted-foreground))] mb-2">
-          Monthly Revenue
-        </p>
-        <p className="text-4xl font-bold tabular-nums mb-2">$48,290</p>
-        <span className="inline-flex items-center rounded-[var(--radius)] bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))] px-2 py-0.5 text-xs font-medium">
-          +12.4%
-        </span>
-        <p className="text-xs text-[hsl(var(--muted-foreground))] mt-2">vs last month</p>
-      </div>
-
-      {/* Card 3 — Pricing */}
-      <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] p-6 [box-shadow:var(--shadow-preset,none)]">
-        <p className="text-xs uppercase tracking-wider text-[hsl(var(--muted-foreground))] mb-1">Pro Plan</p>
-        <p className="text-3xl font-bold mb-3">
-          $29<span className="text-base font-normal text-[hsl(var(--muted-foreground))]">/mo</span>
-        </p>
-        <ul className="space-y-1.5 text-sm mb-4">
-          {['Unlimited projects', 'Priority support', 'Custom domains', 'Advanced analytics'].map((feature) => (
-            <li key={feature} className="flex items-center gap-2">
-              <span className="text-[hsl(var(--accent-foreground))]">·</span>
-              <span className="text-[hsl(var(--foreground))]">{feature}</span>
-            </li>
-          ))}
-        </ul>
-        <Button className="w-full">Get started</Button>
-      </div>
-
-      {/* Card 4 — Profile */}
-      <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] p-6 flex flex-col items-center text-center">
-        <div className="w-14 h-14 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center mb-3">
-          <span className="text-xl font-semibold text-[hsl(var(--muted-foreground))]">A</span>
-        </div>
-        <p className="font-semibold text-base">Alex Krasnov</p>
-        <p className="text-sm text-[hsl(var(--muted-foreground))] mb-4">Design Engineer</p>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">Follow</Button>
-          <Button variant="outline" size="sm">Message</Button>
-        </div>
-      </div>
-
-      {/* Card 5 — Cookie Settings */}
-      <CookieSettingsCard />
-
-      {/* Card 6 — Team Members */}
-      <TeamMembersCard />
-
-      {/* Card 7 — Stats with charts */}
-      <StatsCard />
-
-      {/* Card 8 — Activity Goal */}
-      <ActivityGoalCard />
-
-      {/* Card 9 — Calendar */}
-      <CalendarCard />
-
-      {/* Card 10 — Exercise Minutes */}
-      <ExerciseMinutesCard />
-
-      {/* Card 11 — Create Account */}
-      <CreateAccountCard />
-
-      {/* Card 12 — Date Picker with Range */}
-      <DatePickerCard />
-    </div>
-  )
-}
-
-function TypographyTab() {
-  const label = 'text-xs uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-1'
-
-  return (
-    <div className="p-6 max-w-2xl space-y-8">
-      <div>
-        <p className={label}>Display</p>
-        <p className="text-4xl font-black leading-none">Concrete Brutalist</p>
-      </div>
-      <div>
-        <p className={label}>Heading 1</p>
-        <h1 className="text-3xl font-bold">Building better interfaces</h1>
-      </div>
-      <div>
-        <p className={label}>Heading 2</p>
-        <h2 className="text-2xl font-semibold">Design systems at scale</h2>
-      </div>
-      <div>
-        <p className={label}>Heading 3</p>
-        <h3 className="text-xl font-semibold">Component architecture</h3>
-      </div>
-      <div>
-        <p className={label}>Body</p>
-        <p className="text-base leading-relaxed">
-          Good design is as little design as possible. Less, but better — because it concentrates on the essential aspects, and the products are not burdened with non-essentials. Back to purity, back to simplicity.
-        </p>
-      </div>
-      <div>
-        <p className={label}>Small / Caption</p>
-        <p className="text-sm text-[hsl(var(--muted-foreground))]">
-          Supplemental metadata and captions
-        </p>
-      </div>
-      <div>
-        <p className={label}>Inline Code</p>
-        <code className="font-mono text-sm bg-[hsl(var(--muted))] px-1.5 py-0.5 rounded-[var(--radius)]">
-          const theme = useTheme()
-        </code>
-      </div>
-      <div>
-        <p className={label}>Blockquote</p>
-        <blockquote className="border-l-4 border-[hsl(var(--primary))] pl-4 italic text-[hsl(var(--muted-foreground))]">
-          Design is not just what it looks like and feels like. Design is how it works.
-        </blockquote>
-      </div>
-    </div>
-  )
-}

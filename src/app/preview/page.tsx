@@ -5,7 +5,7 @@ import type { ThemeTokens } from '@/lib/themes/types'
 
 const HSL_RE = /^\d+(\.\d+)? \d+(\.\d+)?% \d+(\.\d+)?%$/
 const RADIUS_RE = /^\d+(\.\d+)?(rem|px|em|%)$/
-const FONT_SAFE_RE = /[^a-zA-Z0-9,.' -]/g
+const FONT_SAFE_RE = /[^a-zA-Z0-9,.'() -]/g
 
 function safeHsl(value: string | undefined, fallback: string): string {
   return value && HSL_RE.test(value.trim()) ? value.trim() : fallback
@@ -31,7 +31,6 @@ interface PreviewPageProps {
     theme?: string
     mode?: string
     radius?: string
-    tab?: string
     fontHeading?: string
     fontBody?: string
     fontMono?: string
@@ -75,8 +74,6 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
   const params = await searchParams
   const themeId = params.theme ?? PRESETS[0].id
   const mode = params.mode === 'dark' ? 'dark' : 'light'
-  const activeTab = params.tab ?? 'components'
-
   const preset = PRESETS.find((p) => p.id === themeId) ?? PRESETS[0]
   const baseTokens: ThemeTokens = mode === 'light' ? preset.light : preset.dark
 
@@ -115,6 +112,11 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
     code, pre, kbd, samp { font-family: var(--font-mono); }
   `
 
+  // shiki dual-theme: activate light or dark token set based on current mode
+  const shikiModeCss = mode === 'dark'
+    ? `:root { color-scheme: dark; } .shiki span { color: var(--shiki-dark) !important; } .shiki { color: var(--shiki-dark) !important; }`
+    : `:root { color-scheme: light; } .shiki span { color: var(--shiki-light) !important; } .shiki { color: var(--shiki-light) !important; }`
+
   const shadowStyle = params.shadow ?? preset.shadowStyle ?? 'none'
   const shadowMap: Record<string, string> = {
     none: 'none',
@@ -131,7 +133,8 @@ export default async function PreviewPage({ searchParams }: PreviewPageProps) {
       <style dangerouslySetInnerHTML={{ __html: css }} />
       <style dangerouslySetInnerHTML={{ __html: fontCss }} />
       <style dangerouslySetInnerHTML={{ __html: shadowCss }} />
-      <ComponentGallery activeTab={activeTab} />
+      <style dangerouslySetInnerHTML={{ __html: shikiModeCss }} />
+      <ComponentGallery />
     </>
   )
 }

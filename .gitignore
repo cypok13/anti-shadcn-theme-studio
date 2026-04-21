@@ -35,3 +35,4 @@ docs/*
 !docs/specs/
 !docs/specs/component-spec-template.md
 .gitnexus
+!docs/COMPONENT-SECTION-CHECKLIST.md

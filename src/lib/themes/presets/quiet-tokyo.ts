@@ -76,9 +76,9 @@ export const quietTokyo: ThemePreset = {
     sidebarRing: '40 20% 86%',
   },
   fonts: {
-    heading: "var(--font-dm), 'DM Sans', sans-serif",
-    body: "var(--font-dm), 'DM Sans', sans-serif",
-    mono: "'JetBrains Mono', 'Fira Code', monospace",
+    heading: 'var(--font-dm)',
+    body: 'var(--font-dm)',
+    mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.375rem',
   shadowStyle: 'soft',
