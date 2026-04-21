@@ -10,6 +10,8 @@ import {
   IBM_Plex_Mono,
   Fira_Code,
 } from 'next/font/google'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import './globals.css'
 
@@ -76,11 +78,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-      <html lang="en" className={[
-        inter.variable, spaceGrotesk.variable, dmSans.variable,
-        syne.variable, manrope.variable, ibmPlexSans.variable,
-        jetbrainsMono.variable, ibmPlexMono.variable, firaCode.variable,
-      ].join(' ')}>
+    <html lang="en" className={[
+      inter.variable, spaceGrotesk.variable, dmSans.variable,
+      syne.variable, manrope.variable, ibmPlexSans.variable,
+      jetbrainsMono.variable, ibmPlexMono.variable, firaCode.variable,
+      GeistSans.variable, GeistMono.variable,
+    ].join(' ')}>
       <body style={{ height: '100vh', overflow: 'hidden', margin: 0, padding: 0 }}>
         <NuqsAdapter>{children}</NuqsAdapter>
       </body>

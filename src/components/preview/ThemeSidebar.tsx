@@ -17,6 +17,7 @@ import { RadiusPicker } from './RadiusPicker'
 
 const HEADING_OPTIONS = [
   { label: 'Inter',         value: 'var(--font-sans)' },
+  { label: 'Geist Sans',    value: 'var(--font-geist-sans)' },
   { label: 'Space Grotesk', value: 'var(--font-grotesk)' },
   { label: 'Syne',          value: 'var(--font-syne)' },
 ]
@@ -26,10 +27,12 @@ const BODY_OPTIONS = [
   { label: 'DM Sans',       value: 'var(--font-dm)' },
   { label: 'Manrope',       value: 'var(--font-manrope)' },
   { label: 'IBM Plex Sans', value: 'var(--font-ibm-plex-sans)' },
+  { label: 'Geist Sans',    value: 'var(--font-geist-sans)' },
 ]
 
 const MONO_OPTIONS = [
   { label: 'JetBrains Mono', value: 'var(--font-jetbrains-mono)' },
+  { label: 'Geist Mono',     value: 'var(--font-geist-mono)' },
   { label: 'IBM Plex Mono',  value: 'var(--font-ibm-plex-mono)' },
   { label: 'Fira Code',      value: 'var(--font-fira-code)' },
 ]
