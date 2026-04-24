@@ -814,3 +814,31 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 **Linear:** ALE-777
 
 **Следующий шаг:** Checkbox компонент (ALE-764), затем Switch/Radio (ALE-753)
+
+## День 16 — Checkbox Preview Block + extended API (2026-04-24, ALE-812)
+
+**Ключевые инсайты:**
+
+1. **Pipeline v2 прошёл первое реальное испытание** — 2 итерации (initial build + 1 visual QA fix round) vs target ≤5. Валидация рабочая: subagent chain (researcher → designer×2 → qa-engineer → ux-reviewer → designer #4 → qa re-verify → CEO) не провалилась ни на одном этапе. Delegation hook (ALE-811) блокировал Edit/Write без `touch .claude/designer-active` — каждый designer subagent делал STEP 0 первым.
+
+2. **Tri-valued checked вместо отдельного `indeterminate` prop** — Radix pattern `checked: boolean | "indeterminate"` выигрывает над `indeterminate: boolean`: (a) меньше prop surface, (b) невозможно одновременно задать `checked=true` и `indeterminate=true` — type system запрещает, (c) совпадает с ARIA семантикой `aria-checked="true|false|mixed"`. `useImperativeHandle` пробрасывает нативный `<input>` ref наружу при внутреннем `useRef` для `input.indeterminate` sync.
+
+3. **DocPropsTable был системным bottleneck, не Checkbox** — API tab с типом `(event: ChangeEvent<HTMLInputElement>) => void` обрезался. Root cause: CSS Grid колонки `1fr` (≡ `minmax(auto, 1fr)`) не ужимаются ниже intrinsic content width — `break-words` не работает без `minmax(0, …)`. Фикс в `DocPropsTable.tsx` улучшает все будущие Preview Blocks (Button, Badge и др.).
+
+4. **`!important` на error override — осознанный выбор, не хак** — `data-error=true` border должен побеждать `data-state=checked` border (оба рендерятся через Tailwind variant). Tailwind JIT не гарантирует source order между `peer-checked:` и `group-data-[error]:` variants. `!border-[hsl(var(--destructive))]` — единственный детерминированный win. Уже стандартная практика в проекте.
+
+5. **Визуальный QA как независимый gate работает** — ux-reviewer нашёл 1 P1 (DocPropsTable overflow) + 2 P2 (error border, badge alignment), которые qa-engineer Playwright тесты пропустили. Тесты проверяли существование attrs/classes, не layout geometry. Для Preview Blocks визуальный loop обязателен — Playwright недостаточен.
+
+**Артефакты:**
+- `src/components/ui/checkbox.tsx` — API extended (63→138 строк): `checked: boolean | "indeterminate"`, `error`, `errorMessage`, `aria-required`, `data-state`, `data-error`
+- `src/components/preview/docs/CheckboxDocs.tsx` — new (289 строк): 5 tabs (Overview/API/Usage/Code/States), DoDontCard inline copy
+- `src/components/preview/docs/DocPropsTable.tsx` — grid `minmax(0, Nfr)`, `break-all` на type pill — project-wide fix
+- `src/components/preview/ComponentGallery.tsx` — CheckboxSection заменил CheckboxDemo
+- `docs/specs/checkbox-spec.md` — Usage Guidelines расширены, indeterminate/required/error из N/A → реальные states, Test Plan +7 пунктов
+- `docs/research/checkbox-states-research.md` — ARIA APG + Radix/shadcn/Ariakit/Carbon/Material референс
+- `docs/sessions/2026-04-24-ALE-812-visual.md` + 20 скринов
+- `tests/component-qa.spec.ts` — Gate 16 (+8 assertions): 74 → 82/82
+
+**Linear:** ALE-812 (parent: ALE-764 Checkbox component, ALE-771 Button Preview Block, ALE-811 Pipeline v2)
+
+**Следующий шаг:** Switch/Radio Preview Blocks (ALE-753) или Input (ALE-754) — pipeline validated, следующие компоненты реалистично ≤2 итераций каждый.

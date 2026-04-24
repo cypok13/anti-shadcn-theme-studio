@@ -16,17 +16,17 @@ function TypePills({ type }: { type: string }) {
   const parts = type.split(' | ').map((p) => p.trim())
   if (parts.length === 1) {
     return (
-      <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]">
+      <span className="font-mono text-xs px-1.5 py-0.5 rounded bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] break-all whitespace-normal">
         {type}
       </span>
     )
   }
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex flex-wrap gap-1 min-w-0">
       {parts.map((part) => (
         <span
           key={part}
-          className="font-mono text-xs px-1.5 py-0.5 rounded bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))]"
+          className="font-mono text-xs px-1.5 py-0.5 rounded bg-[hsl(var(--muted))] text-[hsl(var(--muted-foreground))] break-all whitespace-normal"
         >
           {part}
         </span>
@@ -38,7 +38,7 @@ function TypePills({ type }: { type: string }) {
 export function DocPropsTable({ rows }: DocPropsTableProps) {
   return (
     <div className="rounded-lg border border-[hsl(var(--border))] overflow-hidden text-sm">
-      <div className="grid grid-cols-[160px_1fr_120px_1fr] gap-4 px-4 py-2 bg-[hsl(var(--muted)/0.5)] border-b border-[hsl(var(--border))]">
+      <div className="grid grid-cols-[140px_minmax(0,1.2fr)_100px_minmax(0,1.5fr)] gap-4 px-4 py-2 bg-[hsl(var(--muted)/0.5)] border-b border-[hsl(var(--border))]">
         {['Prop', 'Type', 'Default', 'Description'].map((h) => (
           <span key={h} className="text-xs font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground))]">
             {h}
@@ -48,7 +48,7 @@ export function DocPropsTable({ rows }: DocPropsTableProps) {
       {rows.map((row, i) => (
         <div
           key={row.name}
-          className={`grid grid-cols-[160px_1fr_120px_1fr] gap-4 px-4 py-3 ${i < rows.length - 1 ? 'border-b border-[hsl(var(--border))]' : ''}`}
+          className={`grid grid-cols-[140px_minmax(0,1.2fr)_100px_minmax(0,1.5fr)] gap-4 px-4 py-3 ${i < rows.length - 1 ? 'border-b border-[hsl(var(--border))]' : ''}`}
         >
           <div className="flex items-center gap-1.5">
             <code className="text-xs font-mono font-medium text-[hsl(var(--primary))]">{row.name}</code>
@@ -56,7 +56,7 @@ export function DocPropsTable({ rows }: DocPropsTableProps) {
               <span className="text-xs font-medium px-1 py-0.5 rounded bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))] leading-none">req</span>
             )}
           </div>
-          <div className="flex items-start pt-0.5">
+          <div className="flex items-start pt-0.5 min-w-0">
             <TypePills type={row.type} />
           </div>
           <div className="flex items-center">

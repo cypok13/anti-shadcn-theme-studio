@@ -516,3 +516,742 @@ test.describe('Gate 6 — Tabs', () => {
     await expect(disabledTab).toBeDisabled()
   })
 })
+// ─── Gate 7: Overlay Positioning ─────────────────────────────────────────────
+
+test.describe('Gate 7 — Overlay Positioning', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('select: dropdown opens near trigger, not at top-left corner', async ({ page }) => {
+    const selectSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Select' }) }).first()
+    const trigger = selectSection.locator('button[role="combobox"]').first()
+
+    await trigger.click()
+    await page.waitForTimeout(250)
+
+    const overlay = page.locator('[role="listbox"]')
+    await expect(overlay).toBeVisible()
+
+    const triggerBox = await trigger.boundingBox()
+    const overlayBox = await overlay.boundingBox()
+
+    expect(triggerBox).not.toBeNull()
+    expect(overlayBox).not.toBeNull()
+
+    // Overlay must NOT be at top-left corner (0,0 bug)
+    expect(overlayBox!.y).toBeGreaterThan(50)
+    expect(overlayBox!.x).toBeGreaterThan(10)
+
+    // Overlay must be geometrically close to its trigger
+    expect(Math.abs(overlayBox!.x - triggerBox!.x)).toBeLessThan(300)
+    const verticalGap = overlayBox!.y - (triggerBox!.y + triggerBox!.height)
+    expect(verticalGap).toBeGreaterThan(-50)
+    expect(verticalGap).toBeLessThan(200)
+  })
+
+  test('popover: content opens near trigger, not at top-left corner', async ({ page }) => {
+    const popoverSection = page.locator('[data-section="popover"]')
+    const trigger = popoverSection.getByRole('button', { name: 'Default (bottom)' })
+
+    await trigger.click()
+    await page.waitForTimeout(250)
+
+    const overlay = page.locator('[role="dialog"]').first()
+    await expect(overlay).toBeVisible()
+
+    const triggerBox = await trigger.boundingBox()
+    const overlayBox = await overlay.boundingBox()
+
+    expect(triggerBox).not.toBeNull()
+    expect(overlayBox).not.toBeNull()
+
+    // Overlay must NOT be at top-left corner (0,0 bug)
+    expect(overlayBox!.y).toBeGreaterThan(50)
+    expect(overlayBox!.x).toBeGreaterThan(10)
+
+    // Overlay must be geometrically close to its trigger
+    expect(Math.abs(overlayBox!.x - triggerBox!.x)).toBeLessThan(300)
+    const verticalGap = overlayBox!.y - (triggerBox!.y + triggerBox!.height)
+    expect(verticalGap).toBeGreaterThan(-50)
+    expect(verticalGap).toBeLessThan(200)
+  })
+
+  test('tooltip: appears near trigger, not at top-left corner', async ({ page }) => {
+    const tooltipSection = page.locator('[data-section="tooltip"]')
+    const trigger = tooltipSection.locator('button').first()
+
+    await trigger.hover()
+    await page.waitForTimeout(250)
+
+    const overlay = page.locator('[role="tooltip"]')
+    await expect(overlay).toBeVisible()
+
+    const triggerBox = await trigger.boundingBox()
+    const overlayBox = await overlay.boundingBox()
+
+    expect(triggerBox).not.toBeNull()
+    expect(overlayBox).not.toBeNull()
+
+    // Overlay must NOT be at top-left corner (0,0 bug)
+    expect(overlayBox!.y).toBeGreaterThan(50)
+    expect(overlayBox!.x).toBeGreaterThan(10)
+
+    // Overlay must be geometrically close to its trigger
+    expect(Math.abs(overlayBox!.x - triggerBox!.x)).toBeLessThan(300)
+    // Tooltip may appear above or below trigger — check proximity via absolute distance
+    const triggerCenterY = triggerBox!.y + triggerBox!.height / 2
+    const overlayCenterY = overlayBox!.y + overlayBox!.height / 2
+    expect(Math.abs(overlayCenterY - triggerCenterY)).toBeLessThan(200)
+  })
+})
+
+// ─── Gate 8: Select — spec-driven scenarios ──────────────────────────────────
+
+test.describe('Gate 8 — Select scenarios', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('select: click item — trigger text changes + listbox closes', async ({ page }) => {
+    const selectSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Select' }) }).first()
+    const trigger = selectSection.locator('button[role="combobox"]').first()
+
+    const textBefore = await trigger.innerText()
+
+    await trigger.click()
+    await page.waitForTimeout(150)
+    const listbox = page.locator('[role="listbox"]')
+    await expect(listbox).toBeVisible()
+
+    const firstOption = listbox.locator('[role="option"]').first()
+    const optionText = await firstOption.innerText()
+    await firstOption.click()
+    await page.waitForTimeout(200)
+
+    // Listbox must be closed
+    await expect(listbox).not.toBeVisible()
+
+    // Trigger text must have changed to reflect selection
+    const textAfter = await trigger.innerText()
+    expect(textAfter).not.toBe(textBefore)
+    expect(textAfter.trim()).toContain(optionText.trim())
+  })
+
+  test('select: exclusive selection — selecting B removes aria-selected from A', async ({ page }) => {
+    const selectSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Select' }) }).first()
+    const trigger = selectSection.locator('button[role="combobox"]').first()
+
+    // Open + select first option (A)
+    await trigger.click()
+    await page.waitForTimeout(150)
+    const listbox = page.locator('[role="listbox"]')
+    const optionA = listbox.locator('[role="option"]').first()
+    await optionA.click()
+    await page.waitForTimeout(200)
+
+    // Reopen + verify A is selected, then pick B
+    await trigger.click()
+    await page.waitForTimeout(150)
+    const listbox2 = page.locator('[role="listbox"]')
+    const optionsAfterA = listbox2.locator('[role="option"]')
+    await expect(optionsAfterA.first()).toHaveAttribute('aria-selected', 'true')
+
+    const optionB = optionsAfterA.nth(1)
+    await optionB.click()
+    await page.waitForTimeout(200)
+
+    // Reopen to verify — A must now be deselected, B selected
+    await trigger.click()
+    await page.waitForTimeout(150)
+    const listbox3 = page.locator('[role="listbox"]')
+    const optionsFinal = listbox3.locator('[role="option"]')
+    await expect(optionsFinal.first()).not.toHaveAttribute('aria-selected', 'true')
+    await expect(optionsFinal.nth(1)).toHaveAttribute('aria-selected', 'true')
+  })
+
+  test('select: keyboard Tab→Enter opens, ArrowDown navigates, Enter selects', async ({ page }) => {
+    const selectSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Select' }) }).first()
+    const trigger = selectSection.locator('button[role="combobox"]').first()
+
+    await trigger.focus()
+    await expect(trigger).toBeFocused()
+
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(150)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    await page.keyboard.press('ArrowDown')
+    await page.waitForTimeout(100)
+
+    await page.keyboard.press('Enter')
+    await page.waitForTimeout(200)
+
+    await expect(page.locator('[role="listbox"]')).not.toBeVisible()
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('select: Escape closes dropdown + focus stays on trigger', async ({ page }) => {
+    const selectSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Select' }) }).first()
+    const trigger = selectSection.locator('button[role="combobox"]').first()
+
+    await trigger.click()
+    await page.waitForTimeout(150)
+    await expect(trigger).toHaveAttribute('aria-expanded', 'true')
+
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(200)
+
+    await expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await expect(page.locator('[role="listbox"]')).not.toBeVisible()
+  })
+
+  test('select: aria-invalid="true" on trigger when isError', async ({ page }) => {
+    const selectSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Select' }) }).first()
+    const errorTrigger = selectSection.locator('#select-error')
+    await expect(errorTrigger).toBeVisible()
+    await expect(errorTrigger).toHaveAttribute('aria-invalid', 'true')
+  })
+})
+
+// ─── Gate 9: Checkbox — spec-driven scenarios ─────────────────────────────────
+
+test.describe('Gate 9 — Checkbox scenarios', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('checkbox: Space key toggles checked state', async ({ page }) => {
+    // Checkbox uses native <input type="checkbox"> wrapped in a div
+    const checkboxSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Checkbox' }) }).first()
+    const labels = checkboxSection.locator('label')
+    const firstLabel = labels.first()
+    const input = firstLabel.locator('input[type="checkbox"]')
+
+    const checkedBefore = await input.isChecked()
+    // Focus the input and press Space
+    await input.focus()
+    await page.keyboard.press('Space')
+    await page.waitForTimeout(150)
+
+    const checkedAfter = await input.isChecked()
+    expect(checkedAfter).not.toBe(checkedBefore)
+  })
+
+  test('checkbox: Tab reaches checkbox input element', async ({ page }) => {
+    const checkboxSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Checkbox' }) }).first()
+    // The input is opacity-0 (visually hidden) but focusable
+    const input = checkboxSection.locator('input[type="checkbox"]').first()
+    await input.focus()
+    await expect(input).toBeFocused()
+  })
+
+  test('checkbox: focus-visible ring appears on keyboard focus (on indicator div)', async ({ page }) => {
+    const checkboxSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Checkbox' }) }).first()
+    const firstLabel = checkboxSection.locator('label').first()
+    const input = firstLabel.locator('input[type="checkbox"]')
+    const indicatorDiv = firstLabel.locator('div.peer-focus-visible\\:ring-2, div[class*="peer-focus-visible"]').first()
+
+    await input.focus()
+    await page.waitForTimeout(100)
+
+    // Focus ring is applied via peer-focus-visible on the sibling div.
+    // When input is focused, browser applies :focus-visible → peer-focus-visible activates ring-2.
+    // We verify by checking that the indicator div has a box-shadow (ring) applied.
+    const boxShadow = await indicatorDiv.evaluate(el => getComputedStyle(el).boxShadow)
+    // ring-2 with ring-[hsl(var(--ring))] produces a box-shadow that is non-empty and non-'none'
+    expect(boxShadow).not.toBe('none')
+    expect(boxShadow).not.toBe('')
+  })
+
+  test('checkbox: disabled checkbox — Space does NOT toggle', async ({ page }) => {
+    const checkboxSection = page.locator('div').filter({ has: page.locator('h2', { hasText: 'Checkbox' }) }).first()
+    // Third label is "Disabled checked"
+    const disabledInput = checkboxSection.locator('input[type="checkbox"][disabled]').first()
+    const checkedBefore = await disabledInput.isChecked()
+
+    // Disabled inputs cannot receive focus via .focus() in most browsers, but can via force
+    // Verify Space on a focused parent div doesn't accidentally toggle
+    await disabledInput.dispatchEvent('keydown', { key: ' ', code: 'Space' })
+    await page.waitForTimeout(150)
+
+    const checkedAfter = await disabledInput.isChecked()
+    expect(checkedAfter).toBe(checkedBefore)
+  })
+})
+
+// ─── Gate 10: Input — spec-driven scenarios ───────────────────────────────────
+
+test.describe('Gate 10 — Input scenarios', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('input: cursor:text on enabled input', async ({ page }) => {
+    // Use the specific id from the demo — no data-section on Input section
+    const input = page.locator('#input-default')
+    await expect(input).toBeVisible()
+    const cursor = await input.evaluate(el => getComputedStyle(el).cursor)
+    expect(cursor).toBe('text')
+  })
+
+  test('input: cursor:not-allowed on disabled input', async ({ page }) => {
+    const disabledInput = page.locator('#input-disabled')
+    await expect(disabledInput).toBeVisible()
+    const cursor = await disabledInput.evaluate(el => getComputedStyle(el).cursor)
+    expect(cursor).toBe('not-allowed')
+  })
+
+  test('input: focus-visible ring appears on keyboard focus', async ({ page }) => {
+    const input = page.locator('#input-default')
+    await input.focus()
+    await page.waitForTimeout(100)
+
+    const boxShadow = await input.evaluate(el => getComputedStyle(el).boxShadow)
+    const outlineStyle = await input.evaluate(el => getComputedStyle(el).outlineStyle)
+    const hasFocusRing = outlineStyle !== 'none' || (boxShadow !== 'none' && boxShadow !== '')
+    expect(hasFocusRing).toBe(true)
+  })
+
+  test('input: aria-invalid="true" on error state input', async ({ page }) => {
+    const errorInput = page.locator('#input-error')
+    await expect(errorInput).toBeVisible()
+    await expect(errorInput).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  test('input: aria-describedby references valid DOM IDs for helper + error', async ({ page }) => {
+    const errorInput = page.locator('#input-error')
+    const describedBy = await errorInput.getAttribute('aria-describedby')
+    expect(describedBy).toBeTruthy()
+
+    const ids = describedBy!.split(/\s+/).filter(Boolean)
+    expect(ids.length).toBeGreaterThan(0)
+    for (const id of ids) {
+      const el = page.locator(`#${id}`)
+      await expect(el).toBeAttached()
+    }
+  })
+})
+
+// ─── Gate 11: Tooltip — spec-driven scenarios ─────────────────────────────────
+
+test.describe('Gate 11 — Tooltip scenarios', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('tooltip: hover trigger → tooltip appears', async ({ page }) => {
+    const tooltipSection = page.locator('[data-section="tooltip"]')
+    const trigger = tooltipSection.locator('button').first()
+
+    await trigger.hover()
+    await page.waitForTimeout(700) // delayDuration default 300ms + render buffer
+
+    await expect(page.locator('[role="tooltip"]')).toBeVisible()
+  })
+
+  test('tooltip: keyboard Tab to trigger → tooltip opens', async ({ page }) => {
+    const tooltipSection = page.locator('[data-section="tooltip"]')
+    const trigger = tooltipSection.locator('button').first()
+
+    await trigger.focus()
+    await page.waitForTimeout(700) // focus uses same delayDuration timer
+
+    await expect(page.locator('[role="tooltip"]')).toBeVisible()
+  })
+
+  test('tooltip: Escape closes tooltip when open', async ({ page }) => {
+    const tooltipSection = page.locator('[data-section="tooltip"]')
+    const trigger = tooltipSection.locator('button').first()
+
+    // Open via focus
+    await trigger.focus()
+    await page.waitForTimeout(700)
+    await expect(page.locator('[role="tooltip"]')).toBeVisible()
+
+    // Press Escape — should close (Escape handler added to tooltip trigger)
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(300)
+
+    await expect(page.locator('[role="tooltip"]')).not.toBeVisible()
+  })
+})
+
+// ─── Gate 12: Popover — spec-driven scenarios ─────────────────────────────────
+
+test.describe('Gate 12 — Popover additional scenarios', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('popover: open → first focusable element inside popover receives focus', async ({ page }) => {
+    const popoverSection = page.locator('[data-section="popover"]')
+    // "With form" popover has a Field/input inside — use that for focus check
+    const trigger = popoverSection.getByRole('button', { name: 'With form' })
+    await trigger.click()
+    await page.waitForTimeout(350) // wait for portal render + auto-focus delay (50ms)
+
+    const popoverContent = page.locator('[role="dialog"]').first()
+    await expect(popoverContent).toBeVisible()
+
+    // Verify focus moved inside the popover content (auto-focus feature)
+    const focusInsidePopover = await page.evaluate(() => {
+      const dialogs = document.querySelectorAll('[role="dialog"]')
+      for (const dialog of dialogs) {
+        if (dialog.contains(document.activeElement)) return true
+      }
+      return false
+    })
+    expect(focusInsidePopover).toBe(true)
+  })
+})
+
+// ─── Gate 13: RadioGroup — spec-driven scenarios ──────────────────────────────
+
+test.describe('Gate 13 — RadioGroup scenarios', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('radio: selected item has aria-checked="true"', async ({ page }) => {
+    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const firstGroup = radioSection.locator('[role="radiogroup"]').first()
+    const freeBtn = firstGroup.locator('button[role="radio"]').first()
+    await expect(freeBtn).toHaveAttribute('aria-checked', 'true')
+  })
+
+  test('radio: Space key selects focused item', async ({ page }) => {
+    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const firstGroup = radioSection.locator('[role="radiogroup"]').first()
+    // Click free first to ensure consistent state
+    await firstGroup.locator('button[role="radio"]').first().click()
+    await page.waitForTimeout(100)
+
+    // Focus Pro (second) and press Space
+    const secondBtn = firstGroup.locator('button[role="radio"]').nth(1)
+    await secondBtn.focus()
+    await page.keyboard.press('Space')
+    await page.waitForTimeout(150)
+
+    await expect(secondBtn).toHaveAttribute('aria-checked', 'true')
+  })
+
+  test('radio: ArrowDown moves focus AND selects next item', async ({ page }) => {
+    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const firstGroup = radioSection.locator('[role="radiogroup"]').first()
+    const firstBtn = firstGroup.locator('button[role="radio"]').first()
+    const secondBtn = firstGroup.locator('button[role="radio"]').nth(1)
+
+    // Ensure first is selected
+    await firstBtn.click()
+    await page.waitForTimeout(100)
+    await expect(firstBtn).toHaveAttribute('aria-checked', 'true')
+
+    await firstBtn.focus()
+    await page.keyboard.press('ArrowDown')
+    await page.waitForTimeout(150)
+
+    await expect(secondBtn).toBeFocused()
+    await expect(secondBtn).toHaveAttribute('aria-checked', 'true')
+    await expect(firstBtn).toHaveAttribute('aria-checked', 'false')
+  })
+
+  test('radio: disabled item click does not change selection', async ({ page }) => {
+    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const firstGroup = radioSection.locator('[role="radiogroup"]').first()
+    const firstBtn = firstGroup.locator('button[role="radio"]').first()
+
+    await firstBtn.click()
+    await page.waitForTimeout(100)
+    await expect(firstBtn).toHaveAttribute('aria-checked', 'true')
+
+    const disabledBtn = firstGroup.locator('button[role="radio"][disabled]').first()
+    await expect(disabledBtn).toBeVisible()
+
+    await disabledBtn.click({ force: true })
+    await page.waitForTimeout(150)
+
+    await expect(firstBtn).toHaveAttribute('aria-checked', 'true')
+    await expect(disabledBtn).not.toHaveAttribute('aria-checked', 'true')
+  })
+})
+
+// ─── Gate 14: Switch — spec-driven scenarios ──────────────────────────────────
+
+test.describe('Gate 14 — Switch scenarios', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('switch: Space key toggles state', async ({ page }) => {
+    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
+    const sw = switchSection.locator('[role="switch"]:not([disabled])').first()
+
+    const before = await sw.getAttribute('aria-checked')
+    await sw.focus()
+    await page.keyboard.press('Space')
+    await page.waitForTimeout(150)
+
+    const after = await sw.getAttribute('aria-checked')
+    expect(after).not.toBe(before)
+  })
+
+  test('switch: data-state=checked applied after toggle to on', async ({ page }) => {
+    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
+    // Use the first non-disabled switch — the "Unchecked" one starts aria-checked=false
+    const switches = switchSection.locator('[role="switch"]:not([disabled])')
+    // Find the first unchecked one
+    const count = await switches.count()
+    let targetIndex = 0
+    for (let i = 0; i < count; i++) {
+      const checked = await switches.nth(i).getAttribute('aria-checked')
+      if (checked === 'false') { targetIndex = i; break }
+    }
+    const sw = switches.nth(targetIndex)
+
+    await expect(sw).toHaveAttribute('data-state', 'unchecked')
+
+    await sw.click()
+    await page.waitForTimeout(200)
+
+    // Re-query to avoid stale element reference after React re-render
+    const swAfter = switchSection.locator('[role="switch"]:not([disabled])').nth(targetIndex)
+    await expect(swAfter).toHaveAttribute('aria-checked', 'true')
+    await expect(swAfter).toHaveAttribute('data-state', 'checked')
+  })
+
+  test('switch: Tab reaches switch root', async ({ page }) => {
+    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
+    const sw = switchSection.locator('[role="switch"]:not([disabled])').first()
+    await sw.focus()
+    await expect(sw).toBeFocused()
+  })
+
+  test('switch: focus-visible ring on keyboard focus', async ({ page }) => {
+    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
+    const sw = switchSection.locator('[role="switch"]:not([disabled])').first()
+
+    await sw.focus()
+    await page.waitForTimeout(100)
+    const boxShadow = await sw.evaluate(el => getComputedStyle(el).boxShadow)
+    const outlineStyle = await sw.evaluate(el => getComputedStyle(el).outlineStyle)
+    const hasFocusRing = outlineStyle !== 'none' || (boxShadow !== 'none' && boxShadow !== '')
+    expect(hasFocusRing).toBe(true)
+  })
+
+  test('switch: disabled switch — Space does NOT toggle', async ({ page }) => {
+    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
+    const disabledSw = switchSection.locator('[role="switch"][disabled]').first()
+
+    const before = await disabledSw.getAttribute('aria-checked')
+    await disabledSw.focus()
+    await page.keyboard.press('Space')
+    await page.waitForTimeout(150)
+
+    const after = await disabledSw.getAttribute('aria-checked')
+    expect(after).toBe(before)
+  })
+})
+
+// ─── Gate 15: Dialog — additional spec-driven scenarios ───────────────────────
+
+test.describe('Gate 15 — Dialog additional scenarios', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  test('dialog: click overlay closes dialog', async ({ page }) => {
+    const dialogSection = page.locator('[data-section="dialog"]')
+    const trigger = dialogSection.getByRole('button', { name: 'Default dialog' })
+    await trigger.click()
+    await page.waitForTimeout(200)
+
+    const dialog = page.locator('[role="dialog"]')
+    await expect(dialog).toBeVisible()
+
+    // Click outside the dialog panel (overlay area) — top-left corner of viewport
+    await page.mouse.click(5, 5)
+    await page.waitForTimeout(300)
+
+    await expect(dialog).not.toBeVisible()
+  })
+
+  test('dialog: click X close button closes dialog', async ({ page }) => {
+    const dialogSection = page.locator('[data-section="dialog"]')
+    const trigger = dialogSection.getByRole('button', { name: 'Default dialog' })
+    await trigger.click()
+    await page.waitForTimeout(200)
+
+    const dialog = page.locator('[role="dialog"]')
+    await expect(dialog).toBeVisible()
+
+    // Find the X close button — DialogClose renders button with sr-only "Close" text
+    const closeBtn = dialog.getByRole('button', { name: 'Close dialog' })
+    await closeBtn.click()
+    await page.waitForTimeout(300)
+
+    await expect(dialog).not.toBeVisible()
+  })
+})
+
+// ─── Gate 16: Checkbox Preview Block (5-tab ComponentSection) ─────────────────
+
+test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  // Helper: locate the Checkbox ComponentSection root (rounded-2xl wrapper with h2 "Checkbox")
+  const checkboxSection = (page: import('@playwright/test').Page) =>
+    page.locator('div.rounded-2xl').filter({ has: page.locator('h2', { hasText: 'Checkbox' }) }).first()
+
+  test('preview-block: all 5 tabs rendered (Overview/API/Usage/Code/States)', async ({ page }) => {
+    const section = checkboxSection(page)
+    const expected = ['Overview', 'API', 'Usage', 'Code', 'States']
+    for (const label of expected) {
+      await expect(section.getByRole('button', { name: label, exact: true })).toBeVisible()
+    }
+  })
+
+  test('preview-block: clicking each tab swaps content (tab switching works)', async ({ page }) => {
+    const section = checkboxSection(page)
+
+    // Overview (default): has "Unchecked" / "Checked" / "Indeterminate" / "Disabled" label rows
+    await expect(section.getByText('Indeterminate', { exact: true })).toBeVisible()
+
+    // API tab → DocPropsTable with prop names like "errorMessage"
+    await section.getByRole('button', { name: 'API', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('errorMessage', { exact: false }).first()).toBeVisible()
+
+    // Usage tab → Do/Don't cards
+    await section.getByRole('button', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('✓ Do').first()).toBeVisible()
+    await expect(section.getByText("✕ Don't").first()).toBeVisible()
+
+    // Code tab → code block labels
+    await section.getByRole('button', { name: 'Code', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('Basic (controlled)').first()).toBeVisible()
+
+    // States tab → state matrix table
+    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(100)
+    // Column headers "Unchecked","Checked","Indeterminate","Disabled" are shown in State tab table
+    await expect(section.locator('table').first()).toBeVisible()
+  })
+
+  test('preview-block: shiki syntax highlighting loads in Code tab', async ({ page }) => {
+    const section = checkboxSection(page)
+    await section.getByRole('button', { name: 'Code', exact: true }).click()
+    // shiki import is async; wait for .shiki element to appear
+    const shikiEl = section.locator('.shiki').first()
+    await expect(shikiEl).toBeVisible({ timeout: 5000 })
+    // Verify shiki produced span-based syntax tokens (not a plain <pre><code>)
+    const spanCount = await shikiEl.locator('span').count()
+    expect(spanCount).toBeGreaterThan(5)
+  })
+
+  test('preview-block: Do/Don\'t cards visible in Usage tab', async ({ page }) => {
+    const section = checkboxSection(page)
+    await section.getByRole('button', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    const doCards = section.getByText('✓ Do')
+    const dontCards = section.getByText("✕ Don't")
+    expect(await doCards.count()).toBeGreaterThanOrEqual(1)
+    expect(await dontCards.count()).toBeGreaterThanOrEqual(1)
+  })
+
+  test('checkbox: indeterminate renders dash SVG + aria-checked="mixed"', async ({ page }) => {
+    const section = checkboxSection(page)
+    // On Overview tab the 3rd label is Indeterminate
+    const indeterminateLabel = section.locator('label').filter({ hasText: 'Indeterminate' }).first()
+    const input = indeterminateLabel.locator('input[type="checkbox"]')
+
+    await expect(input).toHaveAttribute('aria-checked', 'mixed')
+    // Verify the box has data-state="indeterminate"
+    const box = indeterminateLabel.locator('[data-state="indeterminate"]').first()
+    await expect(box).toBeVisible()
+    // The dash SVG is the <svg> sibling with group-data-[state=indeterminate]:block
+    // When state=indeterminate, one of the two SVGs is visible
+    const visibleSvgs = await box.locator('svg:visible').count()
+    expect(visibleSvgs).toBeGreaterThanOrEqual(1)
+  })
+
+  test('checkbox: required={true} forwards native attribute + aria-required="true"', async ({ page }) => {
+    // The Required row appears in the States tab
+    const section = checkboxSection(page)
+    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(150)
+
+    const requiredInput = section.locator('input[type="checkbox"][required]').first()
+    await expect(requiredInput).toBeAttached()
+    await expect(requiredInput).toHaveAttribute('aria-required', 'true')
+    // Native required must also be present (JSDOM/browser convert to empty string attr)
+    const nativeRequired = await requiredInput.evaluate((el: HTMLInputElement) => el.required)
+    expect(nativeRequired).toBe(true)
+  })
+
+  test('checkbox: error={true} sets aria-invalid="true" + destructive border color', async ({ page }) => {
+    const section = checkboxSection(page)
+    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(150)
+
+    const errorInput = section.locator('input[type="checkbox"][aria-invalid="true"]').first()
+    await expect(errorInput).toBeAttached()
+
+    // Locate the sibling box (the data-error="true" wrapper)
+    const errorBox = section.locator('[data-error="true"]').first()
+    await expect(errorBox).toBeVisible()
+
+    // Resolve the destructive CSS var to rgb
+    const expectedBorder = await page.evaluate(() => {
+      const probe = document.createElement('div')
+      probe.style.color = 'hsl(var(--destructive))'
+      document.body.appendChild(probe)
+      const rgb = getComputedStyle(probe).color
+      probe.remove()
+      return rgb
+    })
+
+    // Get the inner indicator div (has the border class)
+    const indicator = errorBox.locator('div').first()
+    const actualBorder = await indicator.evaluate((el) => getComputedStyle(el).borderTopColor)
+    expect(actualBorder).toBe(expectedBorder)
+  })
+
+  test('checkbox: errorMessage renders below + linked via aria-describedby', async ({ page }) => {
+    const section = checkboxSection(page)
+    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(150)
+
+    // Error row + Unchecked column carries errorMessage="Required field"
+    const messageEl = section.getByText('Required field', { exact: true }).first()
+    await expect(messageEl).toBeVisible()
+
+    const messageId = await messageEl.getAttribute('id')
+    expect(messageId).toBeTruthy()
+
+    // Find the input whose aria-describedby references that id
+    const linkedInput = section.locator(`input[type="checkbox"][aria-describedby~="${messageId}"]`).first()
+    await expect(linkedInput).toBeAttached()
+
+    // Assert vertical order: input is above the message (message rendered "below" the box)
+    const inputBox = await linkedInput.boundingBox()
+    const msgBox = await messageEl.boundingBox()
+    expect(inputBox).not.toBeNull()
+    expect(msgBox).not.toBeNull()
+    expect(msgBox!.y).toBeGreaterThanOrEqual(inputBox!.y)
+  })
+})

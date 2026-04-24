@@ -36,6 +36,13 @@ import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
 import { ComponentSection } from './ComponentSection'
 import { ButtonApiTab, ButtonUsageTab, ButtonCodeTab } from './docs/ButtonDocs'
+import {
+  CheckboxOverviewTab,
+  CheckboxApiTab,
+  CheckboxUsageTab,
+  CheckboxCodeTab,
+  CheckboxStatesTab,
+} from './docs/CheckboxDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 
@@ -64,9 +71,14 @@ export function ComponentGallery() {
 
             <ComponentSection
               title="Checkbox"
-            >
-              <CheckboxDemo />
-            </ComponentSection>
+              tabs={[
+                { key: 'overview', label: 'Overview', content: <CheckboxOverviewTab /> },
+                { key: 'api',      label: 'API',      content: <CheckboxApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <CheckboxUsageTab /> },
+                { key: 'code',     label: 'Code',     content: <CheckboxCodeTab /> },
+                { key: 'states',   label: 'States',   content: <CheckboxStatesTab /> },
+              ]}
+            />
 
             <ComponentSection
               title="Dialog"
@@ -312,7 +324,7 @@ function TabsDemo() {
               className={[
                 'cursor-pointer flex-1 px-2 py-1 text-xs rounded-[calc(var(--radius)-2px)] transition-colors capitalize',
                 active === tab
-                  ? 'bg-[hsl(var(--background))] text-[hsl(var(--foreground))] shadow-sm font-medium'
+                  ? 'bg-[hsl(var(--background))] text-[hsl(var(--foreground))] [box-shadow:var(--shadow-sm)] font-medium'
                   : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
               ].join(' ')}
             >
@@ -1413,11 +1425,11 @@ function CookieSettingsCard() {
               </span>
             </span>
             <span className={[
-              'relative w-9 h-5 rounded-full transition-colors duration-200 shrink-0 ml-4',
+              'relative w-9 h-5 rounded-full transition-colors [transition-duration:var(--duration-normal)] shrink-0 ml-4',
               val ? 'bg-[hsl(var(--primary))]' : 'bg-[hsl(var(--muted))]',
             ].join(' ')}>
               <span className={[
-                'absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-[hsl(var(--primary-foreground))] transition-transform duration-200',
+                'absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-[hsl(var(--primary-foreground))] transition-transform [transition-duration:var(--duration-normal)]',
                 val ? 'translate-x-4' : 'translate-x-0',
               ].join(' ')} />
             </span>

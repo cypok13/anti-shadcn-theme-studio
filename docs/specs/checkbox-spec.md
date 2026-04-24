@@ -14,6 +14,28 @@
 - Do NOT use when: mutually exclusive choice (use RadioGroup instead)
 - Do NOT use when: immediate action on toggle (use Switch instead — Switch = action, Checkbox = state)
 
+### When is `indeterminate` valid
+
+- Parent of a group with partial child selection (tree-view parent when some children are checked).
+- Bulk-select header in a table row when only some rows are selected.
+- Settings page with mixed values across a group (e.g. 3 of 5 sub-options enabled).
+- Never set `indeterminate` on a leaf checkbox the user can directly toggle — only derived, never input.
+- ARIA: renders as `aria-checked="mixed"` (tri-valued). API uses `checked={"indeterminate"}`.
+
+### How `required` is presented
+
+- Mark with an asterisk (`*`) placed after the label text, colored `hsl(var(--destructive))`, `aria-hidden="true"` so SR users don't hear "star".
+- Screen readers announce via `aria-required="true"` on the input.
+- Required ≠ invalid — do NOT apply error styling until a validation attempt fails.
+- Use `required` only when the form's submit handler will block without it. Avoid "required" theater where there is no enforcement.
+
+### How `error` is presented
+
+- Visual: `border-[hsl(var(--destructive))]` on the box + matching ring on focus.
+- Text: inline error message below the label, `text-xs text-[hsl(var(--destructive))]`, linked via `aria-describedby`.
+- ARIA: `aria-invalid="true"` on the input.
+- `required` and `error` are independent props — error appears only after validation.
+
 ### State decision tree
 
 ```
@@ -81,11 +103,15 @@ Disabled pattern:
 
 | Prop | Values | Default |
 |------|--------|---------|
-| `checked` | `boolean` | `false` (uncontrolled) |
+| `checked` | `boolean \| "indeterminate"` | `false` (uncontrolled) |
 | `disabled` | `boolean` | `false` |
 | `required` | `boolean` | `false` |
+| `error` | `boolean` | `false` |
+| `errorMessage` | `string` | `undefined` |
 
 No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h-4 w-4).
+
+`checked === "indeterminate"` is set programmatically (via `input.indeterminate = true` in `useEffect`) — there is no HTML attribute for it. The native `:checked` CSS pseudo-class does **not** match; distinguish via `data-state="indeterminate"`.
 
 ---
 
@@ -93,13 +119,14 @@ No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h
 
 | State | How implemented | CSS / data-attr |
 |-------|-----------------|-----------------|
-| unchecked | default | `data-[state=unchecked]`: transparent bg, border visible |
-| checked | `checked={true}` | `data-[state=checked]:bg-[hsl(var(--primary))] data-[state=checked]:text-[hsl(var(--primary-foreground))]` |
+| unchecked | default | `data-state="unchecked"`: transparent bg, `border-[hsl(var(--border))]` |
+| checked | `checked={true}` | `data-state="checked"`: `bg-[hsl(var(--primary))] border-[hsl(var(--primary))]`; check ✓ icon visible |
+| indeterminate | `checked="indeterminate"` → React sets `input.indeterminate = true` + `data-state="indeterminate"` | `bg-[hsl(var(--primary))] border-[hsl(var(--primary))]`; horizontal dash `—` icon (lucide `Minus`) instead of ✓ |
 | hover | wrapping `<label>` hover | cursor-pointer on label; indicator: subtle border color shift |
 | focus-visible | Tab navigation | `focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]` |
 | disabled | `disabled` attr on Root | `disabled:cursor-not-allowed disabled:opacity-50`; label gets `cursor-not-allowed` |
-| indeterminate | N/A — not implemented | — |
-| error | N/A — use form validation at wrapper level | — |
+| required | `required={true}` | passed to native `<input required>`; parent label renders `*` aria-hidden in `text-[hsl(var(--destructive))]`; sets `aria-required="true"` |
+| error | `error={true}` | `data-error="true"`: `border-[hsl(var(--destructive))]`; focus ring `ring-[hsl(var(--destructive))]`; sets `aria-invalid="true"` + `aria-describedby={errorId}` when `errorMessage` provided |
 | loading | N/A — checkboxes don't have loading state | — |
 | active | N/A — no scale animation needed | — |
 
@@ -156,12 +183,16 @@ No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h
 
 | CSS property | Token used |
 |-------------|-----------|
-| indicator background (checked) | `hsl(var(--primary))` |
-| indicator icon color | `hsl(var(--primary-foreground))` via `currentColor` on SVG |
-| border (unchecked) | `hsl(var(--border))` → `hsl(var(--primary))` on checked |
-| focus ring | `hsl(var(--ring))` |
+| indicator background (checked / indeterminate) | `hsl(var(--primary))` |
+| indicator icon color (✓ and —) | `hsl(var(--primary-foreground))` via `currentColor` on SVG |
+| border (unchecked) | `hsl(var(--border))` → `hsl(var(--primary))` on checked/indeterminate |
+| focus ring (default) | `hsl(var(--ring))` |
 | focus ring offset | `hsl(var(--background))` |
-| disabled opacity | `opacity-50` (Tailwind utility, no token needed) |
+| disabled opacity | `opacity-50` (Tailwind utility) |
+| error border | `hsl(var(--destructive))` |
+| error focus ring | `hsl(var(--destructive))` |
+| error message text | `hsl(var(--destructive))` |
+| required asterisk | `hsl(var(--destructive))` |
 
 **Hardcoded values:** NONE.
 
@@ -169,12 +200,15 @@ No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h
 
 ## ARIA
 
-- **role:** `checkbox` (rendered by Radix `Checkbox.Root` as `<button role="checkbox">`)
-- **aria-checked:** `"true"` / `"false"` (managed by Radix)
+- **role:** `checkbox` — native `<input type="checkbox">` already has this implicit role
+- **aria-checked:** `"true"` / `"false"` / `"mixed"` (mixed when `checked="indeterminate"`)
 - **aria-label / aria-labelledby:** provided via wrapping `<label>` (preferred) — no explicit prop needed
-- **aria-disabled:** via `disabled` prop on Root (Radix propagates as `aria-disabled`)
-- **aria-hidden on decorative icons:** `aria-hidden="true"` on the SVG checkmark inside Indicator
-- **aria-live:** N/A
+- **aria-disabled:** implicit via `disabled` attribute on the native input
+- **aria-required:** `"true"` when `required={true}`
+- **aria-invalid:** `"true"` when `error={true}`
+- **aria-describedby:** set to the error message `id` when `errorMessage` is provided
+- **aria-hidden on decorative icons:** `aria-hidden="true"` on the SVG check and dash icons, and on the required `*`
+- **aria-live:** N/A (error is not a live region; errors render statically)
 
 ---
 
@@ -207,6 +241,13 @@ No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h
 - [ ] Tab reaches the checkbox root (Gate 3)
 - [ ] focus-visible ring visible on keyboard focus (Gate 3)
 - [ ] Disabled checkbox: Space does not toggle (Gate 3)
+- [ ] `checked="indeterminate"` renders dash icon, sets `input.indeterminate === true`, `aria-checked="mixed"` (Gate 2)
+- [ ] `required={true}` renders input with `required` attr and `aria-required="true"` (Gate 2)
+- [ ] `error={true}` renders with `aria-invalid="true"` and error-colored border (Gate 2)
+- [ ] `errorMessage` renders below label and is linked via `aria-describedby` (Gate 2)
+- [ ] Preview Block: tab switching works (Overview/API/Usage/Code/States) (Gate 2)
+- [ ] Preview Block: shiki syntax highlighting loads in Code tab (Gate 1)
+- [ ] Preview Block: Do/Don't cards visible in Usage tab (Gate 1)
 - [ ] `npm run lint:ui` passes
 
 ---
@@ -219,4 +260,18 @@ No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h
 - [x] ARIA specified
 - [x] Test plan written
 
-**Spec complete:** YES
+**Spec complete:** YES (extended with indeterminate/required/error per ALE-812, 2026-04-24)
+
+---
+
+## Retrospective (Pipeline v2 Step 7)
+
+- **iterations_to_done:** 2 (initial build + 1 visual QA fix round)
+- **Target (≤5):** ✅ HIT — Pipeline v2 validated on first non-trivial API extension.
+- **Iteration log:**
+  1. *Initial build* — research → spec update → checkbox.tsx API extension → CheckboxDocs.tsx + Gallery wiring → token/DS audit (PASS) → qa-engineer (82/82 PASS) → ux-reviewer (APPROVED-WITH-MINOR: 1 P1 + 2 P2)
+  2. *Fix round* — designer fixed: (a) DocPropsTable grid `minmax(0, Nfr)` for type-column overflow (project-wide fix, benefits Button/Badge tables too), (b) Checkbox error border/ring via `!important` to win over `data-state=checked` cascade, (c) DoDontCard `items-baseline` for header alignment. qa re-verify (82/82) PASS.
+- **New Error Log entry:** N/A (iterations ≤ 5).
+- **Automation child ticket:** N/A (iterations ≤ 5).
+- **Key insight:** tri-valued `checked: boolean | "indeterminate"` (Radix pattern) keeps API surface minimal versus separate `indeterminate` prop. `data-state` + `data-error` attrs give tests deterministic hooks without relying on CSS specificity.
+- **Carryover:** `DocPropsTable` grid fix improves all future component Preview Blocks (DocPropsTable was the real bottleneck, not the Checkbox itself).
