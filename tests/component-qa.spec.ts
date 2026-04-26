@@ -1084,7 +1084,7 @@ test.describe('Gate 17 — Switch Preview Block', () => {
     const section = switchSection(page)
     const expected = ['Overview', 'API', 'Usage', 'Code', 'States']
     for (const label of expected) {
-      await expect(section.getByRole('button', { name: label, exact: true })).toBeVisible()
+      await expect(section.getByRole('tab', { name: label, exact: true })).toBeVisible()
     }
   })
 
@@ -1096,30 +1096,30 @@ test.describe('Gate 17 — Switch Preview Block', () => {
     await expect(section.getByText('Checked', { exact: true })).toBeVisible()
 
     // API tab → DocPropsTable with prop names like "onCheckedChange"
-    await section.getByRole('button', { name: 'API', exact: true }).click()
+    await section.getByRole('tab', { name: 'API', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('onCheckedChange', { exact: false }).first()).toBeVisible()
 
     // Usage tab → Do/Don't cards
-    await section.getByRole('button', { name: 'Usage', exact: true }).click()
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('✓ Do').first()).toBeVisible()
     await expect(section.getByText("✕ Don't").first()).toBeVisible()
 
     // Code tab → code block labels
-    await section.getByRole('button', { name: 'Code', exact: true }).click()
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('Basic (controlled)').first()).toBeVisible()
 
     // States tab → state matrix table
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.locator('table').first()).toBeVisible()
   })
 
   test('preview-block: shiki syntax highlighting loads in Code tab', async ({ page }) => {
     const section = switchSection(page)
-    await section.getByRole('button', { name: 'Code', exact: true }).click()
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
     // shiki import is async; wait for .shiki element to appear
     const shikiEl = section.locator('.shiki').first()
     await expect(shikiEl).toBeVisible({ timeout: 5000 })
@@ -1130,7 +1130,7 @@ test.describe('Gate 17 — Switch Preview Block', () => {
 
   test('preview-block: Do/Don\'t cards visible in Usage tab', async ({ page }) => {
     const section = switchSection(page)
-    await section.getByRole('button', { name: 'Usage', exact: true }).click()
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
     await page.waitForTimeout(100)
     const doCards = section.getByText('✓ Do')
     const dontCards = section.getByText("✕ Don't")
@@ -1140,7 +1140,7 @@ test.describe('Gate 17 — Switch Preview Block', () => {
 
   test('switch: size variants — sm/md/lg rendered in States matrix', async ({ page }) => {
     const section = switchSection(page)
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(150)
 
     // States table renders rows labelled sm / md / lg in the leftmost column
@@ -1155,13 +1155,53 @@ test.describe('Gate 17 — Switch Preview Block', () => {
 
   test('switch: disabled-on column in States preserves data-state=checked', async ({ page }) => {
     const section = switchSection(page)
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(150)
 
     // Disabled-on column → switch is disabled AND aria-checked="true" / data-state="checked"
     const disabledChecked = section.locator('[role="switch"][disabled][aria-checked="true"]').first()
     await expect(disabledChecked).toBeAttached()
     await expect(disabledChecked).toHaveAttribute('data-state', 'checked')
+  })
+
+  test('preview-block: tablist exists with role=tablist + aria-orientation=horizontal', async ({ page }) => {
+    const section = switchSection(page)
+    const tablist = section.getByRole('tablist').first()
+    await expect(tablist).toBeVisible()
+    await expect(tablist).toHaveAttribute('aria-orientation', 'horizontal')
+  })
+
+  test('preview-block: active tab has aria-selected=true, others false; only active is in tab order', async ({ page }) => {
+    const section = switchSection(page)
+    const activeTab = section.getByRole('tab', { selected: true })
+    await expect(activeTab).toHaveCount(1)
+    await expect(activeTab).toHaveAttribute('aria-selected', 'true')
+    await expect(activeTab).toHaveAttribute('tabindex', '0')
+
+    const inactiveTabs = section.getByRole('tab', { selected: false })
+    await expect(inactiveTabs.first()).toHaveAttribute('tabindex', '-1')
+  })
+
+  test('preview-block: active panel has role=tabpanel and aria-labelledby points to active tab', async ({ page }) => {
+    const section = switchSection(page)
+    const panel = section.getByRole('tabpanel').first()
+    await expect(panel).toBeVisible()
+    const labelledBy = await panel.getAttribute('aria-labelledby')
+    expect(labelledBy).toBeTruthy()
+    const referenced = section.locator(`#${labelledBy}`)
+    await expect(referenced).toHaveAttribute('aria-selected', 'true')
+  })
+
+  test('preview-block: ArrowRight cycles selected tab and focus stays on it', async ({ page }) => {
+    const section = switchSection(page)
+    const firstTab = section.getByRole('tab').first()
+    await firstTab.focus()
+    await expect(firstTab).toHaveAttribute('aria-selected', 'true')
+
+    await page.keyboard.press('ArrowRight')
+    const secondTab = section.getByRole('tab').nth(1)
+    await expect(secondTab).toBeFocused()
+    await expect(secondTab).toHaveAttribute('aria-selected', 'true')
   })
 })
 
@@ -1223,7 +1263,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
     const section = checkboxSection(page)
     const expected = ['Overview', 'API', 'Usage', 'Code', 'States']
     for (const label of expected) {
-      await expect(section.getByRole('button', { name: label, exact: true })).toBeVisible()
+      await expect(section.getByRole('tab', { name: label, exact: true })).toBeVisible()
     }
   })
 
@@ -1234,23 +1274,23 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
     await expect(section.getByText('Indeterminate', { exact: true })).toBeVisible()
 
     // API tab → DocPropsTable with prop names like "errorMessage"
-    await section.getByRole('button', { name: 'API', exact: true }).click()
+    await section.getByRole('tab', { name: 'API', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('errorMessage', { exact: false }).first()).toBeVisible()
 
     // Usage tab → Do/Don't cards
-    await section.getByRole('button', { name: 'Usage', exact: true }).click()
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('✓ Do').first()).toBeVisible()
     await expect(section.getByText("✕ Don't").first()).toBeVisible()
 
     // Code tab → code block labels
-    await section.getByRole('button', { name: 'Code', exact: true }).click()
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('Basic (controlled)').first()).toBeVisible()
 
     // States tab → state matrix table
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(100)
     // Column headers "Unchecked","Checked","Indeterminate","Disabled" are shown in State tab table
     await expect(section.locator('table').first()).toBeVisible()
@@ -1258,7 +1298,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
 
   test('preview-block: shiki syntax highlighting loads in Code tab', async ({ page }) => {
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'Code', exact: true }).click()
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
     // shiki import is async; wait for .shiki element to appear
     const shikiEl = section.locator('.shiki').first()
     await expect(shikiEl).toBeVisible({ timeout: 5000 })
@@ -1269,7 +1309,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
 
   test('preview-block: Do/Don\'t cards visible in Usage tab', async ({ page }) => {
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'Usage', exact: true }).click()
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
     await page.waitForTimeout(100)
     const doCards = section.getByText('✓ Do')
     const dontCards = section.getByText("✕ Don't")
@@ -1296,7 +1336,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
   test('checkbox: required={true} forwards native attribute + aria-required="true"', async ({ page }) => {
     // The Required row appears in the States tab
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(150)
 
     const requiredInput = section.locator('input[type="checkbox"][required]').first()
@@ -1309,7 +1349,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
 
   test('checkbox: error={true} sets aria-invalid="true" + destructive border color', async ({ page }) => {
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(150)
 
     const errorInput = section.locator('input[type="checkbox"][aria-invalid="true"]').first()
@@ -1337,7 +1377,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
 
   test('checkbox: errorMessage renders below + linked via aria-describedby', async ({ page }) => {
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(150)
 
     // Error row + Unchecked column carries errorMessage="Required field"
