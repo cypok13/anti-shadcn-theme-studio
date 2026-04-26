@@ -50,6 +50,13 @@ import {
   SwitchCodeTab,
   SwitchStatesTab,
 } from './docs/SwitchDocs'
+import {
+  RadioOverviewTab,
+  RadioApiTab,
+  RadioUsageTab,
+  RadioCodeTab,
+  RadioStatesTab,
+} from './docs/RadioDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 
@@ -118,9 +125,14 @@ export function ComponentGallery() {
 
             <ComponentSection
               title="Radio"
-            >
-              <RadioDemo />
-            </ComponentSection>
+              tabs={[
+                { key: 'overview', label: 'Overview', content: <RadioOverviewTab /> },
+                { key: 'api',      label: 'API',      content: <RadioApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <RadioUsageTab /> },
+                { key: 'code',     label: 'Code',     content: <RadioCodeTab /> },
+                { key: 'states',   label: 'States',   content: <RadioStatesTab /> },
+              ]}
+            />
 
             <ComponentSection
               title="Badge"

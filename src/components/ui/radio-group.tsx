@@ -198,7 +198,7 @@ export function RadioItem({ value, disabled = false, children, className }: Radi
     <label
       className={[
         'flex items-center gap-2 select-none min-h-[44px]',
-        isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+        isDisabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer',
         className ?? '',
       ]
         .filter(Boolean)

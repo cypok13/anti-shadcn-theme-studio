@@ -102,7 +102,11 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
   })
 
   test('radio: clicking label text selects the option', async ({ page }) => {
-    const labels = page.locator('section').filter({ hasText: 'Radio' }).locator('label')
+    const radioSection = page
+      .locator('div.rounded-2xl')
+      .filter({ has: page.locator('h2', { hasText: 'Radio' }) })
+      .first()
+    const labels = radioSection.locator('[role="radiogroup"]').first().locator('label')
     // option-b (index 1) starts unselected — click it and verify it becomes selected
     const second = labels.nth(1)
     const textSpan = second.locator('span').first()
@@ -119,8 +123,11 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
   })
 
   test('radio: selecting new option deselects previously selected (mutual exclusivity)', async ({ page }) => {
-    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
-    const labels = radioSection.locator('label')
+    const radioSection = page
+      .locator('div.rounded-2xl')
+      .filter({ has: page.locator('h2', { hasText: 'Radio' }) })
+      .first()
+    const labels = radioSection.locator('[role="radiogroup"]').first().locator('label')
     const firstBtn = labels.nth(0).locator('button[role="radio"]')
     const secondBtn = labels.nth(1).locator('button[role="radio"]')
 
@@ -924,14 +931,20 @@ test.describe('Gate 13 — RadioGroup scenarios', () => {
   })
 
   test('radio: selected item has aria-checked="true"', async ({ page }) => {
-    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const radioSection = page
+      .locator('div.rounded-2xl')
+      .filter({ has: page.locator('h2', { hasText: 'Radio' }) })
+      .first()
     const firstGroup = radioSection.locator('[role="radiogroup"]').first()
     const freeBtn = firstGroup.locator('button[role="radio"]').first()
     await expect(freeBtn).toHaveAttribute('aria-checked', 'true')
   })
 
   test('radio: Space key selects focused item', async ({ page }) => {
-    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const radioSection = page
+      .locator('div.rounded-2xl')
+      .filter({ has: page.locator('h2', { hasText: 'Radio' }) })
+      .first()
     const firstGroup = radioSection.locator('[role="radiogroup"]').first()
     // Click free first to ensure consistent state
     await firstGroup.locator('button[role="radio"]').first().click()
@@ -947,7 +960,10 @@ test.describe('Gate 13 — RadioGroup scenarios', () => {
   })
 
   test('radio: ArrowDown moves focus AND selects next item', async ({ page }) => {
-    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const radioSection = page
+      .locator('div.rounded-2xl')
+      .filter({ has: page.locator('h2', { hasText: 'Radio' }) })
+      .first()
     const firstGroup = radioSection.locator('[role="radiogroup"]').first()
     const firstBtn = firstGroup.locator('button[role="radio"]').first()
     const secondBtn = firstGroup.locator('button[role="radio"]').nth(1)
@@ -967,7 +983,10 @@ test.describe('Gate 13 — RadioGroup scenarios', () => {
   })
 
   test('radio: disabled item click does not change selection', async ({ page }) => {
-    const radioSection = page.locator('section').filter({ hasText: 'Radio' })
+    const radioSection = page
+      .locator('div.rounded-2xl')
+      .filter({ has: page.locator('h2', { hasText: 'Radio' }) })
+      .first()
     const firstGroup = radioSection.locator('[role="radiogroup"]').first()
     const firstBtn = firstGroup.locator('button[role="radio"]').first()
 
@@ -1202,6 +1221,137 @@ test.describe('Gate 17 — Switch Preview Block', () => {
     const secondTab = section.getByRole('tab').nth(1)
     await expect(secondTab).toBeFocused()
     await expect(secondTab).toHaveAttribute('aria-selected', 'true')
+  })
+})
+
+// ─── Gate 18: Radio Preview Block (5-tab ComponentSection) ───────────────────
+
+test.describe('Gate 18 — Radio Preview Block', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  // Helper: locate the Radio ComponentSection root (rounded-2xl wrapper with h2 "Radio")
+  const radioSection = (page: import('@playwright/test').Page) =>
+    page.locator('div.rounded-2xl').filter({ has: page.locator('h2', { hasText: 'Radio' }) }).first()
+
+  test('preview-block: all 5 tabs rendered (Overview/API/Usage/Code/States)', async ({ page }) => {
+    const section = radioSection(page)
+    const expected = ['Overview', 'API', 'Usage', 'Code', 'States']
+    for (const label of expected) {
+      await expect(section.getByRole('tab', { name: label, exact: true })).toBeVisible()
+    }
+  })
+
+  test('preview-block: clicking each tab swaps content (tab switching works)', async ({ page }) => {
+    const section = radioSection(page)
+
+    // Overview (default): plan options should be visible
+    await expect(section.getByText('Free', { exact: true })).toBeVisible()
+    await expect(section.getByText('Pro', { exact: true })).toBeVisible()
+
+    // API tab → DocPropsTable with prop names like "onValueChange"
+    await section.getByRole('tab', { name: 'API', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('onValueChange', { exact: false }).first()).toBeVisible()
+
+    // Usage tab → Do/Don't cards
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('✓ Do').first()).toBeVisible()
+    await expect(section.getByText("✕ Don't").first()).toBeVisible()
+
+    // Code tab → code block labels
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('Basic (controlled)').first()).toBeVisible()
+
+    // States tab → state matrix table
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.locator('table').first()).toBeVisible()
+  })
+
+  test('preview-block: shiki syntax highlighting loads in Code tab', async ({ page }) => {
+    const section = radioSection(page)
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
+    const shikiEl = section.locator('.shiki').first()
+    await expect(shikiEl).toBeVisible({ timeout: 5000 })
+    const spanCount = await shikiEl.locator('span').count()
+    expect(spanCount).toBeGreaterThan(5)
+  })
+
+  test('preview-block: Do/Don\'t cards visible in Usage tab', async ({ page }) => {
+    const section = radioSection(page)
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    const doCards = section.getByText('✓ Do')
+    const dontCards = section.getByText("✕ Don't")
+    expect(await doCards.count()).toBeGreaterThanOrEqual(1)
+    expect(await dontCards.count()).toBeGreaterThanOrEqual(1)
+  })
+
+  test('radio: size variants — sm/md rendered in States matrix (8 radios total)', async ({ page }) => {
+    const section = radioSection(page)
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(150)
+
+    const table = section.locator('table').first()
+    for (const size of ['sm', 'md']) {
+      await expect(table.locator('td', { hasText: new RegExp(`^${size}$`) }).first()).toBeVisible()
+    }
+    // Each row contains 4 radios (Unchecked / Checked / Disabled off / Disabled on) → 8 total
+    const radioCount = await table.locator('[role="radio"]').count()
+    expect(radioCount).toBe(8)
+  })
+
+  test('radio: selecting an item deselects the previously selected item (single-select invariant)', async ({ page }) => {
+    const section = radioSection(page)
+    // Overview tab is default; first RadioGroup is "Choose a plan" with "free" selected
+    const firstGroup = section.locator('[role="radiogroup"]').first()
+    const radios = firstGroup.locator('[role="radio"]')
+
+    // Initial: exactly one checked (Free)
+    await expect(firstGroup.locator('[role="radio"][aria-checked="true"]')).toHaveCount(1)
+    await expect(radios.first()).toHaveAttribute('aria-checked', 'true')
+
+    // Click the second radio (Pro)
+    await radios.nth(1).click()
+    await page.waitForTimeout(50)
+
+    // Still exactly one selection — and it switched to Pro; Free is deselected
+    await expect(firstGroup.locator('[role="radio"][aria-checked="true"]')).toHaveCount(1)
+    await expect(radios.nth(1)).toHaveAttribute('aria-checked', 'true')
+    await expect(radios.first()).toHaveAttribute('aria-checked', 'false')
+  })
+
+  test('radio: disabled-on column in States preserves aria-checked=true AND disabled', async ({ page }) => {
+    const section = radioSection(page)
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(150)
+
+    const disabledChecked = section.locator('[role="radio"][disabled][aria-checked="true"]').first()
+    await expect(disabledChecked).toBeAttached()
+    await expect(disabledChecked).toHaveAttribute('data-state', 'checked')
+  })
+
+  test('preview-block: tablist exists with role=tablist + aria-orientation=horizontal', async ({ page }) => {
+    const section = radioSection(page)
+    const tablist = section.getByRole('tablist').first()
+    await expect(tablist).toBeVisible()
+    await expect(tablist).toHaveAttribute('aria-orientation', 'horizontal')
+  })
+
+  test('preview-block: active tab has aria-selected=true, others false; only active is in tab order', async ({ page }) => {
+    const section = radioSection(page)
+    const activeTab = section.getByRole('tab', { selected: true })
+    await expect(activeTab).toHaveCount(1)
+    await expect(activeTab).toHaveAttribute('aria-selected', 'true')
+    await expect(activeTab).toHaveAttribute('tabindex', '0')
+
+    const inactiveTabs = section.getByRole('tab', { selected: false })
+    await expect(inactiveTabs.first()).toHaveAttribute('tabindex', '-1')
   })
 })
 
