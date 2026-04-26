@@ -232,6 +232,18 @@ Min touch target: 44×44px — wrapping `<label>` handles via full row.
 - [ ] Disabled item: click does not change selection (Gate 2)
 - [ ] `npm run lint:ui` passes
 
+### Gate 18 — Radio Preview Block (5-tab ComponentSection)
+
+- [ ] preview-block: all 5 tabs rendered (Overview / API / Usage / Code / States)
+- [ ] preview-block: clicking each tab swaps content (tab switching works)
+- [ ] preview-block: shiki syntax highlighting loads in Code tab (span-based tokens)
+- [ ] preview-block: Do/Don't cards visible in Usage tab
+- [ ] preview-block: tablist exists with role=tablist + aria-orientation=horizontal
+- [ ] preview-block: active tab has aria-selected=true; only active is in tab order
+- [ ] radio: size variants — sm / md rendered in States matrix (8 radios total: 2 sizes × 4 cols)
+- [ ] radio: selecting an item deselects the previously selected one (single-select invariant)
+- [ ] radio: disabled-on column in States preserves `aria-checked="true"` AND `disabled`
+
 ---
 
 ## Spec Sign-off
