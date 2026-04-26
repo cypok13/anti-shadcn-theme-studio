@@ -226,6 +226,15 @@ Formula: thumb translate = track width − thumb size − 4px (2px padding each 
 - [ ] Disabled switch: Space does not toggle (Gate 3)
 - [ ] `npm run lint:ui` passes
 
+### Gate 17 — Switch Preview Block (5-tab ComponentSection)
+
+- [ ] preview-block: all 5 tabs rendered (Overview / API / Usage / Code / States)
+- [ ] preview-block: clicking each tab swaps content (tab switching works)
+- [ ] preview-block: shiki syntax highlighting loads in Code tab (span-based tokens)
+- [ ] preview-block: Do/Don't cards visible in Usage tab
+- [ ] switch: size variants — sm / md / lg rendered in States matrix (12 switches total)
+- [ ] switch: disabled-on column in States preserves `data-state="checked"`
+
 ---
 
 ## Spec Sign-off
