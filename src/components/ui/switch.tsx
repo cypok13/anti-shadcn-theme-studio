@@ -73,7 +73,7 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
         className={[
           'relative inline-flex shrink-0 items-center rounded-full p-0.5',
           'cursor-pointer',
-          'transition-colors duration-200',
+          'transition-colors [transition-duration:var(--duration-normal)]',
           'bg-[hsl(var(--input))]',
           'data-[state=checked]:bg-[hsl(var(--primary))]',
           'disabled:cursor-not-allowed disabled:opacity-50',
@@ -92,8 +92,8 @@ export const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
         <span
           data-state={state}
           className={[
-            'rounded-full bg-[hsl(var(--primary-foreground))] shadow-sm',
-            'transition-transform duration-200',
+            'rounded-full bg-[hsl(var(--primary-foreground))] [box-shadow:var(--shadow-sm)]',
+            'transition-transform [transition-duration:var(--duration-normal)]',
             'data-[state=unchecked]:translate-x-0',
             thumbCheckedTranslateMap[size],
             thumbSizeMap[size],

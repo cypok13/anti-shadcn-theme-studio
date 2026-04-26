@@ -276,3 +276,16 @@ RadioGroup:
 **Spec complete:** YES / NO
 
 > Implementation starts only when "Spec complete: YES"
+
+---
+
+## Retrospective (filled after visual gate approval, before merge)
+
+Required by COMPONENT-PIPELINE.md § 7. Fill every field — blank blocks merge.
+
+- **iterations_to_done:** `N` (full generate→validate cycles from first implementation to CEO approval)
+- **What went wrong (≤3 lines):**
+- **Root cause (one sentence):**
+- **New Error Log entry created?** `E-0NN` / no (required if iterations > 5)
+- **Automation ticket link:** `ALE-NNN` / none
+- **Memory update:** `memory/theme_studio_component_pipeline.md` updated? yes / n/a

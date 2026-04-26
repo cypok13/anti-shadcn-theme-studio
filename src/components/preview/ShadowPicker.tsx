@@ -3,8 +3,8 @@
 const SHADOW_OPTIONS = [
   { label: 'None',     value: 'none',     shadow: 'none' },
   { label: 'Flat',     value: 'flat',     shadow: '1px 1px 0 hsl(var(--border))' },
-  { label: 'Soft',     value: 'soft',     shadow: '0 2px 8px hsl(var(--foreground) / 0.08)' },
-  { label: 'Dramatic', value: 'dramatic', shadow: '0 6px 20px hsl(var(--foreground) / 0.15)' },
+  { label: 'Soft',     value: 'soft',     shadow: '0 2px 8px hsl(0 0% 0% / 0.12)' },
+  { label: 'Dramatic', value: 'dramatic', shadow: '0 6px 20px hsl(0 0% 0% / 0.22)' },
   { label: 'Glow',     value: 'glow',     shadow: '0 0 14px hsl(var(--primary) / 0.35)' },
 ]
 

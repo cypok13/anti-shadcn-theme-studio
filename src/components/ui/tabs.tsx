@@ -142,7 +142,7 @@ export function TabsTrigger({ className, value, children, ...props }: TabsTrigge
         'hover:text-[hsl(var(--foreground))]',
         'data-[state=active]:bg-[hsl(var(--background))]',
         'data-[state=active]:text-[hsl(var(--foreground))]',
-        'data-[state=active]:shadow-sm',
+        'data-[state=active]:[box-shadow:var(--shadow-sm)]',
         'focus-visible:border-[hsl(var(--ring))] focus-visible:ring-[3px] focus-visible:ring-[hsl(var(--ring)/0.5)] focus-visible:outline-none',
         'disabled:cursor-not-allowed disabled:opacity-50',
         '[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*="size-"])]:size-4',

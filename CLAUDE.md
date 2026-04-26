@@ -70,7 +70,13 @@ Report violations as file:line. Zero violations → "PASS".
 4. **PLAYWRIGHT** → `qa-engineer` субагент (`npm run test:components`). Фиксить все провалы ДО CEO.
 5. **VISUAL GATE** — сначала `ux-reviewer` субагент (Playwright QA), затем CEO апрувит явно.
 6. **DOCS SYNC** — `npm run docs:sync && npm run docs:validate` (exit 0 обязателен).
-7. **MERGE + DEPLOY** — только после шагов 5 и 6.
+7. **RETROSPECTIVE** (Pipeline v2, ALE-811) — заполнить `## Retrospective` в spec: `iterations_to_done`, root cause, новый E-0NN если >5 итераций, ссылка на automation ticket. Без этого merge запрещён.
+8. **MERGE + DEPLOY** — только после шагов 5, 6 и 7.
+9. **POST-DEPLOY VERIFY** — `mcp__claude_ai_Vercel__get_deployment("theme-studio-beta.vercel.app")` → проверить `source == "cli"` + свежий `createdAt`. Если `source == "github"` — GitHub integration перезаписала alias, деплоить заново.
+
+> **Delegation enforcement (Pipeline v2):** PreToolUse hook `.claude/hooks/theme-studio-delegation-guard.sh` блокирует прямые `Edit|Write` на `src/components/ui/*.tsx` без активного designer-субагента. Bypass только для веток `hotfix/*`.
+
+> **Инцидент 2026-04-22:** CLI-деплой был перезаписан GitHub integration из `cypok13/anti-shadcn-theme-studio`. Мы потратили 2+ часа отлаживая код, который уже был правильным — но на проде висела старая версия. Post-deploy verify — блокирующий шаг.
 
 ### Автоматические проверки (18 тестов, 4 gates):
 
@@ -151,7 +157,7 @@ Report violations as file:line. Zero violations → "PASS".
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **theme-studio** (834 symbols, 1224 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **theme-studio** (891 symbols, 1307 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
