@@ -43,6 +43,13 @@ import {
   CheckboxCodeTab,
   CheckboxStatesTab,
 } from './docs/CheckboxDocs'
+import {
+  SwitchOverviewTab,
+  SwitchApiTab,
+  SwitchUsageTab,
+  SwitchCodeTab,
+  SwitchStatesTab,
+} from './docs/SwitchDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 
@@ -100,9 +107,14 @@ export function ComponentGallery() {
 
             <ComponentSection
               title="Switch"
-            >
-              <SwitchDemo />
-            </ComponentSection>
+              tabs={[
+                { key: 'overview', label: 'Overview', content: <SwitchOverviewTab /> },
+                { key: 'api',      label: 'API',      content: <SwitchApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <SwitchUsageTab /> },
+                { key: 'code',     label: 'Code',     content: <SwitchCodeTab /> },
+                { key: 'states',   label: 'States',   content: <SwitchStatesTab /> },
+              ]}
+            />
 
             <ComponentSection
               title="Radio"

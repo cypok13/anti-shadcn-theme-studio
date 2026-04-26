@@ -153,7 +153,10 @@ test.describe('Gate 2 — Interaction smoke tests', () => {
   })
 
   test('switch: clicking label text (not the toggle) also toggles', async ({ page }) => {
-    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
+    const switchSection = page
+      .locator('div.rounded-2xl')
+      .filter({ has: page.locator('h2', { hasText: 'Switch' }) })
+      .first()
     const sw = switchSection.locator('[role="switch"]').first()
     const before = await sw.getAttribute('aria-checked')
 
@@ -991,9 +994,13 @@ test.describe('Gate 14 — Switch scenarios', () => {
     await page.waitForLoadState('networkidle')
   })
 
+  // Helper: locate the Switch ComponentSection root (rounded-2xl wrapper with h2 "Switch")
+  const switchSection = (page: import('@playwright/test').Page) =>
+    page.locator('div.rounded-2xl').filter({ has: page.locator('h2', { hasText: 'Switch' }) }).first()
+
   test('switch: Space key toggles state', async ({ page }) => {
-    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
-    const sw = switchSection.locator('[role="switch"]:not([disabled])').first()
+    const section = switchSection(page)
+    const sw = section.locator('[role="switch"]:not([disabled])').first()
 
     const before = await sw.getAttribute('aria-checked')
     await sw.focus()
@@ -1005,9 +1012,9 @@ test.describe('Gate 14 — Switch scenarios', () => {
   })
 
   test('switch: data-state=checked applied after toggle to on', async ({ page }) => {
-    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
+    const section = switchSection(page)
     // Use the first non-disabled switch — the "Unchecked" one starts aria-checked=false
-    const switches = switchSection.locator('[role="switch"]:not([disabled])')
+    const switches = section.locator('[role="switch"]:not([disabled])')
     // Find the first unchecked one
     const count = await switches.count()
     let targetIndex = 0
@@ -1023,21 +1030,21 @@ test.describe('Gate 14 — Switch scenarios', () => {
     await page.waitForTimeout(200)
 
     // Re-query to avoid stale element reference after React re-render
-    const swAfter = switchSection.locator('[role="switch"]:not([disabled])').nth(targetIndex)
+    const swAfter = section.locator('[role="switch"]:not([disabled])').nth(targetIndex)
     await expect(swAfter).toHaveAttribute('aria-checked', 'true')
     await expect(swAfter).toHaveAttribute('data-state', 'checked')
   })
 
   test('switch: Tab reaches switch root', async ({ page }) => {
-    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
-    const sw = switchSection.locator('[role="switch"]:not([disabled])').first()
+    const section = switchSection(page)
+    const sw = section.locator('[role="switch"]:not([disabled])').first()
     await sw.focus()
     await expect(sw).toBeFocused()
   })
 
   test('switch: focus-visible ring on keyboard focus', async ({ page }) => {
-    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
-    const sw = switchSection.locator('[role="switch"]:not([disabled])').first()
+    const section = switchSection(page)
+    const sw = section.locator('[role="switch"]:not([disabled])').first()
 
     await sw.focus()
     await page.waitForTimeout(100)
@@ -1048,8 +1055,8 @@ test.describe('Gate 14 — Switch scenarios', () => {
   })
 
   test('switch: disabled switch — Space does NOT toggle', async ({ page }) => {
-    const switchSection = page.locator('section').filter({ hasText: 'Switch' })
-    const disabledSw = switchSection.locator('[role="switch"][disabled]').first()
+    const section = switchSection(page)
+    const disabledSw = section.locator('[role="switch"][disabled]').first()
 
     const before = await disabledSw.getAttribute('aria-checked')
     await disabledSw.focus()
@@ -1058,6 +1065,143 @@ test.describe('Gate 14 — Switch scenarios', () => {
 
     const after = await disabledSw.getAttribute('aria-checked')
     expect(after).toBe(before)
+  })
+})
+
+// ─── Gate 17: Switch Preview Block (5-tab ComponentSection) ──────────────────
+
+test.describe('Gate 17 — Switch Preview Block', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  // Helper: locate the Switch ComponentSection root (rounded-2xl wrapper with h2 "Switch")
+  const switchSection = (page: import('@playwright/test').Page) =>
+    page.locator('div.rounded-2xl').filter({ has: page.locator('h2', { hasText: 'Switch' }) }).first()
+
+  test('preview-block: all 5 tabs rendered (Overview/API/Usage/Code/States)', async ({ page }) => {
+    const section = switchSection(page)
+    const expected = ['Overview', 'API', 'Usage', 'Code', 'States']
+    for (const label of expected) {
+      await expect(section.getByRole('tab', { name: label, exact: true })).toBeVisible()
+    }
+  })
+
+  test('preview-block: clicking each tab swaps content (tab switching works)', async ({ page }) => {
+    const section = switchSection(page)
+
+    // Overview (default): "Unchecked" / "Checked" / "Disabled (off)" label rows
+    await expect(section.getByText('Unchecked', { exact: true })).toBeVisible()
+    await expect(section.getByText('Checked', { exact: true })).toBeVisible()
+
+    // API tab → DocPropsTable with prop names like "onCheckedChange"
+    await section.getByRole('tab', { name: 'API', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('onCheckedChange', { exact: false }).first()).toBeVisible()
+
+    // Usage tab → Do/Don't cards
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('✓ Do').first()).toBeVisible()
+    await expect(section.getByText("✕ Don't").first()).toBeVisible()
+
+    // Code tab → code block labels
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('Basic (controlled)').first()).toBeVisible()
+
+    // States tab → state matrix table
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.locator('table').first()).toBeVisible()
+  })
+
+  test('preview-block: shiki syntax highlighting loads in Code tab', async ({ page }) => {
+    const section = switchSection(page)
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
+    // shiki import is async; wait for .shiki element to appear
+    const shikiEl = section.locator('.shiki').first()
+    await expect(shikiEl).toBeVisible({ timeout: 5000 })
+    // Verify shiki produced span-based syntax tokens (not a plain <pre><code>)
+    const spanCount = await shikiEl.locator('span').count()
+    expect(spanCount).toBeGreaterThan(5)
+  })
+
+  test('preview-block: Do/Don\'t cards visible in Usage tab', async ({ page }) => {
+    const section = switchSection(page)
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    const doCards = section.getByText('✓ Do')
+    const dontCards = section.getByText("✕ Don't")
+    expect(await doCards.count()).toBeGreaterThanOrEqual(1)
+    expect(await dontCards.count()).toBeGreaterThanOrEqual(1)
+  })
+
+  test('switch: size variants — sm/md/lg rendered in States matrix', async ({ page }) => {
+    const section = switchSection(page)
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(150)
+
+    // States table renders rows labelled sm / md / lg in the leftmost column
+    const table = section.locator('table').first()
+    for (const size of ['sm', 'md', 'lg']) {
+      await expect(table.locator('td', { hasText: new RegExp(`^${size}$`) }).first()).toBeVisible()
+    }
+    // Each row contains 4 switches (Unchecked / Checked / Disabled off / Disabled on) → 12 total
+    const switchCount = await table.locator('[role="switch"]').count()
+    expect(switchCount).toBe(12)
+  })
+
+  test('switch: disabled-on column in States preserves data-state=checked', async ({ page }) => {
+    const section = switchSection(page)
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(150)
+
+    // Disabled-on column → switch is disabled AND aria-checked="true" / data-state="checked"
+    const disabledChecked = section.locator('[role="switch"][disabled][aria-checked="true"]').first()
+    await expect(disabledChecked).toBeAttached()
+    await expect(disabledChecked).toHaveAttribute('data-state', 'checked')
+  })
+
+  test('preview-block: tablist exists with role=tablist + aria-orientation=horizontal', async ({ page }) => {
+    const section = switchSection(page)
+    const tablist = section.getByRole('tablist').first()
+    await expect(tablist).toBeVisible()
+    await expect(tablist).toHaveAttribute('aria-orientation', 'horizontal')
+  })
+
+  test('preview-block: active tab has aria-selected=true, others false; only active is in tab order', async ({ page }) => {
+    const section = switchSection(page)
+    const activeTab = section.getByRole('tab', { selected: true })
+    await expect(activeTab).toHaveCount(1)
+    await expect(activeTab).toHaveAttribute('aria-selected', 'true')
+    await expect(activeTab).toHaveAttribute('tabindex', '0')
+
+    const inactiveTabs = section.getByRole('tab', { selected: false })
+    await expect(inactiveTabs.first()).toHaveAttribute('tabindex', '-1')
+  })
+
+  test('preview-block: active panel has role=tabpanel and aria-labelledby points to active tab', async ({ page }) => {
+    const section = switchSection(page)
+    const panel = section.getByRole('tabpanel').first()
+    await expect(panel).toBeVisible()
+    const labelledBy = await panel.getAttribute('aria-labelledby')
+    expect(labelledBy).toBeTruthy()
+    const referenced = section.locator(`#${labelledBy}`)
+    await expect(referenced).toHaveAttribute('aria-selected', 'true')
+  })
+
+  test('preview-block: ArrowRight cycles selected tab and focus stays on it', async ({ page }) => {
+    const section = switchSection(page)
+    const firstTab = section.getByRole('tab').first()
+    await firstTab.focus()
+    await expect(firstTab).toHaveAttribute('aria-selected', 'true')
+
+    await page.keyboard.press('ArrowRight')
+    const secondTab = section.getByRole('tab').nth(1)
+    await expect(secondTab).toBeFocused()
+    await expect(secondTab).toHaveAttribute('aria-selected', 'true')
   })
 })
 
@@ -1119,7 +1263,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
     const section = checkboxSection(page)
     const expected = ['Overview', 'API', 'Usage', 'Code', 'States']
     for (const label of expected) {
-      await expect(section.getByRole('button', { name: label, exact: true })).toBeVisible()
+      await expect(section.getByRole('tab', { name: label, exact: true })).toBeVisible()
     }
   })
 
@@ -1130,23 +1274,23 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
     await expect(section.getByText('Indeterminate', { exact: true })).toBeVisible()
 
     // API tab → DocPropsTable with prop names like "errorMessage"
-    await section.getByRole('button', { name: 'API', exact: true }).click()
+    await section.getByRole('tab', { name: 'API', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('errorMessage', { exact: false }).first()).toBeVisible()
 
     // Usage tab → Do/Don't cards
-    await section.getByRole('button', { name: 'Usage', exact: true }).click()
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('✓ Do').first()).toBeVisible()
     await expect(section.getByText("✕ Don't").first()).toBeVisible()
 
     // Code tab → code block labels
-    await section.getByRole('button', { name: 'Code', exact: true }).click()
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
     await page.waitForTimeout(100)
     await expect(section.getByText('Basic (controlled)').first()).toBeVisible()
 
     // States tab → state matrix table
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(100)
     // Column headers "Unchecked","Checked","Indeterminate","Disabled" are shown in State tab table
     await expect(section.locator('table').first()).toBeVisible()
@@ -1154,7 +1298,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
 
   test('preview-block: shiki syntax highlighting loads in Code tab', async ({ page }) => {
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'Code', exact: true }).click()
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
     // shiki import is async; wait for .shiki element to appear
     const shikiEl = section.locator('.shiki').first()
     await expect(shikiEl).toBeVisible({ timeout: 5000 })
@@ -1165,7 +1309,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
 
   test('preview-block: Do/Don\'t cards visible in Usage tab', async ({ page }) => {
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'Usage', exact: true }).click()
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
     await page.waitForTimeout(100)
     const doCards = section.getByText('✓ Do')
     const dontCards = section.getByText("✕ Don't")
@@ -1192,7 +1336,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
   test('checkbox: required={true} forwards native attribute + aria-required="true"', async ({ page }) => {
     // The Required row appears in the States tab
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(150)
 
     const requiredInput = section.locator('input[type="checkbox"][required]').first()
@@ -1205,7 +1349,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
 
   test('checkbox: error={true} sets aria-invalid="true" + destructive border color', async ({ page }) => {
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(150)
 
     const errorInput = section.locator('input[type="checkbox"][aria-invalid="true"]').first()
@@ -1233,7 +1377,7 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
 
   test('checkbox: errorMessage renders below + linked via aria-describedby', async ({ page }) => {
     const section = checkboxSection(page)
-    await section.getByRole('button', { name: 'States', exact: true }).click()
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
     await page.waitForTimeout(150)
 
     // Error row + Unchecked column carries errorMessage="Required field"
