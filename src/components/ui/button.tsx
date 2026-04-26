@@ -1,8 +1,21 @@
 'use client'
 
 import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
+
+function Slot({ children, ...props }: React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }) {
+  if (!React.isValidElement(children)) return <>{children}</>
+  return React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>, {
+    ...props,
+    ...(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>).props,
+    className: [
+      (props as { className?: string }).className,
+      ((children as React.ReactElement<{ className?: string }>).props as { className?: string }).className,
+    ]
+      .filter(Boolean)
+      .join(' '),
+  })
+}
 
 // ─── Variants ────────────────────────────────────────────────────────────────
 
@@ -11,7 +24,7 @@ const buttonVariants = cva(
     // base
     'cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius)] font-medium select-none',
     // transitions
-    'transition-[opacity,background-color,border-color,transform] duration-150 ease-in-out',
+    'transition-[opacity,background-color,border-color,transform] [transition-duration:var(--duration-fast)] ease-in-out',
     // focus ring
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]',
     // disabled (native) — убирает из tab order; cursor + opacity

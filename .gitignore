@@ -18,6 +18,10 @@ dist/
 # vercel
 .vercel
 
+# playwright (ephemeral, never commit)
+test-results/
+playwright-report/
+
 # env
 .env
 .env.local

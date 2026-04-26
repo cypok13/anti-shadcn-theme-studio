@@ -4,6 +4,7 @@ import * as React from 'react'
 import ReactDOM from 'react-dom'
 import {
   useFloating,
+  autoUpdate,
   flip,
   shift,
   offset,
@@ -135,14 +136,13 @@ export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentPro
     }
     const placement: Placement = placementMap[side]?.[align] ?? 'bottom'
 
-    const { refs, floatingStyles } = useFloating({
+    const { refs, floatingStyles, isPositioned } = useFloating({
+      strategy: 'fixed',
       placement,
       middleware: [offset(sideOffset), flip(), shift({ padding: 8 }), arrow({ element: arrowRef })],
-      elements: { reference: triggerRef.current },
+      whileElementsMounted: autoUpdate,
+      elements: { reference: triggerRef.current ?? undefined },
     })
-
-    const [mounted, setMounted] = React.useState(false)
-    React.useEffect(() => { setMounted(true) }, [])
 
     React.useEffect(() => {
       if (!open) return
@@ -159,7 +159,10 @@ export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentPro
       }
 
       const handleKey = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onOpenChange(false)
+        if (e.key === 'Escape') {
+          onOpenChange(false)
+          triggerRef.current?.focus()
+        }
       }
 
       document.addEventListener('mousedown', handleMouseDown)
@@ -170,21 +173,35 @@ export const PopoverContent = React.forwardRef<HTMLDivElement, PopoverContentPro
       }
     }, [open, onOpenChange, refs.floating, triggerRef])
 
-    if (!mounted || !open) return null
+    // Auto-focus first focusable element when popover opens (non-modal)
+    React.useEffect(() => {
+      if (!open) return
+      const timer = setTimeout(() => {
+        const floating = refs.floating.current
+        if (!floating) return
+        const focusable = floating.querySelector<HTMLElement>(
+          'input:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"]), select:not([disabled]), textarea:not([disabled]), a[href]'
+        )
+        focusable?.focus()
+      }, 50)
+      return () => clearTimeout(timer)
+    }, [open, refs.floating])
+
+    if (typeof document === 'undefined' || !open) return null
 
     return ReactDOM.createPortal(
       <div
         ref={refs.setFloating}
         id={contentId}
         role="dialog"
-        style={floatingStyles}
+        style={{ ...floatingStyles, visibility: isPositioned ? 'visible' : 'hidden' }}
         className={[
           'z-[var(--z-dropdown)] max-w-[320px] w-max',
           'rounded-[var(--radius)] border border-[hsl(var(--border))]',
           'bg-[hsl(var(--popover))] text-[hsl(var(--popover-foreground))]',
-          'p-4 shadow-md',
+          'p-4 [box-shadow:var(--shadow-md)]',
           'outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2',
-          'animate-in fade-in-0 zoom-in-95 duration-150',
+          'animate-in fade-in-0 zoom-in-95 [transition-duration:var(--duration-fast)]',
           className,
         ]
           .filter(Boolean)

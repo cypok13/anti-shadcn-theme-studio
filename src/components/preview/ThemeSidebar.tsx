@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import { PRESETS } from '@/lib/themes/registry'
-import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
 import {
   Select,
@@ -18,18 +17,21 @@ import { ShadowPicker } from './ShadowPicker'
 import { ExportTrigger } from './ExportTrigger'
 
 const HEADING_OPTIONS = [
-  { label: 'Inter',         value: 'var(--font-sans)' },
-  { label: 'Geist Sans',    value: 'var(--font-geist-sans)' },
-  { label: 'Space Grotesk', value: 'var(--font-grotesk)' },
-  { label: 'Syne',          value: 'var(--font-syne)' },
+  { label: 'Inter',          value: 'var(--font-sans)' },
+  { label: 'DM Sans',        value: 'var(--font-dm)' },
+  { label: 'Space Grotesk',  value: 'var(--font-grotesk)' },
+  { label: 'Syne',           value: 'var(--font-syne)' },
+  { label: 'Geist Sans',     value: 'var(--font-geist-sans)' },
+  { label: 'JetBrains Mono', value: 'var(--font-jetbrains-mono)' },
 ]
 
 const BODY_OPTIONS = [
-  { label: 'Inter',         value: 'var(--font-sans)' },
-  { label: 'DM Sans',       value: 'var(--font-dm)' },
-  { label: 'Manrope',       value: 'var(--font-manrope)' },
-  { label: 'IBM Plex Sans', value: 'var(--font-ibm-plex-sans)' },
-  { label: 'Geist Sans',    value: 'var(--font-geist-sans)' },
+  { label: 'Inter',          value: 'var(--font-sans)' },
+  { label: 'DM Sans',        value: 'var(--font-dm)' },
+  { label: 'Manrope',        value: 'var(--font-manrope)' },
+  { label: 'IBM Plex Sans',  value: 'var(--font-ibm-plex-sans)' },
+  { label: 'Geist Sans',     value: 'var(--font-geist-sans)' },
+  { label: 'JetBrains Mono', value: 'var(--font-jetbrains-mono)' },
 ]
 
 const MONO_OPTIONS = [
@@ -65,12 +67,28 @@ export function ThemeSidebar() {
     [router, searchParams],
   )
 
+  const handleThemeChange = useCallback(
+    (presetId: string) => {
+      const preset = PRESETS.find((p) => p.id === presetId)
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('theme', presetId)
+      if (preset) {
+        params.set('radius', preset.radius)
+        params.set('fontHeading', preset.fonts.heading)
+        params.set('fontBody', preset.fonts.body)
+        params.set('fontMono', preset.fonts.mono)
+      }
+      router.push(`?${params.toString()}`)
+    },
+    [router, searchParams],
+  )
+
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(window.location.href)
   }, [])
 
   return (
-    <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] shadow-md overflow-y-auto max-h-[calc(100vh-64px)] p-4 space-y-4">
+    <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] shadow-md overflow-y-auto max-h-[calc(100vh-64px)] p-4 flex flex-col gap-4">
 
       {/* Theme preset */}
       <section>
@@ -81,7 +99,7 @@ export function ThemeSidebar() {
               key={preset.id}
               variant={currentTheme === preset.id ? 'default' : 'ghost'}
               size="sm"
-              onClick={() => setParam('theme', preset.id)}
+              onClick={() => handleThemeChange(preset.id)}
               className="w-full justify-start gap-2 h-8 text-xs"
             >
               <span
@@ -95,7 +113,6 @@ export function ThemeSidebar() {
         </div>
       </section>
 
-      <Separator />
 
       {/* Appearance */}
       <section>
@@ -118,7 +135,6 @@ export function ThemeSidebar() {
         </div>
       </section>
 
-      <Separator />
 
       {/* Radius */}
       <section>
@@ -126,7 +142,6 @@ export function ThemeSidebar() {
         <RadiusPicker value={currentRadius} onChange={(v) => setParam('radius', v)} />
       </section>
 
-      <Separator />
 
       {/* Shadow */}
       <section>
@@ -134,7 +149,6 @@ export function ThemeSidebar() {
         <ShadowPicker value={currentShadow} onChange={(v) => setParam('shadow', v)} />
       </section>
 
-      <Separator />
 
       {/* Typography */}
       <section>
@@ -164,7 +178,6 @@ export function ThemeSidebar() {
         </div>
       </section>
 
-      <Separator />
 
       {/* Export */}
       <ExportTrigger />

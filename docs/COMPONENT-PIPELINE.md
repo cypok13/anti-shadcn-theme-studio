@@ -108,23 +108,35 @@ Fill from researcher output + APG + Radix docs:
 - Keyboard interactions per APG
 - Token mapping (every CSS property → var(--token))
 - ARIA requirements (role, aria-checked/expanded/selected, aria-label, aria-disabled)
-- Test plan written BEFORE implementation
+- Test plan written BEFORE implementation — each item in `Given / When / Then` format with the exact DOM property or computed value to assert (see template § "Test Plan")
 
 **Gate:** Spec file exists and complete before any .tsx is written.
+
+> **Test Plan format rule:** вместо `- [ ] dropdown closes` писать:
+> `- [ ] Given dropdown is open, When user clicks item B, Then [role="listbox"] not visible + trigger text = "B" + item B aria-selected="true"`
+> Это и есть скрипт для qa-engineer субагента — без него тест написать невозможно.
 
 ---
 
 ### 2. IMPLEMENT
 
-> **MANDATORY DELEGATION RULE (added 2026-04-17):**
+> **MANDATORY DELEGATION RULE (enforced via hook since 2026-04-24):**
 > The orchestrator MUST NOT implement components directly.
 > Direct implementation produces hallucinated values: non-standard px, invented spacing,
-> visual decisions without design reference (incident: h-3.5=14px in a 16px box).
+> visual decisions without design reference (incident: h-3.5=14px in a 16px box, Select 30 iterations).
+>
+> **Enforcement:** PreToolUse hook `theme-studio-delegation-guard.sh` blocks `Edit|Write`
+> on `src/components/ui/*.tsx` unless the `designer` subagent has touched
+> `apps/theme-studio/.claude/designer-active` within the last 15 minutes.
+> Bypass: branch `hotfix/*` for genuine emergencies only.
 >
 > **Implementation → `designer` subagent** (Design System specialist, token-aware):
 > ```
 > Agent(subagent_type="designer", prompt="""
 > Implement [ComponentName] component for theme-studio.
+>
+> FIRST ACTION (mandatory): run `mkdir -p apps/theme-studio/.claude && touch apps/theme-studio/.claude/designer-active`
+> This marks the designer session active so the delegation guard hook permits edits.
 >
 > Spec: docs/specs/[name]-spec.md — read it entirely before writing any code.
 > Pipeline rules: docs/COMPONENT-PIPELINE.md § 2 — mandatory.
@@ -226,16 +238,36 @@ Checks `src/components/ui/**/*.tsx` for hardcoded hex/color values.
 npm run test:components
 ```
 
-**Must be run with dev server running** (`npm run dev -- --port 3099`).
+Playwright starts the dev server automatically via `webServer` in `playwright.config.ts` (port 3005). If a dev server is already running on 3005 it is reused.
 
-**18-test suite, 4 gates:**
+**Universal gates (Gates 0–7, `component-qa.spec.ts`):**
 
-| Gate | Tests | What it catches |
-|------|-------|-----------------|
-| Gate 0: Runtime integrity | 4 | JS errors, React hydration failures, `<div>` inside `<button>` |
-| Gate 1: CSS & ARIA form | 6 | cursor, user-select, disabled cursor, no inline hex, axe-core critical violations |
-| Gate 2: Interaction smoke | 7 | Real state changes on click — checkbox toggles, switch toggles, tabs switch, select opens, cards work |
-| Gate 3: Keyboard | 1 | Tab reaches semantic interactive elements (button/input/switch/checkbox) |
+| Gate | What it catches |
+|------|-----------------|
+| Gate 0: Runtime integrity | JS errors, React hydration failures, `<div>` inside `<button>` |
+| Gate 1: CSS & ARIA form | cursor, user-select, disabled cursor, no inline hex, axe-core critical |
+| Gate 2: Interaction smoke | Real state changes on click across all components |
+| Gate 3: Keyboard | Tab reaches semantic interactive elements |
+| Gate 4–6: Component-specific | Badge, Separator, Tabs deep assertions |
+| Gate 7: Overlay positioning | Select/Popover/Tooltip appear near trigger, not at (0,0) |
+
+**БЛОКИРУЮЩЕЕ ПРАВИЛО — Spec-Driven Tests:**
+
+> Каждый `- [ ]` в разделе `## Test Plan` спецификации компонента ДОЛЖЕН иметь
+> соответствующий `test()` в `component-qa.spec.ts`. Без этого компонент не Done.
+
+**Процесс для нового компонента (делегировать `qa-engineer` субагенту):**
+```
+Agent(subagent_type="qa-engineer", prompt="""
+Read docs/specs/[name]-spec.md § "Test Plan".
+For every unchecked item (- [ ]) write a Playwright test in tests/component-qa.spec.ts.
+Add as test.describe('Gate N — [ComponentName] Scenarios', ...).
+Each test must have: Given (precondition), When (action), Then (DOM/computed assertion).
+Run: npx playwright test --grep "[ComponentName]"
+Fix all failures before returning.
+Report: N tests added, all passing.
+""")
+```
 
 **If any gate fails:** fix the underlying component before coming to CEO. Pipeline is autonomous.
 
@@ -253,7 +285,7 @@ npm run test:components
 
 ```
 Agent(subagent_type="ux-reviewer", prompt="""
-Visual QA for [ComponentName] at http://localhost:3099/preview?tab=components.
+Visual QA for [ComponentName] at http://localhost:3005/preview?tab=components.
 
 Required checks:
 1. Screenshot the [ComponentName] section — confirm ALL demo states from
@@ -298,19 +330,7 @@ CEO visual checklist:
 
 ---
 
-### 6. CLOSE
-
-```bash
-npm run build  # must pass
-git merge → main
-vercel --prod
-```
-
-Linear ticket → Done only after visual gate approved.
-
----
-
-### 7. DOCUMENTATION SYNC (mandatory, before merge)
+### 6. DOCUMENTATION SYNC (mandatory, before merge)
 
 Runs AFTER Visual Gate approval, BEFORE `git merge → main`.
 
@@ -329,6 +349,43 @@ npm run docs:validate    # exit 1 если есть нарушения — фи�
 - [ ] Memory — `theme_studio_component_pipeline.md` обновлён если изменился Error Log
 
 **Gate:** `npm run docs:validate` → exit 0. При exit 1 — фиксить до merge.
+
+---
+
+### 7. RETROSPECTIVE (mandatory, blocking before merge)
+
+Runs AFTER docs sync, BEFORE close. Purpose: convert painful iterations into enforced rules so the next component takes fewer.
+
+**Mandatory actions:**
+
+1. **Log `iterations_to_done`** in `docs/build-log.md` — the number of full generate→validate cycles the component took from first implementation to CEO approval. Example: `iterations_to_done: 4`.
+
+2. **If `iterations_to_done > 5`** — add a new entry to § "Error Log — Do Not Repeat These" below. Format:
+   ```
+   ### E-0NN: [short title]
+   **Symptom:** what went wrong
+   **Root cause:** why (one sentence)
+   **Fix:** concrete rule or code change
+   **Prevention:** can this be automated (ESLint / hook / Playwright gate)? If yes → create Linear ticket and link here.
+   ```
+
+3. **If root cause is automatable** — create a child Linear ticket for the enforcement (ESLint rule, Playwright test, PreToolUse hook) and link it in the build-log entry + Error Log entry. Do not merge without this link.
+
+4. **Update `memory/theme_studio_component_pipeline.md`** — mirror any new Error Log entry into the memory file.
+
+**Success target:** each next component should take ≤5 iterations. If the number goes UP across consecutive components — pipeline is regressing, stop and investigate.
+
+---
+
+### 8. CLOSE
+
+```bash
+npm run build  # must pass
+git merge → main
+vercel --prod
+```
+
+Linear ticket → Done only after retrospective logged + visual gate approved.
 
 ---
 
@@ -441,6 +498,8 @@ Required sections:
 | Real interaction smoke tests | Playwright Gate 2 | Before merge | Merge |
 | ARIA violations (axe-core) | Playwright Gate 1 | Before merge | Merge |
 | Keyboard accessibility | Playwright Gate 3 | Before merge | Merge |
+| **Overlay positioning** (Select/Popover/Tooltip not at 0,0) | Playwright Gate 7 | Before merge | Merge |
+| **Spec Test Plan coverage** — every `- [ ]` in spec has a `test()` | qa-engineer Gate 8+ | Before merge | Merge |
 | Docs: specs exist, indexes generated, no TODOs | `docs:validate` | Before merge | Merge |
 | Build passes | `npm run build` | Before deploy | Deploy |
 

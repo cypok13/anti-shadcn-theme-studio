@@ -218,7 +218,7 @@ export function RadioItem({ value, disabled = false, children, className }: Radi
         onKeyDown={handleKeyDown}
         className={[
           'shrink-0 flex items-center justify-center rounded-full border-2',
-          'transition-colors duration-150',
+          'transition-colors [transition-duration:var(--duration-fast)]',
           'outline-none',
           'focus-visible:ring-2',
           'focus-visible:ring-[hsl(var(--ring))]',

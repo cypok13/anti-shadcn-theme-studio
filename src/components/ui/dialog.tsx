@@ -108,9 +108,7 @@ export function DialogClose({ asChild, children }: DialogCloseProps) {
 
 export function DialogPortal({ children }: { children: React.ReactNode }) {
   const { open } = useDialogContext()
-  const [mounted, setMounted] = React.useState(false)
-  React.useEffect(() => { setMounted(true) }, [])
-  if (!mounted || !open) return null
+  if (typeof document === 'undefined' || !open) return null
   return ReactDOM.createPortal(children, document.body)
 }
 
@@ -128,9 +126,9 @@ export const DialogOverlay = React.forwardRef<HTMLDivElement, React.HTMLAttribut
           onClick?.(e)
         }}
         className={[
-          'fixed inset-0 z-50',
+          'fixed inset-0 [z-index:var(--z-overlay)]',
           'bg-[hsl(var(--overlay)/0.8)]',
-          'animate-in fade-in-0 duration-200',
+          'animate-in fade-in-0 [transition-duration:var(--duration-normal)]',
           className,
         ]
           .filter(Boolean)
@@ -250,13 +248,13 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
     ].join(' ')
 
     const baseClasses = [
-      'fixed left-[50%] top-[50%] z-50',
+      'fixed left-[50%] top-[50%] [z-index:var(--z-modal)]',
       'translate-x-[-50%] translate-y-[-50%]',
       'w-full border border-[hsl(var(--border))]',
       'bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))]',
       'rounded-[var(--radius)] shadow-xl',
       'focus:outline-none',
-      'animate-in fade-in-0 zoom-in-95 duration-200',
+      'animate-in fade-in-0 zoom-in-95 [transition-duration:var(--duration-normal)]',
       sizeClasses[size],
     ]
 

@@ -63,7 +63,7 @@
   --font-heading: var(--font-sans);
 
   /* ─── Motion tokens ───────────────────────────────────────────────────── */
-  --duration-fast: 100ms;
+  --duration-fast: 150ms;
   --duration-normal: 200ms;
   --duration-slow: 300ms;
   --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
@@ -106,6 +106,11 @@
     border-color: hsl(var(--border));
   }
 }
+
+/* Browser baseline — cursor behavior must load before Tailwind lazy chunks */
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+input:disabled, textarea:disabled, select:disabled { cursor: not-allowed; }
 
 html {
   color-scheme: light;

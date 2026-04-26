@@ -68,7 +68,7 @@ export function ComponentSection({ title, docsHref: _docsHref, tabs, children, c
 
       {/* Demo area */}
       <div className="rounded-xl bg-[hsl(var(--muted)/0.4)] p-6 min-h-[80px] [box-shadow:var(--shadow-preset,none)]">
-        <div className="w-full overflow-x-auto">
+        <div className="w-full overflow-x-auto px-1.5 py-1.5">
           {activeContent}
         </div>
       </div>

@@ -1,8 +1,21 @@
 'use client'
 
 import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
+
+function Slot({ children, ...props }: React.HTMLAttributes<HTMLElement> & { children?: React.ReactNode }) {
+  if (!React.isValidElement(children)) return <>{children}</>
+  return React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>, {
+    ...props,
+    ...(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>).props,
+    className: [
+      (props as { className?: string }).className,
+      ((children as React.ReactElement<{ className?: string }>).props as { className?: string }).className,
+    ]
+      .filter(Boolean)
+      .join(' '),
+  })
+}
 
 const badgeVariants = cva(
   'inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:border-[hsl(var(--ring))] focus-visible:ring-[3px] focus-visible:ring-[hsl(var(--ring)/0.5)] [&>svg]:pointer-events-none [&>svg]:size-3',

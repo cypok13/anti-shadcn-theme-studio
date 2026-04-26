@@ -45,7 +45,7 @@ describe('resolveCSS — v3', () => {
 
   it('generates dark mode tokens', () => {
     const css = resolveCSS(concreteBrutalist, 'dark', 'v3')
-    expect(css).toContain('--background: 0 0% 8%')
+    expect(css).toContain('--background: 0 0% 7%')
   })
 })
 

@@ -42,7 +42,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const base = [
       'w-full rounded-[var(--radius)]',
       'text-[hsl(var(--foreground))]',
-      'transition-colors duration-150 outline-none',
+      'transition-colors [transition-duration:var(--duration-fast)] outline-none',
       'placeholder:text-[hsl(var(--muted-foreground))]',
       'disabled:opacity-50 disabled:cursor-not-allowed',
       'read-only:bg-[hsl(var(--muted))] read-only:cursor-default',
