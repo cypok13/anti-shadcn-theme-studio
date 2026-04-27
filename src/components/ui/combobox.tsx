@@ -122,9 +122,13 @@ export function Combobox({
   const blurTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   React.useEffect(() => {
-    const item = itemsRef.current.find(i => i.value === confirmedValue)
-    setInputValue(item?.label ?? confirmedValue)
-  }, [confirmedValue])
+    if (!confirmedValue) {
+      setInputValue('')
+      return
+    }
+    const item = items.find((i) => i.value === confirmedValue)
+    if (item) setInputValue(item.label)
+  }, [confirmedValue, items])
 
   const filteredItems = React.useMemo(() => {
     const q = inputValue.toLowerCase()
@@ -224,7 +228,8 @@ function ComboboxInputField() {
       setOpen(false)
       setActiveIndex(-1)
       const item = itemsRef.current.find((i) => i.value === confirmedValue)
-      setInputValue(item?.label ?? confirmedValue)
+      if (item) setInputValue(item.label)
+      else if (!confirmedValue) setInputValue('')
     }, 200)
   }
 
@@ -279,7 +284,8 @@ function ComboboxInputField() {
       setOpen(false)
       setActiveIndex(-1)
       const item = itemsRef.current.find((i) => i.value === confirmedValue)
-      setInputValue(item?.label ?? confirmedValue)
+      if (item) setInputValue(item.label)
+      else if (!confirmedValue) setInputValue('')
     }
     // Tab: no preventDefault — natural tab out
   }
@@ -453,7 +459,6 @@ export function ComboboxItem({ value, disabled = false, children }: ComboboxItem
     setInputValue(label)
     setOpen(false)
     setActiveIndex(-1)
-    setTimeout(() => inputRef.current?.focus(), 0)
   }
 
   return (
