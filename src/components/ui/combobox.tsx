@@ -60,12 +60,14 @@ interface ComboboxContextValue {
   inputId: string
   ariaLabel: string | undefined
   inputRef: React.RefObject<HTMLInputElement | null>
+  blurTimerRef: React.RefObject<ReturnType<typeof setTimeout> | null>
   disabled: boolean
   size: ComboboxSize
   placeholder: string
   items: ComboboxItemDef[]
   registerItem: (item: ComboboxItemDef) => void
   filteredItems: ComboboxItemDef[]
+  itemsRef: React.RefObject<ComboboxItemDef[]>
 }
 
 const ComboboxContext = React.createContext<ComboboxContextValue | null>(null)
@@ -117,6 +119,8 @@ export function Combobox({
   const itemsRef = React.useRef(items)
   itemsRef.current = items
 
+  const blurTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
   React.useEffect(() => {
     const item = itemsRef.current.find(i => i.value === confirmedValue)
     setInputValue(item?.label ?? confirmedValue)
@@ -161,12 +165,14 @@ export function Combobox({
         inputId,
         ariaLabel,
         inputRef,
+        blurTimerRef,
         disabled,
         size,
         placeholder,
         items,
         registerItem,
         filteredItems,
+        itemsRef,
       }}
     >
       <div className="relative w-full">
@@ -193,18 +199,18 @@ function ComboboxInputField() {
     inputId,
     ariaLabel,
     inputRef,
+    blurTimerRef,
     disabled,
     size,
     placeholder,
     filteredItems,
+    itemsRef,
   } = useComboboxContext()
 
   const activeOptionId =
     activeIndex >= 0 && filteredItems[activeIndex]
       ? `option-${filteredItems[activeIndex].value.replace(/\s+/g, '-').toLowerCase()}`
       : undefined
-
-  const blurTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const handleFocus = () => {
     if (!disabled) {
@@ -217,7 +223,8 @@ function ComboboxInputField() {
     blurTimerRef.current = setTimeout(() => {
       setOpen(false)
       setActiveIndex(-1)
-      setInputValue(confirmedValue)
+      const item = itemsRef.current.find((i) => i.value === confirmedValue)
+      setInputValue(item?.label ?? confirmedValue)
     }, 200)
   }
 
@@ -225,7 +232,7 @@ function ComboboxInputField() {
     return () => {
       if (blurTimerRef.current) clearTimeout(blurTimerRef.current)
     }
-  }, [])
+  }, [blurTimerRef])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)
@@ -234,15 +241,13 @@ function ComboboxInputField() {
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const enabledItems = filteredItems.filter((i) => !i.disabled)
-
     if (e.key === 'ArrowDown') {
       e.preventDefault()
       if (!open) {
         setOpen(true)
         setActiveIndex(0)
       } else {
-        setActiveIndex(Math.min(activeIndex + 1, enabledItems.length - 1))
+        setActiveIndex(Math.min(activeIndex + 1, filteredItems.length - 1))
       }
     } else if (e.key === 'ArrowUp') {
       if (!open) return
@@ -258,14 +263,14 @@ function ComboboxInputField() {
       setActiveIndex(0)
     } else if (e.key === 'End' && open) {
       e.preventDefault()
-      setActiveIndex(enabledItems.length - 1)
+      setActiveIndex(filteredItems.length - 1)
     } else if (e.key === 'Enter' && open) {
       e.preventDefault()
-      const item = enabledItems[activeIndex]
-      if (item) {
-        const label = item.label
+      const item = filteredItems[activeIndex]
+      if (item && !item.disabled) {
+        if (blurTimerRef.current) clearTimeout(blurTimerRef.current)
         onValueChange(item.value)
-        setInputValue(label)
+        setInputValue(item.label)
         setOpen(false)
         setActiveIndex(-1)
       }
@@ -273,7 +278,8 @@ function ComboboxInputField() {
       e.preventDefault()
       setOpen(false)
       setActiveIndex(-1)
-      setInputValue(confirmedValue)
+      const item = itemsRef.current.find((i) => i.value === confirmedValue)
+      setInputValue(item?.label ?? confirmedValue)
     }
     // Tab: no preventDefault — natural tab out
   }
@@ -422,6 +428,7 @@ export function ComboboxItem({ value, disabled = false, children }: ComboboxItem
     filteredItems,
     activeIndex,
     inputRef,
+    blurTimerRef,
   } = useComboboxContext()
 
   const label = typeof children === 'string' ? children : value
@@ -441,6 +448,7 @@ export function ComboboxItem({ value, disabled = false, children }: ComboboxItem
 
   const handleSelect = () => {
     if (disabled) return
+    if (blurTimerRef.current) clearTimeout(blurTimerRef.current)
     onValueChange(value)
     setInputValue(label)
     setOpen(false)

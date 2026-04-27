@@ -1881,8 +1881,7 @@ test.describe('Gate 20 — Combobox Preview Block', () => {
     await page.waitForTimeout(100)
     await expect(input).toHaveAttribute('aria-expanded', 'true')
 
-    const activeDescendant = await input.getAttribute('aria-activedescendant')
-    expect(activeDescendant).toBeTruthy()
+    await expect(input).toHaveAttribute('aria-activedescendant', 'option-react')
 
     // Enter selects
     await input.press('Enter')
