@@ -58,6 +58,13 @@ import {
   RadioStatesTab,
 } from './docs/RadioDocs'
 import { SliderSection } from './SliderSection'
+import {
+  ComboboxOverviewTab,
+  ComboboxApiTab,
+  ComboboxUsageTab,
+  ComboboxCodeTab,
+  ComboboxStatesTab,
+} from './docs/ComboboxDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 
@@ -136,6 +143,17 @@ export function ComponentGallery() {
             />
 
             <SliderSection />
+
+            <ComponentSection
+              title="Combobox"
+              tabs={[
+                { key: 'overview', label: 'Overview', content: <ComboboxOverviewTab /> },
+                { key: 'api',      label: 'API',      content: <ComboboxApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <ComboboxUsageTab /> },
+                { key: 'code',     label: 'Code',     content: <ComboboxCodeTab /> },
+                { key: 'states',   label: 'States',   content: <ComboboxStatesTab /> },
+              ]}
+            />
 
             <ComponentSection
               title="Badge"

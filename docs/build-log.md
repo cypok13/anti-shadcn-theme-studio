@@ -897,3 +897,17 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 **Linear:** ALE-830 Done
 
 **Следующий шаг:** ALE-831 Combobox (другая категория Preview Block — keyboard nav + listbox ARIA, ожидаемо больше итераций) — отдельная сессия.
+
+## День 19 — Combobox Preview Block — первый popover-based component (2026-04-27, ALE-831)
+
+1. **E-015: Subagent hallucination pattern** — designer субагент дважды reported "файлы созданы" но они не были на диске. Context compaction уничтожил работу. Правило: всегда `wc -l` после Write в subagent prompts. Оба файла пришлось писать заново.
+
+2. **ARIA 1.2 combobox — 4 имплементационных бага в одном компоненте** — `Combobox` root не рендерил `ComboboxInputField` (Basic demo не имел input), `aria-controls` был null когда listbox закрыт (должен быть always-set), Enter key не закрывал listbox (handler только сбрасывал activeIndex), `useEffect([confirmedValue])` перезаписывал label со value ("react" вместо "React"). Все 4 исправлены.
+
+3. **Pipeline v2 итерации: 3** — HITL gate предсказал ≤4, фактически 3. Цель соблюдена, несмотря на то что это первый popover-based Preview Block (принципиально другая категория чем form-controls).
+
+**Артефакты:** `src/components/ui/combobox.tsx` (550 lines), `src/components/preview/docs/ComboboxDocs.tsx` (402 lines), `docs/specs/combobox-spec.md`, Gate 20 (11 assertions, 11/11 pass)
+
+**Linear:** ALE-831 Done
+
+**Следующий шаг:** ALE-832 Canarist fake-door или следующий компонент из backlog

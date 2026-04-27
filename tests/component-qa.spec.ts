@@ -1722,3 +1722,174 @@ test.describe('Gate 16 — Checkbox Preview Block & extended API', () => {
     expect(msgBox!.y).toBeGreaterThanOrEqual(inputBox!.y)
   })
 })
+
+// ─── Gate 20: Combobox Preview Block (5-tab ComponentSection) ─────────────────
+
+test.describe('Gate 20 — Combobox Preview Block', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  const comboboxSection = (page: import('@playwright/test').Page) =>
+    page.locator('div.rounded-2xl').filter({ has: page.locator('h2', { hasText: 'Combobox' }) }).first()
+
+  test('preview-block: all 5 tabs rendered (Overview/API/Usage/Code/States)', async ({ page }) => {
+    const section = comboboxSection(page)
+    const expected = ['Overview', 'API', 'Usage', 'Code', 'States']
+    for (const label of expected) {
+      await expect(section.getByRole('tab', { name: label, exact: true })).toBeVisible()
+    }
+  })
+
+  test('preview-block: clicking each tab swaps content', async ({ page }) => {
+    const section = comboboxSection(page)
+
+    // Overview (default): label text visible
+    await expect(section.getByText('Basic (no label)', { exact: true })).toBeVisible()
+
+    // API tab
+    await section.getByRole('tab', { name: 'API', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('onValueChange', { exact: false }).first()).toBeVisible()
+
+    // Usage tab → Do/Don't cards
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('✓ Do').first()).toBeVisible()
+    await expect(section.getByText("✕ Don't").first()).toBeVisible()
+
+    // Code tab → code block
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('Controlled', { exact: true }).first()).toBeVisible()
+
+    // States tab
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('disabled', { exact: true }).first()).toBeVisible()
+  })
+
+  test('preview-block: shiki syntax highlighting loads in Code tab', async ({ page }) => {
+    const section = comboboxSection(page)
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
+    const shikiEl = section.locator('.shiki').first()
+    await expect(shikiEl).toBeVisible({ timeout: 5000 })
+    const spanCount = await shikiEl.locator('span').count()
+    expect(spanCount).toBeGreaterThan(5)
+  })
+
+  test("preview-block: Do/Don't cards visible in Usage tab (>=1 each)", async ({ page }) => {
+    const section = comboboxSection(page)
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    expect(await section.getByText('✓ Do').count()).toBeGreaterThanOrEqual(1)
+    expect(await section.getByText("✕ Don't").count()).toBeGreaterThanOrEqual(1)
+  })
+
+  test('preview-block: tablist has aria-orientation=horizontal', async ({ page }) => {
+    const section = comboboxSection(page)
+    await expect(section.getByRole('tablist').first()).toHaveAttribute('aria-orientation', 'horizontal')
+  })
+
+  test('preview-block: active tab aria-selected=true, only active in tab order', async ({ page }) => {
+    const section = comboboxSection(page)
+    const activeTab = section.getByRole('tab', { selected: true })
+    await expect(activeTab).toHaveCount(1)
+    await expect(activeTab).toHaveAttribute('aria-selected', 'true')
+    await expect(activeTab).toHaveAttribute('tabindex', '0')
+    await expect(section.getByRole('tab', { selected: false }).first()).toHaveAttribute('tabindex', '-1')
+  })
+
+  test('combobox-aria-attrs: role=combobox, aria-expanded=false, aria-autocomplete=list, aria-controls set', async ({ page }) => {
+    const section = comboboxSection(page)
+    const input = section.getByRole('combobox').first()
+    await expect(input).toBeVisible()
+    await expect(input).toHaveAttribute('aria-expanded', 'false')
+    await expect(input).toHaveAttribute('aria-autocomplete', 'list')
+    const controls = await input.getAttribute('aria-controls')
+    expect(controls).toBeTruthy()
+    // The listbox element referenced by aria-controls exists in the DOM (may be in body portal)
+    // We verify it renders when open — checked in next tests
+  })
+
+  test('combobox-open-close: click opens listbox (aria-expanded=true, role=listbox visible); click outside closes', async ({ page }) => {
+    const section = comboboxSection(page)
+    const input = section.getByRole('combobox').first()
+
+    await expect(input).toHaveAttribute('aria-expanded', 'false')
+    await input.click()
+    await page.waitForTimeout(100)
+    await expect(input).toHaveAttribute('aria-expanded', 'true')
+    // Listbox portals to body
+    await expect(page.getByRole('listbox').first()).toBeVisible()
+
+    // Click outside to close
+    await page.locator('h2', { hasText: 'Combobox' }).click()
+    await page.waitForTimeout(200)
+    await expect(input).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  test('combobox-arrowdown-opens: ArrowDown on closed combobox opens listbox', async ({ page }) => {
+    const section = comboboxSection(page)
+    const input = section.getByRole('combobox').first()
+
+    // Blur first to ensure closed state
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(100)
+
+    await input.click()
+    await page.waitForTimeout(100)
+    // Focus opens it; press Escape to close first
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(100)
+    await expect(input).toHaveAttribute('aria-expanded', 'false')
+
+    // Now press ArrowDown to open
+    await input.press('ArrowDown')
+    await page.waitForTimeout(100)
+    await expect(input).toHaveAttribute('aria-expanded', 'true')
+    await expect(page.getByRole('listbox').first()).toBeVisible()
+  })
+
+  test('combobox-escape-closes: Escape closes open listbox, focus stays on input', async ({ page }) => {
+    const section = comboboxSection(page)
+    const input = section.getByRole('combobox').first()
+
+    await input.click()
+    await page.waitForTimeout(100)
+    await expect(input).toHaveAttribute('aria-expanded', 'true')
+
+    await input.press('Escape')
+    await page.waitForTimeout(100)
+    await expect(input).toHaveAttribute('aria-expanded', 'false')
+    await expect(page.getByRole('listbox')).toHaveCount(0)
+  })
+
+  test('combobox-enter-selects: ArrowDown activates first option, Enter selects it, listbox closes', async ({ page }) => {
+    const section = comboboxSection(page)
+    const input = section.getByRole('combobox').first()
+
+    // Open and close once (handleFocus opens it), then use ArrowDown from closed state
+    await input.click()
+    await page.waitForTimeout(100)
+    await input.press('Escape')
+    await page.waitForTimeout(100)
+
+    // ArrowDown opens + activates first option (React)
+    await input.press('ArrowDown')
+    await page.waitForTimeout(100)
+    await expect(input).toHaveAttribute('aria-expanded', 'true')
+
+    const activeDescendant = await input.getAttribute('aria-activedescendant')
+    expect(activeDescendant).toBeTruthy()
+
+    // Enter selects
+    await input.press('Enter')
+    await page.waitForTimeout(100)
+    await expect(input).toHaveAttribute('aria-expanded', 'false')
+    await expect(page.getByRole('listbox')).toHaveCount(0)
+    // Input now shows selected label
+    await expect(input).toHaveValue('React')
+  })
+})
