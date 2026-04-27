@@ -111,7 +111,7 @@ export function ComponentSection({ title, docsHref: _docsHref, tabs, children, c
           : {})}
         className="rounded-xl bg-[hsl(var(--muted)/0.4)] p-6 min-h-[80px] [box-shadow:var(--shadow-preset,none)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2"
       >
-        <div className="w-full overflow-x-auto px-1.5 py-1.5">
+        <div className="w-full overflow-x-auto [overflow-y:visible] px-1.5 py-1.5">
           {activeContent}
         </div>
       </div>

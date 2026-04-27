@@ -1355,6 +1355,179 @@ test.describe('Gate 18 — Radio Preview Block', () => {
   })
 })
 
+// ─── Gate 19: Slider Preview Block (5-tab ComponentSection) ──────────────────
+
+test.describe('Gate 19 — Slider Preview Block', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/preview')
+    await page.waitForLoadState('networkidle')
+  })
+
+  // Helper: locate the Slider ComponentSection root (rounded-2xl wrapper with h2 "Slider")
+  const sliderSection = (page: import('@playwright/test').Page) =>
+    page.locator('div.rounded-2xl').filter({ has: page.locator('h2', { hasText: 'Slider' }) }).first()
+
+  test('preview-block: all 5 tabs rendered (Overview/API/Usage/Code/States)', async ({ page }) => {
+    const section = sliderSection(page)
+    const expected = ['Overview', 'API', 'Usage', 'Code', 'States']
+    for (const label of expected) {
+      await expect(section.getByRole('tab', { name: label, exact: true })).toBeVisible()
+    }
+  })
+
+  test('preview-block: clicking each tab swaps content (tab switching works)', async ({ page }) => {
+    const section = sliderSection(page)
+
+    // Overview (default): "Default (md)" / "With value + format" labels visible
+    await expect(section.getByText('Default (md)', { exact: true })).toBeVisible()
+    await expect(section.getByText('With value + format', { exact: true })).toBeVisible()
+
+    // API tab → DocPropsTable with prop names like "onValueCommit"
+    await section.getByRole('tab', { name: 'API', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('onValueCommit', { exact: false }).first()).toBeVisible()
+
+    // Usage tab → Do/Don't cards
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('✓ Do').first()).toBeVisible()
+    await expect(section.getByText("✕ Don't").first()).toBeVisible()
+
+    // Code tab → code block labels
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('Controlled', { exact: true }).first()).toBeVisible()
+
+    // States tab → STATE_ROWS rendered (e.g. "At min", "At max", "Disabled")
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(100)
+    await expect(section.getByText('At min', { exact: true })).toBeVisible()
+    await expect(section.getByText('At max', { exact: true })).toBeVisible()
+    await expect(section.getByText('Disabled', { exact: true })).toBeVisible()
+  })
+
+  test('preview-block: shiki syntax highlighting loads in Code tab', async ({ page }) => {
+    const section = sliderSection(page)
+    await section.getByRole('tab', { name: 'Code', exact: true }).click()
+    const shikiEl = section.locator('.shiki').first()
+    await expect(shikiEl).toBeVisible({ timeout: 5000 })
+    const spanCount = await shikiEl.locator('span').count()
+    expect(spanCount).toBeGreaterThan(5)
+  })
+
+  test('preview-block: Do/Don\'t cards visible in Usage tab (≥1 each)', async ({ page }) => {
+    const section = sliderSection(page)
+    await section.getByRole('tab', { name: 'Usage', exact: true }).click()
+    await page.waitForTimeout(100)
+    const doCards = section.getByText('✓ Do')
+    const dontCards = section.getByText("✕ Don't")
+    expect(await doCards.count()).toBeGreaterThanOrEqual(1)
+    expect(await dontCards.count()).toBeGreaterThanOrEqual(1)
+  })
+
+  test('preview-block: tablist exists with role=tablist + aria-orientation=horizontal', async ({ page }) => {
+    const section = sliderSection(page)
+    const tablist = section.getByRole('tablist').first()
+    await expect(tablist).toBeVisible()
+    await expect(tablist).toHaveAttribute('aria-orientation', 'horizontal')
+  })
+
+  test('preview-block: active tab has aria-selected=true; only active is in tab order', async ({ page }) => {
+    const section = sliderSection(page)
+    const activeTab = section.getByRole('tab', { selected: true })
+    await expect(activeTab).toHaveCount(1)
+    await expect(activeTab).toHaveAttribute('aria-selected', 'true')
+    await expect(activeTab).toHaveAttribute('tabindex', '0')
+
+    const inactiveTabs = section.getByRole('tab', { selected: false })
+    await expect(inactiveTabs.first()).toHaveAttribute('tabindex', '-1')
+  })
+
+  test('slider: Overview tab shows live slider with role="slider" + valuemin/max/now', async ({ page }) => {
+    const section = sliderSection(page)
+    const slider = section.getByRole('slider').first()
+    await expect(slider).toBeVisible()
+    await expect(slider).toHaveAttribute('aria-valuemin', '0')
+    await expect(slider).toHaveAttribute('aria-valuemax', '100')
+    await expect(slider).toHaveAttribute('aria-valuenow', /^\d+$/)
+    await expect(slider).toHaveAttribute('aria-orientation', 'horizontal')
+  })
+
+  test('slider: ArrowRight increments aria-valuenow by step', async ({ page }) => {
+    const section = sliderSection(page)
+    // First slider on Overview tab is "Volume" — value=50, step=1 (controlled)
+    const slider = section.getByRole('slider').first()
+    await slider.focus()
+    const before = Number(await slider.getAttribute('aria-valuenow'))
+    await slider.press('ArrowRight')
+    await page.waitForTimeout(50)
+    const after = Number(await slider.getAttribute('aria-valuenow'))
+    expect(after).toBe(before + 1)
+  })
+
+  test('slider: Home → aria-valuemin, End → aria-valuemax', async ({ page }) => {
+    const section = sliderSection(page)
+    const slider = section.getByRole('slider').first()
+    await slider.focus()
+
+    await slider.press('End')
+    await page.waitForTimeout(50)
+    const max = await slider.getAttribute('aria-valuemax')
+    await expect(slider).toHaveAttribute('aria-valuenow', max!)
+
+    await slider.press('Home')
+    await page.waitForTimeout(50)
+    const min = await slider.getAttribute('aria-valuemin')
+    await expect(slider).toHaveAttribute('aria-valuenow', min!)
+  })
+
+  test('slider: track click moves thumb and focus moves to thumb (Gate 2)', async ({ page }) => {
+    const section = sliderSection(page)
+    const slider = section.getByRole('slider').first()
+    // Find the track (parent span with role-less, sibling of thumb): use bounding box of slider's parent
+    const track = section.locator('span.relative.flex-1').first()
+    await expect(track).toBeVisible()
+    const box = await track.boundingBox()
+    expect(box).not.toBeNull()
+
+    // Click at ~75% along the track using locator.click with relative position
+    // (page.mouse.click can miss if element is not scrolled into viewport)
+    await track.click({ position: { x: box!.width * 0.75, y: box!.height / 2 } })
+    await page.waitForTimeout(100)
+
+    const valueAfter = Number(await slider.getAttribute('aria-valuenow'))
+    // For min=0/max=100, ~75% click → roughly 75 (snapped to step=1, ±2 tolerance)
+    expect(valueAfter).toBeGreaterThanOrEqual(70)
+    expect(valueAfter).toBeLessThanOrEqual(80)
+
+    // Focus should be on the thumb after track click
+    const focused = await slider.evaluate((el) => el === document.activeElement)
+    expect(focused).toBe(true)
+  })
+
+  test('slider: disabled slider in States tab — ArrowRight does NOT change aria-valuenow', async ({ page }) => {
+    const section = sliderSection(page)
+    await section.getByRole('tab', { name: 'States', exact: true }).click()
+    await page.waitForTimeout(150)
+
+    // Disabled slider has aria-disabled="true" + tabindex="-1" + value=70
+    const disabledSlider = section.locator('[role="slider"][aria-disabled="true"]').first()
+    await expect(disabledSlider).toBeAttached()
+    const before = await disabledSlider.getAttribute('aria-valuenow')
+    expect(before).toBe('70')
+
+    // tabindex must be -1 (skipped from tab order)
+    await expect(disabledSlider).toHaveAttribute('tabindex', '-1')
+
+    // Force-focus + ArrowRight — value must NOT change (disabled handler returns early)
+    await disabledSlider.evaluate((el: HTMLElement) => el.focus())
+    await disabledSlider.press('ArrowRight')
+    await page.waitForTimeout(50)
+    const after = await disabledSlider.getAttribute('aria-valuenow')
+    expect(after).toBe('70')
+  })
+})
+
 // ─── Gate 15: Dialog — additional spec-driven scenarios ───────────────────────
 
 test.describe('Gate 15 — Dialog additional scenarios', () => {

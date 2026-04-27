@@ -57,6 +57,7 @@ import {
   RadioCodeTab,
   RadioStatesTab,
 } from './docs/RadioDocs'
+import { SliderSection } from './SliderSection'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 
@@ -133,6 +134,8 @@ export function ComponentGallery() {
                 { key: 'states',   label: 'States',   content: <RadioStatesTab /> },
               ]}
             />
+
+            <SliderSection />
 
             <ComponentSection
               title="Badge"
