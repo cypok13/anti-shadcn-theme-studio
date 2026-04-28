@@ -48,6 +48,15 @@ export function Tooltip({ delayDuration = 300, children }: TooltipProps) {
   const triggerRef = React.useRef<HTMLElement | null>(null)
   const tooltipId = React.useId()
 
+  React.useEffect(() => {
+    if (!open) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [open])
+
   return (
     <TooltipContext.Provider value={{ open, setOpen, triggerRef, tooltipId, delayDuration }}>
       {children}
@@ -125,13 +134,17 @@ export const TooltipContent = React.forwardRef<HTMLDivElement, TooltipContentPro
 
     const placement: Placement = side
 
-    const { refs, floatingStyles, isPositioned } = useFloating({
+    const { refs, floatingStyles, isPositioned, middlewareData, placement: computedPlacement } = useFloating({
       strategy: 'fixed',
       placement,
       middleware: [offset(sideOffset), flip(), shift({ padding: 8 }), arrow({ element: arrowRef })],
       whileElementsMounted: autoUpdate,
       elements: { reference: triggerRef.current ?? undefined },
     })
+
+    const arrowSide = { top: 'bottom', right: 'left', bottom: 'top', left: 'right' }[
+      computedPlacement.split('-')[0]
+    ] as string
 
     if (typeof document === 'undefined' || !open) return null
 
@@ -147,7 +160,7 @@ export const TooltipContent = React.forwardRef<HTMLDivElement, TooltipContentPro
           'bg-[hsl(var(--popover))] text-[hsl(var(--popover-foreground))]',
           'py-1.5 px-3 text-xs font-medium',
           '[box-shadow:var(--shadow-md)]',
-          'animate-in fade-in-0 zoom-in-95 [transition-duration:var(--duration-fast)]',
+          'animate-in fade-in-0 zoom-in-95 [animation-duration:var(--duration-fast)]',
           className,
         ]
           .filter(Boolean)
@@ -159,6 +172,11 @@ export const TooltipContent = React.forwardRef<HTMLDivElement, TooltipContentPro
           <div
             ref={arrowRef}
             className="absolute h-2 w-2 rotate-45 bg-[hsl(var(--popover))] border border-[hsl(var(--border))]"
+            style={{
+              left: middlewareData.arrow?.x != null ? `${middlewareData.arrow.x}px` : '',
+              top: middlewareData.arrow?.y != null ? `${middlewareData.arrow.y}px` : '',
+              [arrowSide]: '-4px',
+            }}
           />
         )}
       </div>,

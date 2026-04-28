@@ -589,11 +589,10 @@ test.describe('Gate 7 — Overlay Positioning', () => {
   })
 
   test('tooltip: appears near trigger, not at top-left corner', async ({ page }) => {
-    const tooltipSection = page.locator('[data-section="tooltip"]')
-    const trigger = tooltipSection.locator('button').first()
-
+    const trigger = page.getByRole('button', { name: 'Save changes' }).first()
+    await trigger.scrollIntoViewIfNeeded()
     await trigger.hover()
-    await page.waitForTimeout(250)
+    await page.waitForTimeout(400)
 
     const overlay = page.locator('[role="tooltip"]')
     await expect(overlay).toBeVisible()
@@ -856,35 +855,30 @@ test.describe('Gate 11 — Tooltip scenarios', () => {
   })
 
   test('tooltip: hover trigger → tooltip appears', async ({ page }) => {
-    const tooltipSection = page.locator('[data-section="tooltip"]')
-    const trigger = tooltipSection.locator('button').first()
-
+    const trigger = page.getByRole('button', { name: 'Save changes' }).first()
+    await trigger.scrollIntoViewIfNeeded()
     await trigger.hover()
-    await page.waitForTimeout(700) // delayDuration default 300ms + render buffer
+    await page.waitForTimeout(700)
 
     await expect(page.locator('[role="tooltip"]')).toBeVisible()
   })
 
   test('tooltip: keyboard Tab to trigger → tooltip opens', async ({ page }) => {
-    const tooltipSection = page.locator('[data-section="tooltip"]')
-    const trigger = tooltipSection.locator('button').first()
-
+    const trigger = page.getByRole('button', { name: 'Save changes' }).first()
+    await trigger.scrollIntoViewIfNeeded()
     await trigger.focus()
-    await page.waitForTimeout(700) // focus uses same delayDuration timer
+    await page.waitForTimeout(700)
 
     await expect(page.locator('[role="tooltip"]')).toBeVisible()
   })
 
   test('tooltip: Escape closes tooltip when open', async ({ page }) => {
-    const tooltipSection = page.locator('[data-section="tooltip"]')
-    const trigger = tooltipSection.locator('button').first()
-
-    // Open via focus
+    const trigger = page.getByRole('button', { name: 'Save changes' }).first()
+    await trigger.scrollIntoViewIfNeeded()
     await trigger.focus()
     await page.waitForTimeout(700)
     await expect(page.locator('[role="tooltip"]')).toBeVisible()
 
-    // Press Escape — should close (Escape handler added to tooltip trigger)
     await page.keyboard.press('Escape')
     await page.waitForTimeout(300)
 
@@ -1890,5 +1884,84 @@ test.describe('Gate 20 — Combobox Preview Block', () => {
     await expect(page.getByRole('listbox')).toHaveCount(0)
     // Input now shows selected label
     await expect(input).toHaveValue('React')
+  })
+})
+
+// ─── Gate 21: Tooltip Preview Block (5-tab ComponentSection) ──────────────────
+
+test.describe('Gate 21 — Tooltip Preview Block', () => {
+  const TOOLTIP_URL = `${BASE_URL}?tab=components`
+
+  test('preview-block: heading "Tooltip" visible on page', async ({ page }) => {
+    await page.goto(TOOLTIP_URL)
+    await page.waitForLoadState('networkidle')
+    await expect(page.getByRole('heading', { name: 'Tooltip', exact: true })).toBeVisible()
+  })
+
+  test('preview-block: all 5 tabs rendered (Overview/API/Usage/Code/States)', async ({ page }) => {
+    await page.goto(TOOLTIP_URL)
+    await page.waitForLoadState('networkidle')
+    // ComponentSection renders a <div role="tablist" aria-label="Tooltip sections">
+    const tablist = page.getByRole('tablist', { name: 'Tooltip sections' })
+    for (const label of ['Overview', 'API', 'Usage', 'Code', 'States']) {
+      await expect(tablist.getByRole('tab', { name: label })).toBeVisible()
+    }
+  })
+
+  test('preview-block: tab switching swaps content', async ({ page }) => {
+    await page.goto(TOOLTIP_URL)
+    await page.waitForLoadState('networkidle')
+    const tablist = page.getByRole('tablist', { name: 'Tooltip sections' })
+
+    await expect(tablist.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'true')
+
+    await tablist.getByRole('tab', { name: 'API' }).click()
+    await expect(tablist.getByRole('tab', { name: 'API' })).toHaveAttribute('aria-selected', 'true')
+    await expect(tablist.getByRole('tab', { name: 'Overview' })).toHaveAttribute('aria-selected', 'false')
+  })
+
+  test('tooltip: hover trigger → role="tooltip" appears in DOM', async ({ page }) => {
+    await page.goto(TOOLTIP_URL)
+    await page.waitForLoadState('networkidle')
+    // "Save changes" button is in Overview tab of TooltipSection (first demo row)
+    const trigger = page.getByRole('button', { name: 'Save changes' }).first()
+    await trigger.scrollIntoViewIfNeeded()
+    await trigger.hover()
+    await page.waitForTimeout(500)
+
+    await expect(page.getByRole('tooltip')).toBeVisible()
+  })
+
+  test('tooltip: Escape closes open tooltip', async ({ page }) => {
+    await page.goto(TOOLTIP_URL)
+    await page.waitForLoadState('networkidle')
+    const trigger = page.getByRole('button', { name: 'Save changes' }).first()
+    await trigger.scrollIntoViewIfNeeded()
+    await trigger.hover()
+    await page.waitForTimeout(500)
+    await expect(page.getByRole('tooltip')).toBeVisible()
+
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(200)
+    await expect(page.getByRole('tooltip')).toHaveCount(0)
+  })
+
+  test('tooltip: focus trigger opens tooltip instantly', async ({ page }) => {
+    await page.goto(TOOLTIP_URL)
+    await page.waitForLoadState('networkidle')
+    const trigger = page.getByRole('button', { name: 'Save changes' }).first()
+    await trigger.scrollIntoViewIfNeeded()
+    await trigger.focus()
+    await page.waitForTimeout(400)
+
+    await expect(page.getByRole('tooltip')).toBeVisible()
+  })
+
+  test('tooltip: axe-core no critical violations on Tooltip section', async ({ page }) => {
+    await page.goto(TOOLTIP_URL)
+    await page.waitForLoadState('networkidle')
+    const results = await new AxeBuilder({ page }).analyze()
+    const criticals = results.violations.filter(v => v.impact === 'critical')
+    expect(criticals).toHaveLength(0)
   })
 })

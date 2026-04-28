@@ -953,3 +953,21 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 **Linear:** ALE-834 Done
 
 **Следующий шаг:** Tooltip Preview Block (следующий в очереди по списку)
+
+## День 23 — Tooltip Preview Block (2026-04-28)
+
+1. **`[animation-duration]` vs `[transition-duration]` паттерн** — `transition-duration` без явного `transition-property` анимирует ВСЕ CSS свойства включая `top`/`left`. Исправлено на `animation-duration`. Тот же баг что и в ALE-833 для Select/Combobox — теперь зафиксировано в E-0NN как системный паттерн.
+
+2. **Escape требует document-level обработчик** — `onKeyDown` на `TooltipTrigger` срабатывает только при фокусе на триггере. После hover-only взаимодействия фокус не на триггере → Escape не закрывает tooltip. Решение: `useEffect` с `document.addEventListener('keydown', ...)` в `Tooltip` root пока `open === true`.
+
+3. **Floating UI arrow позиция** — `arrow` middleware вычисляет координаты в `middlewareData.arrow`, но они не применялись к arrow div. Arrow рендерился в DOM без `left`/`top` — не был виден. Исправлено: деструктурировать `middlewareData` + применить `style={{ left, top, [staticSide]: '-4px' }}`.
+
+4. **Gate 7/11 stale locators** — старые тесты использовали `[data-section="tooltip"]` (удалённый атрибут). Обновлены на `getByRole('button', { name: 'Save changes' }).first()` — консистентно с Gate 21.
+
+5. **Demo label overlap** — DemoRow не имел верхнего отступа, tooltip перекрывал label над бокс-контейнером. Исправлено `pt-8` на первых двух DemoRow в Overview.
+
+**Артефакты:** `src/components/ui/tooltip.tsx` (Escape handler + arrow fix), `src/components/preview/docs/TooltipDocs.tsx` (новый), `src/components/preview/TooltipSection.tsx` (новый), `tests/component-qa.spec.ts` (Gate 21 + обновлённые Gate 7/11), `docs/specs/tooltip-spec.md` (retrospective)
+
+**Linear:** ALE-837 Done
+
+**Следующий шаг:** Accordion или Badge Preview Block (следующие в очереди)

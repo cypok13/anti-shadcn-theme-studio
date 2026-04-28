@@ -240,3 +240,21 @@ No `variant` or `size` prop — single style, single size. Placement/alignment o
 - [x] Test plan written
 
 **Spec complete:** YES
+
+
+---
+
+## Retrospective
+
+**iterations_to_done:** 3
+
+**Root causes:**
+1. `[transition-duration]` without `transition-property` animated all CSS props including `top`/`left` — fixed to `[animation-duration]` (same pattern as ALE-833 bug)
+2. `tooltip.tsx` Escape handler on `TooltipTrigger.onKeyDown` only fires when trigger has focus — after hover-only interaction Escape never fired. Fixed by adding document-level `keydown` listener in `Tooltip` root via `useEffect`.
+3. Floating UI `arrow` middleware computed coordinates not applied to arrow div — arrow rendered in DOM at 0,0. Fixed by destructuring `middlewareData` and setting `style` with `x`/`y` + `[staticSide]: '-4px'`.
+
+**Demo label overlap:** `DemoRow` lacked clearance for top-placement tooltips. Fixed with `pt-8` on affected rows.
+
+**Old Gate 7/11 locators:** Used removed `[data-section="tooltip"]` attribute — updated to `getByRole('button', { name: 'Save changes' }).first()`.
+
+**Ticket:** ALE-837

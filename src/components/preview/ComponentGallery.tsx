@@ -59,6 +59,7 @@ import {
 } from './docs/RadioDocs'
 import { SliderSection } from './SliderSection'
 import { SelectSection } from './SelectSection'
+import { TooltipSection } from './TooltipSection'
 import {
   ComboboxOverviewTab,
   ComboboxApiTab,
@@ -117,6 +118,8 @@ export function ComponentGallery() {
 
             <SelectSection />
 
+            <TooltipSection />
+
             <ComponentSection
               title="Switch"
               tabs={[
@@ -162,12 +165,6 @@ export function ComponentGallery() {
               title="Separator"
             >
               <SeparatorDemo />
-            </ComponentSection>
-
-            <ComponentSection
-              title="Tooltip"
-            >
-              <TooltipDemo />
             </ComponentSection>
 
             <ComponentSection
