@@ -842,3 +842,100 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 **Linear:** ALE-812 (parent: ALE-764 Checkbox component, ALE-771 Button Preview Block, ALE-811 Pipeline v2)
 
 **Следующий шаг:** Switch/Radio Preview Blocks (ALE-753) или Input (ALE-754) — pipeline validated, следующие компоненты реалистично ≤2 итераций каждый.
+
+
+## День 17 — Switch + Radio Preview Blocks + Vercel silent-fail incident (2026-04-26 → 2026-04-27, ALE-825 / ALE-829)
+
+**Ключевые инсайты:**
+
+1. **Pipeline v2 mirror pattern работает** — `SwitchDocs.tsx` + `RadioDocs.tsx` собраны зеркалированием `CheckboxDocs.tsx` (5 tabs: Overview/API/Usage/Code/States). 0 → 2 итерации на компонент, target ≤5 выдержан второй раз подряд. Гипотеза подтверждена: после первого Preview Block следующие из той же категории (form controls с `aria-checked`) собираются в ≤2 итерации без новых E-XXX. 82 → 101 tests passing. Wins: ARIA tabs unified в `ComponentSection`, disabled-off visibility fix применён к обоим компонентам одной правкой.
+
+2. **`ComponentSection` как shared tabs primitive** — выделение tabs-обвязки из `CheckboxDocs` в `ComponentSection.tsx` (Pipeline v2 retrospective отметил это как automation candidate) — следующий Preview Block копирует только содержимое табов, не их структуру. Сократит iteration count для Slider/Combobox в Phase 3 ещё сильнее. Reusable shell + per-component content — паттерн для всех будущих Preview Blocks.
+
+3. **Vercel auto-build silent-fail инцидент 4+ дней (CRITICAL)** — main был broken с ALE-812 Checkbox merge: 4 компонента импортировали `@radix-ui/*` без deps в package.json. Standalone repo Vercel автодеплой падал каждый push, но не сигнализировал — production висел на `a19ebc20` (день 15) пока main HEAD ушёл к `ac3f37b`. 13 последних production deploys на одном SHA = молчаливые retry-redeploys. Markdown rule `feedback_session_start_build_check.md` существовал, но не enforced — оператор пропускал. **Фикс (ALE-829):** (a) GitHub Actions `build.yml` на standalone (npm ci + build + lint:ui + test:components) как required status check + (b) n8n workflow polling Vercel API каждые 15 мин → Telegram alert на ERROR deployments. Memo: `memory/feedback_vercel_autobuild_silent_fail.md`. E-012 добавлен в COMPONENT-PIPELINE.md. **Урок:** standalone repos с auto-deploy MUST иметь CI gate + alerting слоем — markdown rule не enforcement.
+
+**Артефакты:**
+- `src/components/preview/docs/SwitchDocs.tsx` — new (зеркало CheckboxDocs)
+- `src/components/preview/docs/RadioDocs.tsx` — new
+- `src/components/preview/ComponentSection.tsx` — shared tabs shell
+- `src/components/ui/switch.tsx` + `radio-group.tsx` — disabled-off visibility fix
+- `docs/specs/switch-spec.md` + `radio-group-spec.md` — Usage Guidelines + States table extended
+- `tests/component-qa.spec.ts` — 82 → 101 assertions
+- `.github/workflows/build.yml` (standalone, ALE-829) — required CI status check
+- n8n workflow `vercel-theme-studio-deploy-alert` (ALE-829) — Telegram alert on ERROR deploys
+- `apps/theme-studio/CLAUDE.md` — Pipeline §9 + CI required check добавлено
+- `docs/COMPONENT-PIPELINE.md` — E-012 (Vercel silent-fail)
+
+**Linear:** ALE-825 (Switch/Radio, Done), ALE-827 (build fix), ALE-829 (CI gate + alert, In Progress)
+
+**Следующий шаг:** Phase 3 — Slider Preview Block (mirror RadioDocs) или Combobox (более сложный — keyboard nav + listbox ARIA). Backlog tickets создаются без работы.
+
+
+
+## День 18 — Slider Preview Block + E-013 focus-stealing (2026-04-27, ALE-830)
+
+**Ключевые инсайты:**
+
+1. **Pipeline v2 mirror pattern — 4-в-ряд.** Slider собран зеркалированием RadioDocs (5 tabs ComponentSection) за 2 итерации (target ≤5 hit). Полная цепочка валидаций: Checkbox → Switch → Radio → Slider, все ≤2 iter каждый. Гипотеза подтверждена: form-control Preview Blocks из той же категории (single-value, ARIA-managed) собираются предсказуемо дёшево через mirror. Следующий тест паттерна — Combobox (другая категория: keyboard nav + listbox).
+
+2. **E-013: focus-stealing in pointer handlers.** Iter 2 нашёл новый класс багов: `handleTrackPointerDown` и `handleThumbPointerDown` вызывали `thumb.focus()`, но БЕЗ `e.preventDefault()`. Браузерный native focus-on-pointerdown потом проходит вверх по дереву и ставит фокус на ближайший focusable ancestor — в нашем случае `tabpanel[tabIndex=0]`. Симптом: track click двигает значение, но `document.activeElement` остаётся на tabpanel вместо thumb. Урок: любой компонент с internal focus management внутри tabpanel/dialog/etc. должен вызывать `e.preventDefault()` ДО `.focus()` в pointer handlers. Audit candidates: Switch / Tabs / Combobox.
+
+3. **Phantom scrollbar в Preview Blocks (shared bug).** ux-reviewer заметил vertical scrollbar внутри Overview card на ВСЕХ Preview Blocks (Radio + Slider) — `overflow-x-auto` неявно включает `overflow-y: auto`, contentHeight 220 vs clientHeight 217 = 3px overflow от focus-ring offsets и thumb hit zones. Fix: одна строка в `ComponentSection.tsx` — добавил `[overflow-y:visible]` рядом с `overflow-x-auto`. Single shared fix для всех 4 Preview Blocks. Урок: implicit overflow promotion — Tailwind/CSS gotcha, документировано в spec retrospective.
+
+4. **Stale dev server маскирует passing tests as failing.** Designer round 3 сообщил 7/20 passed после overflow fix, claim "pre-existing fail". Реальность: ux-reviewer оставил dev server на порту 3005 со старой версией страницы (HMR drift), Playwright reused его (`reuseExistingServer: !CI`). После `kill -9` старого процесса — 20/20 passed без изменений в коде. Урок: при подозрительных regression failures сначала kill orphan dev servers, потом дебажить код. Subagent verdicts по test results не доверять без независимой ре-проверки.
+
+**Артефакты:**
+- `src/components/ui/slider.tsx` (новый, 9.1KB)
+- `src/components/preview/docs/SliderDocs.tsx` (новый, 11.1KB, 5 tabs)
+- `src/components/preview/SliderSection.tsx` (новый, 706B)
+- `src/components/preview/ComponentSection.tsx` (overflow-y fix, 1 строка)
+- `src/components/preview/ComponentGallery.tsx` (SliderSection wired)
+- `tests/component-qa.spec.ts` (+173 lines Gate 19)
+- `docs/specs/slider-spec.md` (новый, retrospective filled)
+- `memory/theme_studio_iterations_log.md` (Slider 2 iter row)
+
+**Linear:** ALE-830 Done
+
+**Следующий шаг:** ALE-831 Combobox (другая категория Preview Block — keyboard nav + listbox ARIA, ожидаемо больше итераций) — отдельная сессия.
+
+## День 19 — Combobox Preview Block — первый popover-based component (2026-04-27, ALE-831)
+
+1. **E-015: Subagent hallucination pattern** — designer субагент дважды reported "файлы созданы" но они не были на диске. Context compaction уничтожил работу. Правило: всегда `wc -l` после Write в subagent prompts. Оба файла пришлось писать заново.
+
+2. **ARIA 1.2 combobox — 4 имплементационных бага в одном компоненте** — `Combobox` root не рендерил `ComboboxInputField` (Basic demo не имел input), `aria-controls` был null когда listbox закрыт (должен быть always-set), Enter key не закрывал listbox (handler только сбрасывал activeIndex), `useEffect([confirmedValue])` перезаписывал label со value ("react" вместо "React"). Все 4 исправлены.
+
+3. **Pipeline v2 итерации: 3** — HITL gate предсказал ≤4, фактически 3. Цель соблюдена, несмотря на то что это первый popover-based Preview Block (принципиально другая категория чем form-controls).
+
+**Артефакты:** `src/components/ui/combobox.tsx` (550 lines), `src/components/preview/docs/ComboboxDocs.tsx` (402 lines), `docs/specs/combobox-spec.md`, Gate 20 (11 assertions, 11/11 pass)
+
+**Linear:** ALE-831 Done
+
+**Следующий шаг:** ALE-832 Canarist fake-door или следующий компонент из backlog
+
+## День 20 — Combobox: blur на Enter + stale-closure фикс (2026-04-27)
+
+1. **React stale-closure race при sync blur()** — синхронный `inputRef.current?.blur()` внутри `onClick` вызывал `handleBlur` до того, как React флашил батченные state updates. `confirmedValue` в closure был старый → timer через 200ms сбрасывал inputValue к предыдущему значению. Симптом: выбирается не тот элемент. Фикс: `setTimeout(..., 0)` откладывает blur до после React flush.
+2. **Enter key тоже должен снимать фокус** — та же паттерн добавлена в `handleKeyDown` для Enter. Обе точки выбора теперь единообразны.
+3. **Extracted global skill** — `~/.claude/skills/learned/react-programmatic-blur-deferred.md` — переиспользуемый паттерн для любых React-компонентов с programmatic blur.
+
+**Артефакты:** `src/components/ui/combobox.tsx` (commits 210098e, e34c846), `~/.claude/skills/learned/react-programmatic-blur-deferred.md`
+
+**Linear:** ALE-831 (post-close fixes)
+
+**Деплой:** https://theme-studio-beta.vercel.app ✅
+
+**Следующий шаг:** ALE-832 Canarist fake-door или следующий компонент из backlog
+
+## День 21 — ALE-833: Dropdown Drift on Scroll — root cause найден (2026-04-28)
+
+1. **Root cause: `transition-duration` без `transition-property` = CSS transition on all** — `[transition-duration:var(--duration-fast)]` без явного `transition-property` → браузер применяет `all` → каждое DOM-мутация `style.top/left` при скролле запускала CSS-переход. Результат: drift-анимация при скролле. Исправление: `[animation-duration:var(--duration-fast)]` — `tailwindcss-animate` использует CSS `animation` (keyframes), а не `transition`.
+
+2. **DOM mutation vs React state для позиционирования** — первоначальный open: `setPos()` через React state (animation fires once correctly). Scroll/resize: прямая мутация `floatingRef.current.style.*` без React re-render. Комбинация дала: анимация при открытии есть, drift при скролле нет. Но `transition-duration` всё равно применялась к positional props — отсюда оставшийся артефакт.
+
+3. **Попытки до финального фикса** — Floating UI migration сломала позиционирование (reference element не резолвился корректно); close-on-scroll отклонён CEO; viewport-fixed отклонён. Финальный фикс: одна строка CSS — `transition-duration` → `animation-duration` в обоих компонентах.
+
+**Артефакты:** `src/components/ui/select.tsx`, `src/components/ui/combobox.tsx` (commit 896c9cc), `memory/feedback_tailwindcss_animate_transition_vs_animation.md`
+
+**Linear:** ALE-833 Done
+
+**Следующий шаг:** ALE-830 Slider Preview Block (незакоммиченные изменения ждут)
