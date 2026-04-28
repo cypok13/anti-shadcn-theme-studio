@@ -57,6 +57,15 @@ import {
   RadioCodeTab,
   RadioStatesTab,
 } from './docs/RadioDocs'
+import { SliderSection } from './SliderSection'
+import { SelectSection } from './SelectSection'
+import {
+  ComboboxOverviewTab,
+  ComboboxApiTab,
+  ComboboxUsageTab,
+  ComboboxCodeTab,
+  ComboboxStatesTab,
+} from './docs/ComboboxDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 
@@ -106,11 +115,7 @@ export function ComponentGallery() {
               <InputDemo />
             </ComponentSection>
 
-            <ComponentSection
-              title="Select"
-            >
-              <SelectDemo />
-            </ComponentSection>
+            <SelectSection />
 
             <ComponentSection
               title="Switch"
@@ -131,6 +136,19 @@ export function ComponentGallery() {
                 { key: 'usage',    label: 'Usage',    content: <RadioUsageTab /> },
                 { key: 'code',     label: 'Code',     content: <RadioCodeTab /> },
                 { key: 'states',   label: 'States',   content: <RadioStatesTab /> },
+              ]}
+            />
+
+            <SliderSection />
+
+            <ComponentSection
+              title="Combobox"
+              tabs={[
+                { key: 'overview', label: 'Overview', content: <ComboboxOverviewTab /> },
+                { key: 'api',      label: 'API',      content: <ComboboxApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <ComboboxUsageTab /> },
+                { key: 'code',     label: 'Code',     content: <ComboboxCodeTab /> },
+                { key: 'states',   label: 'States',   content: <ComboboxStatesTab /> },
               ]}
             />
 

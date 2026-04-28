@@ -474,6 +474,36 @@ Documented failures from Session A. Each rule above has a reason. Read before im
 
 ---
 
+### E-012: Broken main can persist for days when Vercel auto-build silently fails
+
+**Symptom (ALE-825 / ALE-829, 2026-04-27):** Standalone repo `cypok13/anti-shadcn-theme-studio` had main broken 4+ days after ALE-812 Checkbox merge (4 components imported `@radix-ui/*` without deps in package.json). Every push triggered a failed Vercel build, but no signal reached the operator — production stayed on `a19ebc20` (день 15) while main HEAD advanced to `ac3f37b`. 13 most recent production deploys all shared the same SHA = silent auto-redeploy retries with no new commits getting through.
+**Root cause:** Standalone repo had **zero CI workflows**. Markdown rule `feedback_session_start_build_check.md` ("run `npm run build` at session start when prior session had uncommitted work") existed but was not enforced — operator skipped it. Vercel deployment failures were not surfaced anywhere (no Telegram, no Slack, no dashboard).
+**Fix (two layers, ALE-829):**
+1. **GitHub Actions required status check** — `.github/workflows/build.yml` on standalone (`npm install` + `npm run build`). Branch protection blocks merge to main when red. (`lint:ui` and `test:components` skipped: `eslint` not in standalone deps; Playwright needs browser install + dev server. `npm run build` alone catches the ALE-825 root cause — missing/broken deps.)
+2. **Vercel deploy-failure → Telegram alert** — n8n workflow `vercel-theme-studio-deploy-alert` polls Vercel API every 15 min, alerts on `state == ERROR` deployments with dedupe.
+**Prevention:** Standalone repos with Vercel auto-deploy MUST have CI gate + alerting. Markdown-only rules are not enforcement. Apply to any future standalone repo: see `~/My_Projects/.github/workflows/build.yml` as template.
+
+---
+
+### E-013: Pointer-down handlers calling element.focus() must call e.preventDefault() first
+
+**Symptom (ALE-830, 2026-04-27):** Slider thumb is the intended focus target on track click. Component called `thumbRef.current?.focus()` from `handleTrackPointerDown`. Playwright assertion `document.activeElement === thumb` failed — focus landed on the surrounding `tabpanel[tabIndex=0]` ancestor instead.
+**Root cause:** Browser's native focus-on-pointerdown algorithm runs AFTER the React handler. Without `e.preventDefault()`, native focus walks up the DOM tree to the nearest focusable ancestor and overrides any explicit `.focus()` call made during the handler.
+**Fix:** Call `e.preventDefault()` at the top of any pointer-down handler that programmatically moves focus. Same pattern needed on both track and thumb pointer-down handlers. Single line.
+**Pre-emptive audit (any component with internal focus management nested inside a focusable ancestor):** Switch / RadioGroup / Tabs / Combobox pointer handlers — verify they either don't call `.focus()` (relying on native default) OR they call `e.preventDefault()` first.
+**Test coverage:** Gate 19 includes `track click → document.activeElement === thumb` assertion explicitly.
+
+---
+
+### E-014: Stale dev server masks passing tests as regressions
+
+**Symptom (ALE-830, 2026-04-27):** Designer round 3 reported 7/20 Gate 18+19 tests failing, claimed "pre-existing fail". Independent rerun after killing orphan dev server: 20/20 passing, zero code changes.
+**Root cause:** `playwright.config.ts` has `reuseExistingServer: !process.env.CI`. ux-reviewer left a Next dev server on port 3005 with an old build (HMR drift, missing the new Slider component). Playwright reused it. Tests asked for fresh DocPropsTable rows that the stale build never compiled.
+**Fix:** When test failures look like regressions but you didn't touch the affected code paths, kill orphan dev servers first: `lsof -ti:3005 | xargs -r kill -9` then re-run. Playwright will start a fresh server.
+**Process rule:** Subagent verdicts on test results are not load-bearing. Independently re-verify any "this is pre-existing" claim by running the failing tests yourself with a clean server. The cost of re-running is small; the cost of shipping a real regression flagged as "not mine" is large.
+
+---
+
 ## Component Spec Template
 
 See `docs/specs/component-spec-template.md` for the full template.

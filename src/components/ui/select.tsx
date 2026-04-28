@@ -351,8 +351,8 @@ export const SelectContent = React.forwardRef<HTMLUListElement, React.HTMLAttrib
         return
       }
 
-      const compute = () => {
-        if (!triggerRef.current) return
+      const computeValues = () => {
+        if (!triggerRef.current) return null
         const r = triggerRef.current.getBoundingClientRect()
         const gap = 4
         const padding = 8
@@ -361,19 +361,31 @@ export const SelectContent = React.forwardRef<HTMLUListElement, React.HTMLAttrib
         const preferAbove = spaceBelow < 120 && spaceAbove > spaceBelow
         const maxHeight = Math.max(80, preferAbove ? spaceAbove : spaceBelow)
         const left = Math.min(r.left, window.innerWidth - r.width - padding)
-        if (preferAbove) {
-          setPos({ bottom: window.innerHeight - r.top + gap, left, minWidth: r.width, maxHeight })
-        } else {
-          setPos({ top: r.bottom + gap, left, minWidth: r.width, maxHeight })
-        }
+        return preferAbove
+          ? { bottom: window.innerHeight - r.top + gap, left, minWidth: r.width, maxHeight }
+          : { top: r.bottom + gap, left, minWidth: r.width, maxHeight }
       }
 
-      compute()
-      window.addEventListener('scroll', compute, true)
-      window.addEventListener('resize', compute)
+      // Initial position via React state — renders portal, plays open animation once
+      setPos(computeValues())
+
+      // Scroll/resize: direct DOM mutation, no React re-render, no animation re-trigger
+      const updateDOM = () => {
+        if (!floatingRef.current) return
+        const s = computeValues()
+        if (!s) return
+        floatingRef.current.style.top = 'top' in s && s.top !== undefined ? `${s.top}px` : ''
+        floatingRef.current.style.bottom = 'bottom' in s && s.bottom !== undefined ? `${s.bottom}px` : ''
+        floatingRef.current.style.left = `${s.left}px`
+        floatingRef.current.style.minWidth = `${s.minWidth}px`
+        floatingRef.current.style.maxHeight = `${s.maxHeight}px`
+      }
+
+      window.addEventListener('scroll', updateDOM, true)
+      window.addEventListener('resize', updateDOM)
       return () => {
-        window.removeEventListener('scroll', compute, true)
-        window.removeEventListener('resize', compute)
+        window.removeEventListener('scroll', updateDOM, true)
+        window.removeEventListener('resize', updateDOM)
       }
     }, [open, triggerRef])
 
@@ -454,7 +466,7 @@ export const SelectContent = React.forwardRef<HTMLUListElement, React.HTMLAttrib
           'rounded-[var(--radius)] border border-[hsl(var(--border))]',
           'bg-[hsl(var(--popover))] text-[hsl(var(--popover-foreground))]',
           'p-1 [box-shadow:var(--shadow-md)]',
-          'animate-in fade-in-0 zoom-in-95 [transition-duration:var(--duration-fast)]',
+          'animate-in fade-in-0 zoom-in-95 [animation-duration:var(--duration-fast)]',
           className,
         ]
           .filter(Boolean)
