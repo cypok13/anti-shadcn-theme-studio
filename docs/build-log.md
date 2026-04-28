@@ -939,3 +939,17 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 **Linear:** ALE-833 Done
 
 **Следующий шаг:** ALE-830 Slider Preview Block (незакоммиченные изменения ждут)
+
+## День 22 — ALE-834: Select Preview Block — Pipeline v2 (2026-04-28)
+
+1. **Gate 8 locator pattern** — `#select-error` должен быть на Overview tab (рендерится сразу при загрузке), а не на States tab (рендерится только после клика по табу). Playwright запускает тесты без навигации по табам — id на lazy-rendered tab = CRITICAL miss.
+
+2. **axe-core `button-name` violation — bare SelectTrigger** — `role="combobox"` без видимого текста и без `aria-label` = axe critical. Все bare triggers (Overview + States) получили `aria-label`. SelectField triggers безопасны — они используют `<label htmlFor>` wiring через `SelectTrigger id`.
+
+3. **Pipeline v2: 3 итерации** — implement → token audit (border-l-[3px]→border-l-4, --success fallback fix) → QA (#select-error локатор + aria-label). Ниже порога ≤5.
+
+**Артефакты:** `src/components/preview/docs/SelectDocs.tsx` (новый), `src/components/preview/SelectSection.tsx` (новый), `src/components/preview/ComponentGallery.tsx` (SelectSection wired), `docs/specs/select-spec.md` (retrospective filled)
+
+**Linear:** ALE-834 Done
+
+**Следующий шаг:** Tooltip Preview Block (следующий в очереди по списку)

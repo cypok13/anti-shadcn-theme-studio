@@ -6,59 +6,56 @@
 
 ### When to use this component
 
-- Use when: user must choose exactly one option from a predefined list (5–20 options)
-- Use when: screen space is limited — list stays hidden until triggered
-- Do NOT use when: <5 options → use RadioGroup instead
-- Do NOT use when: searchable/filterable list needed → use Combobox (separate component)
-- Do NOT use when: multiple selections needed → use MultiSelect (separate component)
+- Use when: presenting 6–30 mutually exclusive options and vertical space is constrained
+- Use when: options are well-known and don't require search/filtering
+- Do NOT use when: 2–5 options and vertical space allows → use **Radio**
+- Do NOT use when: 30+ options or user needs to type/filter → use **Combobox**
+- Do NOT use when: single boolean toggle → use **Switch**
 
 ### Variant decision tree
 
 ```
-Need a select?
-├── How many options?
-│   ├── <5 → RadioGroup
-│   ├── 5–20 → Select (this component)
-│   └── >20 searchable → Combobox
-├── What size?
-│   ├── Dense UI / table rows → size="sm"
-│   ├── Default forms → size="md" (default)
-│   └── Hero / large forms → size="lg"
-└── Options grouped? → use SelectGroup + SelectLabel
+Mutually exclusive choice?
+├── 2–5 options, space allows → Radio
+├── 6–30 options, fixed list → Select
+├── 30+ options or needs search → Combobox
+└── Boolean (on/off) → Switch
 ```
 
 ### Common patterns
 
 ```tsx
-// Basic
-<SelectField label="Country" placeholder="Select country">
+// Basic controlled
+const [value, setValue] = useState('system')
+<Select value={value} onValueChange={setValue}>
+  <SelectTrigger><SelectValue placeholder="Select theme" /></SelectTrigger>
+  <SelectContent>
+    <SelectItem value="light">Light</SelectItem>
+    <SelectItem value="dark">Dark</SelectItem>
+    <SelectItem value="system">System</SelectItem>
+  </SelectContent>
+</Select>
+
+// Form field (label + helper + error wired automatically)
+<SelectField id="country" label="Country" placeholder="Choose country"
+  helperText="We'll ship to this address.">
   <SelectItem value="us">United States</SelectItem>
   <SelectItem value="gb">United Kingdom</SelectItem>
 </SelectField>
 
-// With error
-<SelectField label="Role" isError errorMessage="Please select a role">
-  <SelectItem value="admin">Admin</SelectItem>
-  <SelectItem value="viewer">Viewer</SelectItem>
-</SelectField>
-
-// Grouped
-<SelectField label="Font" placeholder="Choose font">
-  <SelectGroup label="Sans-serif">
-    <SelectItem value="inter">Inter</SelectItem>
-    <SelectItem value="geist">Geist</SelectItem>
-  </SelectGroup>
-  <SelectGroup label="Monospace">
-    <SelectItem value="jetbrains">JetBrains Mono</SelectItem>
-  </SelectGroup>
+// Error state
+<SelectField id="plan" label="Plan" isError errorMessage="Please select a plan."
+  placeholder="Select plan">
+  <SelectItem value="free">Free</SelectItem>
+  <SelectItem value="pro">Pro</SelectItem>
 </SelectField>
 ```
 
 ### Anti-patterns
 
-- DO NOT use `position="item-aligned"` — causes overflow on short viewports; always use `position="popper"`
-- DO NOT add leading icon to trigger — not in scope; compose manually if needed
-- DO NOT use for searchable lists — use Combobox instead
+- Don't use Select for 2–4 options — Radio shows all choices at once, reducing cognitive load
+- Don't use Select when users need to search — Combobox has a text input for filtering
+- Don't use bare SelectTrigger in forms without SelectField — label/aria wiring is manual and error-prone
 
 ---
 
@@ -66,34 +63,25 @@ Need a select?
 
 - **Component name:** Select
 - **File:** `src/components/ui/select.tsx`
-- **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/combobox/
-- **Reference:** https://www.radix-ui.com/primitives/docs/components/select · https://ui.shadcn.com/docs/components/select
-- **Ticket:** ALE-768
+- **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/combobox/ (Select-only combobox)
+- **Reference:** shadcn/ui Select, Radix UI Select primitive
+- **Ticket:** ALE-834
 
 ---
 
 ## Industry Parity Check
 
-| Feature / Prop | Material 3 | Carbon | Spectrum | Fluent 2 | Atlassian | shadcn | **Include?** | Reason if excluded |
-|----------------|:----------:|:------:|:--------:|:--------:|:---------:|:------:|:-----------:|-------------------|
-| Size variants sm/md/lg | partial | YES | partial | YES | partial | NO | **YES** | 3+ DS |
-| Placeholder | YES | YES | YES | YES | YES | YES | **YES** | Universal |
-| Disabled state | YES | YES | YES | YES | YES | YES | **YES** | Universal |
-| Error/invalid state | YES | YES | YES | YES | YES | partial | **YES** | shadcn gap — add `aria-invalid` styling |
-| Required prop | YES | YES | YES | YES | YES | YES | **YES** | Universal |
-| Helper text | YES | YES | YES | YES | YES | NO | **YES** | 5/6 DS — shadcn gap |
-| Error message text | YES | YES | YES | YES | YES | NO | **YES** | 5/6 DS — shadcn gap |
-| Group / section support | YES | YES | YES | YES | YES | YES | **YES** | Universal |
-| Leading icon in items | YES | NO | YES | NO | YES | NO | **YES** | 3/6 DS |
-| Scroll buttons (long lists) | NO | YES | YES | YES | YES | YES | **YES** | 5/6 DS — Radix built-in |
-| Keyboard type-ahead | YES | YES | YES | YES | YES | YES | **YES** | Universal — Radix built-in |
-| Leading icon in trigger | YES | NO | NO | NO | partial | NO | NO | Only 1–2 DS; compose manually |
-| Searchable/filterable | NO | separate | NO | NO | YES | separate | NO | Out of scope — Combobox |
-| Multi-select | NO | separate | separate | YES | YES | separate | NO | Out of scope — separate component |
-| Quiet/underline variant | NO | NO | YES | YES | NO | NO | NO | Only 2 DS |
-| isLoading state | NO | NO | YES | NO | NO | NO | NO | Out of scope for MVP |
-
-**GATE:** Parity check complete. All REQUIRED features included.
+| Feature / Prop | Material | Carbon | Spectrum | Fluent | shadcn | **Include?** | Reason if excluded |
+|----------------|----------|--------|----------|--------|--------|-------------|-------------------|
+| Size variants (sm/md/lg) | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ YES | Core UX need |
+| Error state + message | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ YES | Form validation required |
+| Disabled trigger | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ YES | |
+| Disabled individual item | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ YES | |
+| Grouped options (SelectGroup) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ YES | |
+| Leading icon on item | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ YES | Implemented via leadingIcon |
+| Helper text | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ YES | Via SelectField |
+| Multi-select | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ NO | Out of scope (separate ticket) |
+| Async / dynamic options | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ NO | That's Combobox |
 
 ---
 
@@ -101,22 +89,10 @@ Need a select?
 
 | Prop | Values | Default |
 |------|--------|---------|
-| `size` | `"sm"` \| `"md"` \| `"lg"` | `"md"` |
-| `disabled` | `boolean` | `false` |
-| `required` | `boolean` | `false` |
-| `isError` | `boolean` | `false` |
-| `placeholder` | `string` | — |
-| `label` | `string` | — |
-| `helperText` | `string` | — |
-| `errorMessage` | `string` | — |
-
-**Size dimensions:**
-
-| Size | Height | Padding X | Font size | Icon size |
-|------|--------|-----------|-----------|-----------|
-| sm | `h-8` (32px) | `px-2` (8px) | `text-xs` | `h-3 w-3` |
-| md | `h-9` (36px) | `px-3` (12px) | `text-sm` | `h-4 w-4` |
-| lg | `h-10` (40px) | `px-4` (16px) | `text-sm` | `h-4 w-4` |
+| `size` (SelectTrigger) | `'sm' \| 'md' \| 'lg'` | `'md'` |
+| `isError` (SelectTrigger) | `boolean` | `false` |
+| `disabled` (Select root) | `boolean` | `false` |
+| `disabled` (SelectItem) | `boolean` | `false` |
 
 ---
 
@@ -124,76 +100,62 @@ Need a select?
 
 | State | How implemented | CSS / data-attr |
 |-------|-----------------|-----------------|
-| default (closed) | — | `data-state="closed"` on trigger |
-| open | dropdown visible | `data-state="open"` on trigger + content |
-| placeholder | no value selected | `data-[placeholder]` on trigger |
-| hover | bg change on trigger | `hover:bg-accent/50` |
-| focus-visible | ring-2 on trigger | `focus-visible:ring-2 focus-visible:ring-ring` |
-| active (mousedown) | N/A — Radix handles | — |
-| disabled | opacity-50, cursor-not-allowed, no interaction | `data-[disabled]` / `disabled` attr |
-| error | red border + ring, aria-invalid | `aria-invalid="true"`, `aria-describedby` → error message |
-| item default | bg-transparent | — |
-| item highlighted | accent bg | `data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground` |
-| item selected | checkmark in ItemIndicator | `data-state="checked"` |
-| item disabled | opacity-50, skip in keyboard nav | `data-[disabled]` |
+| default (no value) | Placeholder visible in muted color | `text-[hsl(var(--muted-foreground))]` |
+| default (value selected) | Selected label visible | `text-[hsl(var(--foreground))]` |
+| open / expanded | Portal `<ul>` rendered | `aria-expanded="true"` on trigger |
+| option focused | Option bg accent | `bg-[hsl(var(--accent))]` |
+| option selected | Check icon in left-2 slot | `aria-selected="true"` |
+| disabled trigger | opacity-50, cursor-not-allowed | `opacity-50 cursor-not-allowed pointer-events-none` |
+| disabled option | opacity-50, skipped by arrow keys | `aria-disabled="true" tabIndex={-1}` |
+| error | Destructive border + focus ring | `aria-invalid="true"` |
+| loading | N/A — not implemented | — |
 
 ---
 
 ## Interaction Zones
 
-- **Clickable area:** entire trigger button (`SelectTrigger`) — full width
-- **Trigger:** click or Enter/Space opens dropdown
-- **Tab:** moves focus to/from trigger; dropdown items are NOT in tab order
-- **Enter / Space:** on trigger → opens; on highlighted item → selects + closes
-- **Escape:** closes dropdown, returns focus to trigger
-- **Arrow keys:** ArrowDown/Up navigates items (Radix handles natively); opens dropdown if closed
-- **Type-ahead:** printable characters jump to matching option (Radix native)
-- **Home / End:** first / last item (Radix native)
-- **Click outside:** closes dropdown
+- **Clickable area:** entire SelectTrigger button
+- **Trigger:** click or Enter/Space/ArrowDown opens listbox
+- **Tab:** focus lands on SelectTrigger; Tab inside open listbox exits naturally
+- **Enter/Space:** on trigger = open; on focused option = select + close
+- **Escape:** closes listbox, returns focus to trigger
+- **Arrow keys:** ArrowDown/Up navigate enabled options (wrap-around)
+- **Click outside:** mousedown listener closes listbox
 
 ---
 
 ## Visual Design
 
-### Trigger Dimensions
+### Dimensions
 
 | Property | Value | Token / Tailwind class |
 |----------|-------|------------------------|
-| Height sm | 32px | `h-8` |
-| Height md | 36px | `h-9` |
-| Height lg | 40px | `h-10` |
-| Min touch target | 44×44px | lg size + wrapper padding if needed |
-| Width | full parent | `w-full` |
+| Height sm | 36px | `h-9` |
+| Height md | 40px | `h-10` |
+| Height lg | 44px | `h-11` |
 
 ### Internal proportions
 
-| Property | Value | Token / class | Notes |
-|----------|-------|---------------|-------|
-| Padding X sm | 8px | `px-2` | On 4px scale |
-| Padding X md | 12px | `px-3` | On 4px scale |
-| Padding X lg | 16px | `px-4` | On 4px scale |
-| Chevron icon size md/lg | 16px | `h-4 w-4` | `--icon-sm` |
-| Chevron icon size sm | 12px | `h-3 w-3` | `--icon-indicator` |
-| ItemIndicator icon | 12px | `h-3 w-3` | `--icon-indicator` — NOT h-3.5 (E-011 lesson) |
-| Item padding | pl-8 pr-2 py-1.5 | `pl-8 pr-2 py-1.5` | space for indicator |
-| Content min-width | trigger width | `min-w-[var(--radix-select-trigger-width)]` | |
-| Content padding | 4px | `p-1` | |
-| Content offset | 4px | `sideOffset={4}` on Content | |
+| Property | Value | Token / class |
+|----------|-------|---------------|
+| Horizontal padding | 12px | `px-3` |
+| Chevron icon | 16px | `h-4 w-4` |
+| Check icon | 16px | `h-4 w-4` |
+| Option padding | 8px 12px | `py-2 px-3` |
+| Content padding | 4px | `p-1` |
 
 ### Border & shape
 
 | Property | Value | Token |
 |----------|-------|-------|
-| Border radius (trigger) | `var(--radius)` | `rounded-[var(--radius)]` |
-| Border radius (content) | `var(--radius)` | `rounded-[var(--radius)]` |
-| Border radius (item) | 4px | `rounded-sm` |
+| Border radius | `var(--radius)` | `rounded-[var(--radius)]` |
 | Border width | 1px | `border` |
 
 ### Anti-patterns (visual)
 
-- DO NOT use `h-3.5` for ItemIndicator — use `h-3 w-3` (12px = on scale)
-- DO NOT hardcode heights — use size token map
-- DO NOT use `position="item-aligned"` — causes clipping
+- NO arbitrary px — all sizes on 4px scale
+- NO `h-3.5` (14px) anywhere
+- NO hardcoded hex — all `hsl(var(--token))`
 
 ---
 
@@ -201,23 +163,17 @@ Need a select?
 
 | CSS property | Token used |
 |-------------|-----------|
-| Trigger background | `var(--background)` → `bg-background` |
-| Trigger border | `var(--input)` → `border-input` |
-| Trigger text | `var(--foreground)` → `text-foreground` |
-| Trigger placeholder | `var(--muted-foreground)` → `data-[placeholder]:text-muted-foreground` |
-| Trigger focus ring | `var(--ring)` → `ring-ring` |
-| Trigger error border | `var(--destructive)` → `aria-[invalid=true]:border-destructive` |
-| Trigger disabled | opacity-50 |
-| Chevron icon | `var(--muted-foreground)` → `text-muted-foreground` |
-| Content background | `var(--popover)` → `bg-popover` |
-| Content text | `var(--popover-foreground)` → `text-popover-foreground` |
-| Content border | `var(--border)` → `border` |
-| Item hover bg | `var(--accent)` → `data-[highlighted]:bg-accent` |
-| Item hover text | `var(--accent-foreground)` → `data-[highlighted]:text-accent-foreground` |
-| Group label | `var(--muted-foreground)` → `text-muted-foreground` |
-| Separator | `var(--muted)` → `bg-muted` |
-| Helper text | `var(--muted-foreground)` → `text-muted-foreground` |
-| Error message | `var(--destructive)` → `text-destructive` |
+| trigger background | `hsl(var(--background))` |
+| trigger text | `hsl(var(--foreground))` |
+| trigger border | `hsl(var(--input))` |
+| trigger focus ring | `hsl(var(--ring))` |
+| trigger error border | `hsl(var(--destructive))` |
+| content background | `hsl(var(--popover))` |
+| content text | `hsl(var(--popover-foreground))` |
+| option hover bg | `hsl(var(--accent))` |
+| option hover text | `hsl(var(--accent-foreground))` |
+| placeholder | `hsl(var(--muted-foreground))` |
+| shadow | `var(--shadow-md)` |
 
 **Hardcoded values:** NONE.
 
@@ -225,82 +181,108 @@ Need a select?
 
 ## ARIA
 
-- **role:** `combobox` on trigger, `listbox` on content, `option` on each item
-- **aria-expanded:** `"true"` / `"false"` on trigger (Radix sets automatically)
-- **aria-haspopup:** `"listbox"` on trigger (Radix sets automatically)
-- **aria-controls:** points to listbox element (Radix sets automatically)
-- **aria-activedescendant:** ID of highlighted item (Radix sets automatically)
-- **aria-selected:** `"true"` on selected item (Radix sets automatically)
-- **aria-disabled:** on disabled items (Radix sets automatically)
-- **aria-invalid:** `"true"` on trigger when `isError=true` — **must be set manually**
-- **aria-describedby:** points to error message element when `isError=true` — **must be set manually**
-- **aria-label / aria-labelledby:** via external `<label htmlFor>` + `id` on trigger
-- **aria-required:** `"true"` when `required=true`
-- **aria-hidden on chevron icon:** yes — `aria-hidden="true"`
+| Element | Role / Attribute | Value |
+|---------|-----------------|-------|
+| SelectTrigger `<button>` | `role="combobox"` | — |
+| | `aria-expanded` | `true/false` |
+| | `aria-haspopup` | `"listbox"` |
+| | `aria-controls` | listbox id |
+| | `aria-invalid` | `"true"` when isError |
+| SelectContent `<ul>` | `role="listbox"` | — |
+| | `aria-labelledby` | trigger id |
+| SelectItem `<li>` | `role="option"` | — |
+| | `aria-selected` | `true/false` |
+| | `aria-disabled` | `true` when disabled |
+| SelectGroup `<div>` | `role="group"` | — |
+| SelectSeparator | `role="separator"` | — |
+| Icons | `aria-hidden="true"` | — |
+
+**Focus model:** real DOM focus on `<li>` (tabIndex=0), not aria-activedescendant. Both are valid APG patterns.
 
 ---
 
 ## Animation
 
-- Enter: fade-in + zoom-in-95 (80ms ease-out) — `data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95`
-- Exit: fade-out + zoom-out-95 (80ms ease-in) — `data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95`
-- Side transitions: `data-[side=bottom]:slide-in-from-top-2` etc.
-- `prefers-reduced-motion:` handled via `motion-safe:` prefix on animation classes
+- Enter: `animate-in fade-in-0 zoom-in-95 [animation-duration:var(--duration-fast)]`
+- Exit: N/A (portal unmounts on close)
+- `prefers-reduced-motion`: `motion-safe:` prefix on animate-in classes
 
 ---
 
 ## Dark Mode
 
-- [ ] All tokens semantic — dark mode activates via `?mode=dark` URL param (NOT CSS class toggle / NOT `data-theme`)
+- [ ] All tokens semantic — dark mode activates via `?mode=dark`
 - [ ] No hardcoded colors
 - [ ] Verified at `/preview?tab=components&mode=dark`
 
 ---
 
-## Demo States (required in ComponentGallery)
+## Demo States
 
-| State | Label in demo | Notes |
-|-------|--------------|-------|
-| Size sm | "Small" | placeholder, no value |
-| Size md | "Medium" | placeholder, no value |
-| Size lg | "Large" | placeholder, no value |
-| With value selected | "With value" | shows selected text |
-| Disabled | "Disabled" | opacity-50, not interactive |
-| Error | "Error" | red border, aria-invalid, error message below |
-| With helper text | "With helper text" | label + helper below |
-| Grouped options | "Grouped" | two SelectGroups with labels + separator |
-| Items with icons | "Items with icons" | leading icon per item |
-| Long list (scroll) | "Long list" | 12+ items, scroll buttons appear |
+### Tab 1 — Overview: 3 live demo rows
+
+| Row | Label | Setup |
+|-----|-------|-------|
+| 1 | Basic (md) | Controlled, 3 theme options, placeholder |
+| 2 | With label + helper (SelectField) | label, helperText, 3 country options |
+| 3 | Error state | isError, errorMessage, 2 plan options |
+
+### Tab 5 — States: 8 live rows
+
+| Label | Setup |
+|-------|-------|
+| Default (no selection) | placeholder visible |
+| Default (value selected) | pre-selected option |
+| Size sm | `size="sm"` |
+| Size lg | `size="lg"` |
+| Disabled | `disabled` on Select root |
+| Error | `isError` on SelectTrigger |
+| With leadingIcon | flag emoji on items |
+| Grouped + separator | SelectGroup + SelectLabel + SelectSeparator |
 
 ---
 
 ## Test Plan
 
-- [ ] All size variants render without errors
-- [ ] `cursor:pointer` on trigger — Playwright
-- [ ] `cursor:not-allowed` on disabled — Playwright
-- [ ] No `style` with hex color — Playwright
-- [ ] Click trigger → dropdown opens (`aria-expanded="true"`) — Playwright
-- [ ] Click item → item selected, dropdown closes — Playwright
-- [ ] **EXCLUSIVE-SELECTION:** Select item A → open again → select item B → verify item A `aria-selected` becomes `"false"` — Playwright
-- [ ] `Escape` closes dropdown — Playwright
-- [ ] `aria-invalid="true"` on trigger when isError — Playwright
-- [ ] axe-core: 0 critical violations
-- [ ] Keyboard: Tab → focus trigger → Enter → open → ArrowDown → Enter → select
-- [ ] Dark mode renders correctly at `/preview?tab=components&mode=dark`
-- [ ] `npm run lint:ui` passes
-- [ ] ItemIndicator icon is `h-3 w-3` (12px) — NOT `h-3.5`
+### Component-specific Playwright assertions
+
+- [ ] Click trigger → `aria-expanded="true"` on trigger + `[role="listbox"]` visible in Portal
+- [ ] Click option → `aria-expanded="false"` + selected value appears in trigger text
+- [ ] Click disabled option → value does NOT change, listbox stays open
+- [ ] Press Escape when open → listbox closes, focus returns to trigger
+- [ ] Press ArrowDown on trigger → listbox opens, first enabled option focused
+- [ ] Press ArrowDown twice in open listbox → second option focused
+- [ ] Disabled trigger → click does NOT open listbox, `aria-expanded` stays `"false"`
+
+### Dark mode
+
+- [ ] Verified at `/preview?tab=components&mode=dark`
 
 ---
 
 ## Spec Sign-off
 
 - [x] Industry Parity Check table filled
-- [x] Variants complete (size sm/md/lg, disabled, error, required)
+- [x] Variants complete
 - [x] All states addressed
-- [x] Visual Design filled with token-based values
+- [x] Visual Design section filled with token-based values
 - [x] All CSS → tokens
 - [x] ARIA specified
 - [x] Test plan written
 
-**Spec complete:** YES
+**Spec complete: YES**
+
+---
+
+## Retrospective
+
+*(Fill after visual gate approval, before merge)*
+
+- **iterations_to_done:** 3 (implement → token audit fix → QA id fix)
+- **What went wrong:** (1) border-l-[3px] off 4px scale + --success fallback hex in DoDontCard. (2) #select-error placed in States tab but test runs on Overview tab without navigating.
+- **Root cause:** QA test expects element visible on page load; id must be on Overview tab element, not lazy-rendered States tab.
+- **New Error Log entry created?** no (iterations ≤5)
+- **Automation ticket link:** none
+- **Memory update:** yes
+
+<!-- retrospective updated 2026-04-28 -->

@@ -73,6 +73,7 @@ Report violations as file:line. Zero violations → "PASS".
 7. **RETROSPECTIVE** (Pipeline v2, ALE-811) — заполнить `## Retrospective` в spec: `iterations_to_done`, root cause, новый E-0NN если >5 итераций, ссылка на automation ticket. Без этого merge запрещён.
 8. **MERGE + DEPLOY** — только после шагов 5, 6 и 7.
 9. **POST-DEPLOY VERIFY** — `mcp__claude_ai_Vercel__get_deployment("theme-studio-beta.vercel.app")` → проверить `source == "cli"` + свежий `createdAt`. Если `source == "github"` — GitHub integration перезаписала alias, деплоить заново.
+   - **CI required check (ALE-829, добавлено 2026-04-27):** standalone repo `cypok13/anti-shadcn-theme-studio` имеет GitHub Actions `build.yml` (`npm install` + `npm run build`) — ловит missing deps / build failures на push в main. Vercel deploy-failure → Telegram alert через n8n workflow `vercel-theme-studio-deploy-alert` (id `oJFaZJfbnVrKl8q7`, polling каждые 15 мин, окно 30 мин). Без зелёного CI и Telegram-молчания деплой не считается успешным.
 
 > **Delegation enforcement (Pipeline v2):** PreToolUse hook `.claude/hooks/theme-studio-delegation-guard.sh` блокирует прямые `Edit|Write` на `src/components/ui/*.tsx` без активного designer-субагента. Bypass только для веток `hotfix/*`.
 
