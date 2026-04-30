@@ -971,3 +971,19 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 **Linear:** ALE-837 Done
 
 **Следующий шаг:** Accordion или Badge Preview Block (следующие в очереди)
+
+## День 24 — ALE-721: OKLCH Color Picker (2026-04-30)
+
+1. **Routing regression (ALE-754) — AppShell was unreachable** — `page.tsx` was redirecting to `/preview` since ALE-754. Token editor and OklchPicker were dead code from routing perspective. Restored `<AppShell />` as root route. Lesson: any route change must be explicitly called out in tickets.
+
+2. **OKLCH editing now lives in the editor, not just export** — `OklchPicker` replaces native `<input type="color">`. L/C/H sliders with real-time preview, hex input with bidirectional sync, contrast ratio shown as `4.7:1 AA`. This delivers the core product promise: OKLCH is the editing space, not a post-export nicety.
+
+3. **`oklch-engine.ts` was ready from Day 4 — zero rewrite needed** — `oklchFromHsl`, `oklchFromHex`, `oklchToHslString`, `oklchToHex`, `getGamutInfo` all used as-is. Long-term bets on the engine paid off.
+
+4. **All 8 base/foreground contrast pairs wired** — primary, background, secondary, muted, accent, destructive, card, popover all show numeric contrast ratio in the picker. Previously only primary was shown.
+
+**Артефакты:** `src/components/tokens/OklchPicker.tsx` (новый, 261 строк), `src/components/tokens/TokenEditor.tsx` (OklchPicker integration, CONTRAST_PAIR map), `src/app/page.tsx` (routing restore), `docs/specs/oklch-picker-spec.md` (новый)
+
+**Linear:** ALE-721 Done
+
+**Следующий шаг:** Badge Preview Block (Pipeline v2) или pre-existing TokenEditor DS violations cleanup

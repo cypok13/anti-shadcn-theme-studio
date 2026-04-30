@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { hslStringToHex, hexToHslString } from '@/lib/color/convert'
+import { hslStringToHex } from '@/lib/color/convert'
 import { contrastRatio } from '@/lib/color/contrast'
 import type { ThemeTokens } from '@/lib/themes/types'
+import { OklchPicker } from './OklchPicker'
 
 export interface TokenOverrides {
   background?: string
@@ -135,12 +136,30 @@ function tokenLabel(key: ColorKey): string {
   return LABEL_MAP[key] ?? key
 }
 
+// Pair mapping for contrast readout: key → its contrast partner key
+const CONTRAST_PAIR: Partial<Record<ColorKey, ColorKey>> = {
+  primary: 'primaryForeground',
+  primaryForeground: 'primary',
+  background: 'foreground',
+  foreground: 'background',
+  secondary: 'secondaryForeground',
+  secondaryForeground: 'secondary',
+  muted: 'mutedForeground',
+  mutedForeground: 'muted',
+  accent: 'accentForeground',
+  accentForeground: 'accent',
+  destructive: 'destructiveForeground',
+  destructiveForeground: 'destructive',
+  card: 'cardForeground',
+  cardForeground: 'card',
+  popover: 'popoverForeground',
+  popoverForeground: 'popover',
+  sidebarBackground: 'sidebarForeground',
+  sidebarForeground: 'sidebarBackground',
+}
+
 export function TokenEditor({ tokens, presetTokens, overrides, presetFonts, onChange }: TokenEditorProps) {
   const [openGroups, setOpenGroups] = useState<Set<string>>(DEFAULT_OPEN)
-
-  const primary = overrides.primary ?? tokens.primary
-  const ratio = contrastRatio(primary, overrides.primaryForeground ?? tokens.primaryForeground)
-  const passesAA = ratio >= 4.5
 
   const toggleGroup = (id: string) => {
     setOpenGroups((prev) => {
@@ -151,8 +170,8 @@ export function TokenEditor({ tokens, presetTokens, overrides, presetFonts, onCh
     })
   }
 
-  const setColor = (key: ColorKey, hex: string) => {
-    onChange({ ...overrides, [key]: hexToHslString(hex) })
+  const setColorHsl = (key: ColorKey, hsl: string) => {
+    onChange({ ...overrides, [key]: hsl })
   }
 
   const resetToken = (key: ColorKey) => {
@@ -232,33 +251,41 @@ export function TokenEditor({ tokens, presetTokens, overrides, presetFonts, onCh
                     const hsl = (overrides[key as keyof TokenOverrides] as string | undefined) ?? tokens[key]
                     const hex = hslStringToHex(hsl)
                     const isOverridden = key in overrides
-                    const showBadge = key === 'primary'
+                    const pairKey = CONTRAST_PAIR[key]
+                    const pairHsl = pairKey
+                      ? ((overrides[pairKey as keyof TokenOverrides] as string | undefined) ?? tokens[pairKey as keyof ThemeTokens] as string | undefined)
+                      : undefined
+                    // Show numeric contrast ratio for base/fg pairs
+                    const showRatio = Boolean(pairKey && pairHsl)
+                    const ratio = showRatio && pairHsl ? Math.round(contrastRatio(hsl, pairHsl) * 10) / 10 : null
+                    const passesAA = ratio !== null && ratio >= 4.5
                     return (
                       <div key={key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: '11px', fontFamily: 'monospace', color: 'hsl(var(--foreground, 0 0% 5%))', minWidth: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '110px' }}>
+                        <span style={{ fontSize: '11px', fontFamily: 'monospace', color: 'hsl(var(--foreground, 0 0% 5%))', minWidth: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100px' }}>
                           {tokenLabel(key)}
                         </span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                          {showBadge && (
+                          {ratio !== null && (
                             <span style={{
                               fontSize: '9px',
                               fontFamily: 'monospace',
                               padding: '1px 4px',
                               borderRadius: '2px',
-                              background: passesAA ? '#16a34a' : '#dc2626',
-                              color: '#fff',
+                              background: passesAA ? 'hsl(var(--muted, 0 0% 88%))' : 'hsl(var(--destructive, 0 84% 60%))',
+                              color: passesAA ? 'hsl(var(--foreground, 0 0% 5%))' : 'hsl(var(--destructive-foreground, 0 0% 98%))',
+                              whiteSpace: 'nowrap',
                             }}>
-                              {passesAA ? 'AA ✓' : 'AA ✗'}
+                              {ratio.toFixed(1)}:1
                             </span>
                           )}
                           <span style={{ fontSize: '10px', fontFamily: 'monospace', color: 'hsl(var(--muted-foreground, 0 0% 40%))' }}>
                             {hex}
                           </span>
-                          <input
-                            type="color"
-                            value={hex}
-                            onChange={(e) => setColor(key, e.target.value)}
-                            style={{ width: '18px', height: '18px', padding: '0', border: '1px solid hsl(var(--border, 0 0% 20%))', borderRadius: '50%', cursor: 'pointer', background: 'transparent', flexShrink: 0 }}
+                          <OklchPicker
+                            hsl={hsl}
+                            pairHsl={pairHsl}
+                            label={tokenLabel(key)}
+                            onChange={(nextHsl) => setColorHsl(key, nextHsl)}
                           />
                           {isOverridden && (
                             <button
