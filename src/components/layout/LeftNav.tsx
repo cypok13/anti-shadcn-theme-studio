@@ -131,7 +131,7 @@ export function LeftNav({ isOpen = false, onClose }: Props) {
           overflowY: 'auto',
           padding: '32px 16px',
           background: 'hsl(var(--background))',
-          width: 280,
+          width: 240,
           flexShrink: 0,
           flexDirection: 'column',
         }}
