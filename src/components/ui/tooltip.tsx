@@ -143,27 +143,32 @@ export const TooltipContent = React.forwardRef<HTMLDivElement, TooltipContentPro
 
     React.useLayoutEffect(() => {
       refs.setReference(triggerRef.current)
-    }, [refs, triggerRef])
+    }, []) // mount-only: reference doesn't change after TooltipContent mounts
 
     const arrowSide = { top: 'bottom', right: 'left', bottom: 'top', left: 'right' }[
       computedPlacement.split('-')[0]
     ] as string
 
-    if (typeof document === 'undefined' || !open) return null
+    if (typeof document === 'undefined') return null
 
     return ReactDOM.createPortal(
       <div
         ref={refs.setFloating}
         id={tooltipId}
         role="tooltip"
-        style={{ ...floatingStyles, visibility: isPositioned ? 'visible' : 'hidden' }}
+        aria-hidden={!open}
+        style={{
+          ...floatingStyles,
+          visibility: (open && isPositioned) ? 'visible' : 'hidden',
+          pointerEvents: open ? 'auto' : 'none',
+        }}
         className={[
           'z-[var(--z-tooltip)] max-w-[240px] rounded-[var(--radius)]',
           'border border-[hsl(var(--border))]',
           'bg-[hsl(var(--popover))] text-[hsl(var(--popover-foreground))]',
           'py-1.5 px-3 text-xs font-medium',
           '[box-shadow:var(--shadow-md)]',
-          'animate-in fade-in-0 zoom-in-95 [animation-duration:var(--duration-fast)]',
+          open ? 'animate-in fade-in-0 zoom-in-95 [animation-duration:var(--duration-fast)]' : '',
           className,
         ]
           .filter(Boolean)

@@ -62,11 +62,17 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     : `:root { color-scheme: light; } .shiki span { color: var(--shiki-light) !important; } .shiki { color: var(--shiki-light) !important; }`
 
   const shadowStyle = params.shadow ?? preset.shadowStyle ?? 'none'
-  const shadowMap: Record<string, string> = {
+  const shadowMap: Record<string, string> = mode === 'dark' ? {
     none: 'none',
     flat: '1px 1px 0 hsl(var(--border))',
-    soft: '0 2px 8px hsl(var(--foreground) / 0.08)',
-    dramatic: '0 8px 24px hsl(var(--foreground) / 0.15)',
+    soft: '0 2px 12px rgba(0,0,0,0.5)',
+    dramatic: '0 8px 32px rgba(0,0,0,0.7)',
+    glow: '0 0 20px hsl(var(--primary) / 0.5)',
+  } : {
+    none: 'none',
+    flat: '1px 1px 0 hsl(var(--border))',
+    soft: '0 2px 8px rgba(0,0,0,0.08)',
+    dramatic: '0 8px 24px rgba(0,0,0,0.15)',
     glow: '0 0 16px hsl(var(--primary) / 0.3)',
   }
   const shadowValue = shadowMap[shadowStyle] ?? 'none'

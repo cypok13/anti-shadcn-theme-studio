@@ -27,31 +27,26 @@ export function LeftNav({ isOpen = false, onClose }: Props) {
   const scrollContainerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    const scrollContainer = document.querySelector<HTMLElement>('.gallery-scroll')
-    scrollContainerRef.current = scrollContainer
+    const container = document.querySelector<HTMLElement>('.gallery-scroll')
+    if (!container) return
+    scrollContainerRef.current = container
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id)
-            break
-          }
+    function update() {
+      const containerTop = container!.getBoundingClientRect().top
+      const threshold = containerTop + 80
+      let active = COMPONENTS[0].id
+      for (const { id } of COMPONENTS) {
+        const el = document.getElementById(id)
+        if (el && el.getBoundingClientRect().top <= threshold) {
+          active = id
         }
-      },
-      {
-        root: scrollContainer,
-        rootMargin: '-10% 0px -60% 0px',
-        threshold: 0,
-      },
-    )
-
-    for (const { id } of COMPONENTS) {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
+      }
+      setActiveId(active)
     }
 
-    return () => observer.disconnect()
+    container.addEventListener('scroll', update, { passive: true })
+    update()
+    return () => container.removeEventListener('scroll', update)
   }, [])
 
   function scrollTo(id: string) {
