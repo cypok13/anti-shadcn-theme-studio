@@ -2,13 +2,12 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { Loader2, Search, Trash2, CheckCircle, AlertTriangle, Info, Zap } from 'lucide-react'
+import { Loader2, Search, Trash2 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { Switch } from '../ui/switch'
 import { RadioGroup, RadioItem } from '../ui/radio-group'
 import { CalendarCard } from './cards/CalendarCard'
-import { Field, Input } from '../ui/input'
 import {
   SelectGroup,
   SelectItem,
@@ -16,10 +15,7 @@ import {
   SelectSeparator,
   SelectField,
 } from '../ui/select'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs'
 import { TooltipProvider } from '../ui/tooltip'
-import { Badge } from '../ui/badge'
-import { Separator } from '../ui/separator'
 import { ComponentSection } from './ComponentSection'
 import { LeftNav } from '@/components/layout/LeftNav'
 import { EmailCTA } from '@/components/layout/EmailCTA'
@@ -55,6 +51,9 @@ import {
   ComboboxCodeTab,
   ComboboxStatesTab,
 } from './docs/ComboboxDocs'
+import { InputOverviewTab, InputApiTab, InputCodeTab } from './docs/InputDocs'
+import { BadgeOverviewTab, BadgeApiTab, BadgeCodeTab } from './docs/BadgeDocs'
+import { SeparatorOverviewTab, SeparatorApiTab } from './docs/SeparatorDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 import { SiteHeader } from '@/components/layout/SiteHeader'
@@ -110,9 +109,12 @@ export function ComponentGallery() {
             <ComponentSection
               id="input"
               title="Input"
-            >
-              <InputDemo />
-            </ComponentSection>
+              tabs={[
+                { key: 'overview', label: 'Overview', content: <InputOverviewTab /> },
+                { key: 'api',      label: 'API',      content: <InputApiTab /> },
+                { key: 'code',     label: 'Code',     content: <InputCodeTab /> },
+              ]}
+            />
 
             <SelectSection />
 
@@ -157,16 +159,21 @@ export function ComponentGallery() {
             <ComponentSection
               id="badge"
               title="Badge"
-            >
-              <BadgeDemo />
-            </ComponentSection>
+              tabs={[
+                { key: 'overview', label: 'Overview', content: <BadgeOverviewTab /> },
+                { key: 'api',      label: 'API',      content: <BadgeApiTab /> },
+                { key: 'code',     label: 'Code',     content: <BadgeCodeTab /> },
+              ]}
+            />
 
             <ComponentSection
               id="separator"
               title="Separator"
-            >
-              <SeparatorDemo />
-            </ComponentSection>
+              tabs={[
+                { key: 'overview', label: 'Overview', content: <SeparatorOverviewTab /> },
+                { key: 'api',      label: 'API',      content: <SeparatorApiTab /> },
+              ]}
+            />
 
             <TabsSection />
             <EmailCTA />
@@ -401,41 +408,6 @@ function RadioDemo() {
   )
 }
 
-function TabsDemo() {
-  const [active, setActive] = useState('account')
-  const tabs = ['account', 'password', 'notifications']
-  const content: Record<string, string> = {
-    account: 'Manage your account settings and preferences.',
-    password: 'Change your password and security settings.',
-    notifications: 'Configure how you receive notifications.',
-  }
-  return (
-    <section className="space-y-3" data-section="tabs-original">
-      <h4 className={sectionHeading}>Tabs</h4>
-      <div className="max-w-sm">
-        <div className="flex rounded-[var(--radius)] bg-[hsl(var(--muted))] p-1 gap-1">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActive(tab)}
-              className={[
-                'cursor-pointer flex-1 px-2 py-1 text-xs rounded-[calc(var(--radius)-2px)] transition-colors capitalize',
-                active === tab
-                  ? 'bg-[hsl(var(--background))] text-[hsl(var(--foreground))] [box-shadow:var(--shadow-sm)] font-medium'
-                  : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]',
-              ].join(' ')}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        <div className="mt-3 p-3 rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))]">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">{content[active]}</p>
-        </div>
-      </div>
-    </section>
-  )
-}
 
 const CircleIcon = () => (
   <svg
@@ -476,44 +448,6 @@ const SquareIcon = () => (
   </svg>
 )
 
-function SeparatorDemo() {
-  return (
-    <section className="space-y-4" data-section="separator">
-      <h4 className={sectionHeading}>Separator</h4>
-      <div className="space-y-6">
-
-        {/* Horizontal */}
-        <div className="space-y-2">
-          <p className="text-xs text-[hsl(var(--muted-foreground))]">Horizontal</p>
-          <Separator />
-        </div>
-
-        {/* Vertical */}
-        <div className="space-y-2">
-          <p className="text-xs text-[hsl(var(--muted-foreground))]">Vertical</p>
-          <div className="flex items-center gap-3 text-sm text-[hsl(var(--muted-foreground))]">
-            <span>Item A</span>
-            <Separator orientation="vertical" className="h-4" />
-            <span>Item B</span>
-            <Separator orientation="vertical" className="h-4" />
-            <span>Item C</span>
-          </div>
-        </div>
-
-        {/* With label */}
-        <div className="space-y-2">
-          <p className="text-xs text-[hsl(var(--muted-foreground))]">With label</p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Separator style={{ flex: 1 }} />
-            <span style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', whiteSpace: 'nowrap' }}>OR</span>
-            <Separator style={{ flex: 1 }} />
-          </div>
-        </div>
-
-      </div>
-    </section>
-  )
-}
 
 function SelectDemo() {
   return (
@@ -637,32 +571,6 @@ function SelectDemo() {
   )
 }
 
-function TabsPrimitiveDemo() {
-  return (
-    <section className="space-y-3" data-section="tabs-component">
-      <h4 className={sectionHeading}>Tabs</h4>
-      <div className="space-y-4">
-        <Tabs defaultValue="tab1">
-          <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-            <TabsTrigger value="tab3" disabled>Tab 3</TabsTrigger>
-          </TabsList>
-          <TabsContent value="tab1">
-            <p className="text-sm text-[hsl(var(--muted-foreground))] pt-2">Content for Tab 1</p>
-          </TabsContent>
-          <TabsContent value="tab2">
-            <p className="text-sm text-[hsl(var(--muted-foreground))] pt-2">Content for Tab 2</p>
-          </TabsContent>
-          <TabsContent value="tab3">
-            <p className="text-sm text-[hsl(var(--muted-foreground))] pt-2">Content for Tab 3</p>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </section>
-  )
-}
-
 
 function ButtonsDemo() {
   const [isLoading, setIsLoading] = useState(false)
@@ -735,313 +643,6 @@ function ButtonsDemo() {
   )
 }
 
-const SearchIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-  </svg>
-)
-
-const CalendarIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-  </svg>
-)
-
-const XIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-  </svg>
-)
-
-function InputDemo() {
-  return (
-    <section className="space-y-4">
-      <h4 className={sectionHeading}>Input</h4>
-      <div className="space-y-4 max-w-sm">
-        {/* Default — interactive */}
-        <Field
-          id="input-default"
-          label="Default"
-          inputProps={{ placeholder: 'Type something…' }}
-        />
-
-        {/* With placeholder */}
-        <Field
-          id="input-placeholder"
-          label="With placeholder"
-          inputProps={{ placeholder: 'you@company.com', type: 'email' }}
-        />
-
-        {/* With pre-filled value */}
-        <Field
-          id="input-value"
-          label="With value"
-          inputProps={{ defaultValue: 'Alex Krasnov' }}
-        />
-
-        {/* Disabled */}
-        <Field
-          id="input-disabled"
-          label="Disabled"
-          inputProps={{ defaultValue: 'Free plan', disabled: true }}
-        />
-
-        {/* Read only */}
-        <Field
-          id="input-readonly"
-          label="Read only"
-          inputProps={{ defaultValue: 'read-only@example.com', readOnly: true }}
-        />
-
-        {/* Error state */}
-        <Field
-          id="input-error"
-          label="Error state"
-          isError
-          errorMessage="Enter a valid email address"
-          inputProps={{ defaultValue: 'not-an-email', type: 'email' }}
-        />
-
-        {/* With helper text */}
-        <Field
-          id="input-helper"
-          label="Helper text"
-          helperText="As it appears on your passport"
-          inputProps={{ placeholder: 'Full name' }}
-        />
-
-        {/* Size sm */}
-        <Field
-          id="input-sm"
-          label="Small"
-          inputProps={{ placeholder: 'Small input', size: 'sm' }}
-        />
-
-        {/* Size lg */}
-        <Field
-          id="input-lg"
-          label="Large"
-          inputProps={{ placeholder: 'Large input', size: 'lg' }}
-        />
-
-        {/* With left icon */}
-        <Field
-          id="input-left-icon"
-          label="With left icon"
-          inputProps={{ placeholder: 'Search…', leftIcon: <SearchIcon /> }}
-        />
-
-        {/* With right icon */}
-        <Field
-          id="input-right-icon"
-          label="With right icon"
-          inputProps={{ placeholder: 'Pick a date', rightIcon: <CalendarIcon /> }}
-        />
-
-        {/* Both icons */}
-        <Field
-          id="input-both-icons"
-          label="Both icons"
-          inputProps={{ placeholder: 'Search…', leftIcon: <SearchIcon />, rightIcon: <XIcon /> }}
-        />
-
-        {/* Filled variant */}
-        <Field
-          id="input-filled"
-          label="Filled variant"
-          inputProps={{ placeholder: 'Filled input', variant: 'filled' }}
-        />
-
-        {/* Filled with icon */}
-        <Field
-          id="input-filled-icon"
-          label="Filled with icon"
-          inputProps={{ placeholder: 'Search…', variant: 'filled', leftIcon: <SearchIcon /> }}
-        />
-
-        {/* Error with icon */}
-        <Field
-          id="input-error-icon"
-          label="Error with icon"
-          isError
-          errorMessage="This field is required"
-          inputProps={{ leftIcon: <SearchIcon />, defaultValue: 'invalid input' }}
-        />
-      </div>
-    </section>
-  )
-}
-
-
-function BadgeDemo() {
-  return (
-    <section className="space-y-4" data-section="badge">
-      <div className="space-y-3">
-        {/* Color variants */}
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">Color variants</p>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="default">Brand</Badge>
-          <Badge variant="secondary">Gray</Badge>
-          <Badge variant="outline">Outline</Badge>
-          <Badge variant="destructive">Error</Badge>
-          <Badge variant="success">Success</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="info">Info</Badge>
-        </div>
-
-        {/* Sizes */}
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">Sizes</p>
-        <div className="flex flex-wrap gap-2 items-center">
-          <Badge variant="default" size="sm">Small</Badge>
-          <Badge variant="default" size="md">Medium</Badge>
-        </div>
-
-        {/* With dot indicator */}
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">With dot indicator</p>
-        <div className="flex flex-wrap gap-2 items-center">
-          <Badge variant="success" dot>Online</Badge>
-          <Badge variant="destructive" dot>Offline</Badge>
-          <Badge variant="warning" dot>Away</Badge>
-          <Badge variant="info" dot>Busy</Badge>
-        </div>
-
-        {/* With leading icon */}
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">With leading icon</p>
-        <div className="flex flex-wrap gap-2 items-center">
-          <Badge variant="success"><CheckCircle aria-hidden="true" />Verified</Badge>
-          <Badge variant="destructive"><AlertTriangle aria-hidden="true" />Critical</Badge>
-          <Badge variant="info"><Info aria-hidden="true" />Info</Badge>
-          <Badge variant="default"><Zap aria-hidden="true" />New</Badge>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function ComponentsTab() {
-  return (
-    <div className="p-6 space-y-8">
-      {/* Section 1 — Buttons */}
-      <ButtonsDemo />
-
-      {/* Section 2 — Inputs */}
-      <InputDemo />
-
-      {/* Section 3 — Badge */}
-      <BadgeDemo />
-
-      {/* Section 4 — Alerts */}
-      <section className="space-y-3">
-        <h4 className={sectionHeading}>Alerts</h4>
-        <div className="space-y-3 max-w-sm">
-          <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] bg-[hsl(var(--card))] px-4 py-3">
-            <p className="text-sm font-bold text-[hsl(var(--foreground))]">Heads up</p>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
-              You can change your email address in account settings.
-            </p>
-          </div>
-          <div className="rounded-[var(--radius)] border border-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.1)] px-4 py-3">
-            <p className="text-sm font-bold text-[hsl(var(--destructive))]">Error</p>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
-              Your session has expired. Please sign in again.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 5 — Table */}
-      <section className="space-y-3">
-        <h4 className={sectionHeading}>Table</h4>
-        <div className="rounded-[var(--radius)] border border-[hsl(var(--border))] overflow-hidden max-w-lg">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[hsl(var(--muted))] border-b border-[hsl(var(--border))]">
-                <th className="text-left py-2 px-3 font-medium text-[hsl(var(--muted-foreground))]">Name</th>
-                <th className="text-left py-2 px-3 font-medium text-[hsl(var(--muted-foreground))]">Status</th>
-                <th className="text-left py-2 px-3 font-medium text-[hsl(var(--muted-foreground))]">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b border-[hsl(var(--border))] hover:bg-[hsl(var(--muted)/0.5)] transition-colors">
-                <td className="py-2 px-3">Alice</td>
-                <td className="py-2 px-3 text-[hsl(var(--accent-foreground))]">Active</td>
-                <td className="py-2 px-3">$240</td>
-              </tr>
-              <tr className="border-b border-[hsl(var(--border))] hover:bg-[hsl(var(--muted)/0.5)] transition-colors">
-                <td className="py-2 px-3">Bob</td>
-                <td className="py-2 px-3 text-[hsl(var(--muted-foreground))]">Pending</td>
-                <td className="py-2 px-3">$180</td>
-              </tr>
-              <tr className="hover:bg-[hsl(var(--muted)/0.5)] transition-colors">
-                <td className="py-2 px-3">Carol</td>
-                <td className="py-2 px-3 text-[hsl(var(--muted-foreground))]">Inactive</td>
-                <td className="py-2 px-3">$320</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* Section 6 — Separator (placeholder) */}
-
-      {/* Section 7 — Avatar */}
-      <section className="space-y-3">
-        <h4 className={sectionHeading}>Avatar</h4>
-        <div className="flex items-end gap-3">
-          <div className="w-8 h-8 rounded-full bg-[hsl(var(--muted))] flex items-center justify-center text-xs font-semibold text-[hsl(var(--muted-foreground))]">AK</div>
-          <div className="w-10 h-10 rounded-full bg-[hsl(var(--primary))] flex items-center justify-center text-sm font-semibold text-[hsl(var(--primary-foreground))]">JD</div>
-          <div className="w-14 h-14 rounded-full bg-[hsl(var(--accent))] flex items-center justify-center text-lg font-semibold text-[hsl(var(--accent-foreground))]">MR</div>
-          <div className="flex -space-x-2 ml-2">
-            {['AK', 'JD', 'MR', '+4'].map((label, i) => (
-              <div key={i} className="w-8 h-8 rounded-full border-2 border-[hsl(var(--background))] bg-[hsl(var(--muted))] flex items-center justify-center text-xs font-medium text-[hsl(var(--foreground))]">
-                {label}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Section 8 — Progress */}
-      <section className="space-y-3">
-        <h4 className={sectionHeading}>Progress</h4>
-        <div className="space-y-3 max-w-sm">
-          {[25, 60, 85].map((pct) => (
-            <div key={pct}>
-              <div className="flex justify-between text-xs text-[hsl(var(--muted-foreground))] mb-1">
-                <span>Progress</span><span>{pct}%</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-[hsl(var(--muted))]">
-                <div className="h-2 rounded-full bg-[hsl(var(--primary))] transition-all" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Section 9 — Checkbox */}
-      <CheckboxDemo />
-
-      {/* Section 10 — Switch */}
-      <SwitchDemo />
-
-      {/* Section 11 — Radio */}
-      <RadioDemo />
-
-      {/* Section 12 — Separator */}
-      <SeparatorDemo />
-
-      {/* Section 13 — Tabs */}
-      <TabsDemo />
-
-      {/* Section 14 — Select */}
-      <SelectDemo />
-
-      {/* Section 14b — Tabs (primitive) */}
-      <TabsPrimitiveDemo />
-
-    </div>
-  )
-}
 
 function CookieSettingsCard() {
   const [prefs, setPrefs] = useState({ functional: true, analytics: false })
