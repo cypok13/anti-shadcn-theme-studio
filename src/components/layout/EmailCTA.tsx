@@ -29,10 +29,10 @@ export function EmailCTA() {
       {/* Skeleton block — suggests more content exists */}
       <div style={{ position: 'relative', height: 120, overflow: 'hidden' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '0 4px' }}>
-          <div className="animate-pulse" style={{ height: 16, width: '75%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
-          <div className="animate-pulse" style={{ height: 16, width: '55%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
-          <div className="animate-pulse" style={{ height: 16, width: '65%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
-          <div className="animate-pulse" style={{ height: 16, width: '40%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
+          <div style={{ height: 16, width: '75%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
+          <div style={{ height: 16, width: '55%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
+          <div style={{ height: 16, width: '65%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
+          <div style={{ height: 16, width: '40%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
         </div>
 
         {/* Gradient overlay over skeleton — bottom-up fade */}

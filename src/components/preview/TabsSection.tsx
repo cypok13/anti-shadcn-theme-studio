@@ -3,6 +3,71 @@
 import { ComponentSection } from './ComponentSection'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs'
 
+function TabsApiTab() {
+  return (
+    <div className="space-y-6">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b border-[hsl(var(--border))]">
+              <th className="text-left py-2 pr-4 font-medium text-[hsl(var(--foreground))]">Prop</th>
+              <th className="text-left py-2 pr-4 font-medium text-[hsl(var(--foreground))]">Type</th>
+              <th className="text-left py-2 pr-4 font-medium text-[hsl(var(--foreground))]">Default</th>
+              <th className="text-left py-2 font-medium text-[hsl(var(--foreground))]">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['defaultValue', 'string', '—', 'Initially selected tab (uncontrolled)'],
+              ['value', 'string', '—', 'Controlled selected tab'],
+              ['onValueChange', '(value: string) => void', '—', 'Called when selected tab changes'],
+              ['TabsList.variant', '"default" | "line"', '"default"', 'Pill style or underline indicator style'],
+              ['TabsTrigger.value', 'string', 'required', 'Unique identifier for this tab'],
+              ['TabsTrigger.disabled', 'boolean', 'false', 'Prevents selection and interaction'],
+              ['TabsContent.value', 'string', 'required', 'Shown when its value matches selected tab'],
+            ].map(([prop, type, def, desc]) => (
+              <tr key={prop} className="border-b border-[hsl(var(--border)/0.5)]">
+                <td className="py-2 pr-4 font-mono text-xs text-[hsl(var(--primary))]">{prop}</td>
+                <td className="py-2 pr-4 text-[hsl(var(--muted-foreground))]">{type}</td>
+                <td className="py-2 pr-4 text-[hsl(var(--muted-foreground))]">{def}</td>
+                <td className="py-2 text-[hsl(var(--muted-foreground))]">{desc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+function TabsCodeTab() {
+  return (
+    <pre className="bg-[hsl(var(--muted))] rounded-[var(--radius)] p-4 text-sm font-mono text-[hsl(var(--foreground))] overflow-x-auto">
+      <code>{`import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+
+// Default (pill) style
+<Tabs defaultValue="account">
+  <TabsList>
+    <TabsTrigger value="account">Account</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="account">Account content</TabsContent>
+  <TabsContent value="settings">Settings content</TabsContent>
+</Tabs>
+
+// Underline style
+<Tabs defaultValue="overview">
+  <TabsList variant="line">
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+    <TabsTrigger value="disabled" disabled>Disabled</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview">Overview content</TabsContent>
+</Tabs>`}</code>
+    </pre>
+  )
+}
+
 function TabsOverviewTab() {
   return (
     <div className="space-y-8">
@@ -220,6 +285,8 @@ export function TabsSection() {
       title="Tabs"
       tabs={[
         { key: 'overview', label: 'Overview', content: <TabsOverviewTab /> },
+        { key: 'api',      label: 'API',      content: <TabsApiTab /> },
+        { key: 'code',     label: 'Code',     content: <TabsCodeTab /> },
       ]}
     />
   )
