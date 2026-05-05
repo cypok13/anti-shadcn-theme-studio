@@ -307,3 +307,8 @@ Min interactive target: thumb 16/20px is below 44px — pointer-area is extended
 - Automation ticket: not needed (single-line preventDefault fix; covered now via Gate 19 `track click → thumb focused` assertion). E-013 added to Error Log.
 - Pipeline v2 mirror pattern: validated 4× in a row (Checkbox → Switch → Radio → Slider, all ≤2 iterations).
 - Non-blocking from ux-reviewer (filed for follow-up): phantom vertical scrollbar in Overview card from `overflow-x-auto` implicit y-scroll (3px overflow); affects Radio Preview Block too — 1-line shared fix.
+
+## Related
+- [[radio-group-spec]]
+- [[switch-spec]]
+- [[select-spec]]

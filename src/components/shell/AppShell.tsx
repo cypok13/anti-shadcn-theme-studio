@@ -7,6 +7,8 @@ import { PresetGrid } from '@/components/presets/PresetGrid'
 import { PreviewFrame } from '@/components/preview/PreviewFrame'
 import { ExportModal } from '@/components/export/ExportModal'
 import { TokenEditor, type TokenOverrides } from '@/components/tokens/TokenEditor'
+import { SiteHeader } from '@/components/layout/SiteHeader'
+import { BuiltByBadge } from '@/components/BuiltByBadge'
 
 const TABS = ['components', 'cards', 'typography'] as const
 type PreviewTab = (typeof TABS)[number]
@@ -45,6 +47,7 @@ export function AppShell() {
     <div
       style={{
         display: 'flex',
+        flexDirection: 'column',
         height: '100vh',
         overflow: 'hidden',
         background: `hsl(${tokens.background})`,
@@ -79,6 +82,11 @@ export function AppShell() {
           --font-mono: ${selectedPreset.fonts.mono};
         }
       `}</style>
+      <SiteHeader
+        darkMode={mode === 'dark'}
+        onToggleDark={() => setMode(mode === 'light' ? 'dark' : 'light')}
+      />
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
       {/* Sidebar */}
       <aside
         style={{
@@ -98,7 +106,7 @@ export function AppShell() {
           }}
         >
           <span style={{ fontFamily: 'monospace', fontSize: '14px', fontWeight: 700 }}>
-            anti-shadcn
+            theme-studio
           </span>
         </div>
 
@@ -165,24 +173,11 @@ export function AppShell() {
             padding: '0 12px 12px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-end',
           }}
         >
-          <button
-            onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
-            style={{
-              fontSize: '12px',
-              color: `hsl(${tokens.mutedForeground})`,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            {mode === 'light' ? '◐ Dark' : '○ Light'}
-          </button>
           <a
-            href="https://github.com/cypok13/anti-shadcn-theme-studio"
+            href="https://github.com/cypok13/theme-studio"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -243,6 +238,7 @@ export function AppShell() {
           />
         </main>
       </div>
+      </div>
 
       <ExportModal
         preset={selectedPreset}
@@ -251,6 +247,7 @@ export function AppShell() {
         isOpen={exportOpen}
         onClose={() => setExportOpen(false)}
       />
+      <BuiltByBadge />
     </div>
   )
 }

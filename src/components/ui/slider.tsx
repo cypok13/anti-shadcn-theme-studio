@@ -226,14 +226,16 @@ export const Slider = React.forwardRef<HTMLSpanElement, SliderProps>(
           <span className="sr-only">{label}</span>
         ) : null}
 
+        {/* Track wrapper — px-2.5 gives thumb room at 0%/100% without clipping */}
+        <span
+          className={['relative flex-1 px-2.5 touch-none overflow-visible', disabled ? '' : 'cursor-pointer'].filter(Boolean).join(' ')}
+          onPointerDown={handleTrackPointerDown}
+        >
         {/* Track */}
         <span
           ref={trackRef}
-          onPointerDown={handleTrackPointerDown}
           className={[
-            'relative flex-1 rounded-full bg-[hsl(var(--muted))]',
-            disabled ? '' : 'cursor-pointer',
-            'touch-none',
+            'relative block w-full rounded-full bg-[hsl(var(--muted))]',
             trackHeightMap[size],
           ].join(' ')}
         >
@@ -286,6 +288,7 @@ export const Slider = React.forwardRef<HTMLSpanElement, SliderProps>(
               .filter(Boolean)
               .join(' ')}
           />
+        </span>
         </span>
 
         {showValue ? (

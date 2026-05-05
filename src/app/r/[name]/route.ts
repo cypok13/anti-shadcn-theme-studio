@@ -71,7 +71,7 @@ export async function GET(
     type: "registry:theme",
     title: preset.name,
     description: preset.tagline,
-    author: "Anti-shadcn Theme Studio <https://theme-studio-beta.vercel.app>",
+    author: "Theme Studio <https://theme-studio-beta.vercel.app>",
     license: "MIT",
     tags: preset.vibe,
     cssVars: {

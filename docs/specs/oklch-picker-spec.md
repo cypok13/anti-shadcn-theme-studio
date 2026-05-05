@@ -226,3 +226,8 @@ Need color editing?
 - **New Error Log entry created?** No — both issues were resolved within ≤5 iterations. Target HIT.
 - **Automation ticket link:** ALE-721
 - **Memory update:** yes
+
+## Related
+- [[ALE-721 - [theme-studio] Replace native color input with OKLCH picker (L-C-H sliders + hex text input)]]
+- [[theme-sidebar-colors-spec]]
+- [[token-spec]]

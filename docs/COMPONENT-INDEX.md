@@ -31,3 +31,8 @@
 ## Preview-only (ComponentGallery)
 
 > Компоненты в preview: Checkbox, Switch, Radio, Tabs, Select, Input, Textarea, Badge, Alert, Table, Separator, Avatar, Progress. Все реализованы в ALE-737 как inline в ComponentGallery.tsx. НЕ являются импортируемыми модулями.
+
+## Related
+- [[TOKEN-INDEX]]
+- [[DOCS-ARCHITECTURE]]
+- [[MISSING-REQUIREMENTS]]

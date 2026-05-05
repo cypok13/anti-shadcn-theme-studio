@@ -128,3 +128,8 @@ Need a selection control?
 **HITL gate prediction:** ≤4 iterations — actual: 3. Within target.
 
 **New error log entry:** E-015 — Subagent writes that only exist in conversation context (not on disk) are lost on context compaction. Verify with `wc -l` after every Write tool call in subagent prompts.
+
+## Related
+- [[select-spec]]
+- [[radio-group-spec]]
+- [[checkbox-spec]]

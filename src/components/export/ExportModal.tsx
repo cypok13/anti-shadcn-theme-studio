@@ -115,7 +115,7 @@ export function ExportModal({ preset, mode, overrides = {}, isOpen, onClose }: E
     { id: 'css', label: 'CSS Variables', title: 'Copy into your globals.css' },
     { id: 'claude', label: 'AI Config', title: 'CLAUDE.md — paste into your project root for Claude Code' },
     { id: 'cursor', label: 'AI Rules', title: '.cursorrules — paste into your project root for Cursor / Copilot' },
-    { id: 'cli', label: 'CLI Install', title: 'One-command install via shadcn CLI' },
+    { id: 'cli', label: 'CLI Install', title: 'One-command install via component library CLI' },
   ]
 
   return (

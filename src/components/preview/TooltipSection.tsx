@@ -12,6 +12,7 @@ import {
 export function TooltipSection() {
   return (
     <ComponentSection
+      id="tooltip"
       title="Tooltip"
       tabs={[
         { key: 'overview', label: 'Overview', content: <TooltipOverviewTab /> },

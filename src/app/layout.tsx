@@ -72,8 +72,8 @@ const firaCode = Fira_Code({
 })
 
 export const metadata: Metadata = {
-  title: 'Anti-shadcn Theme Studio',
-  description: 'Generate personality-first shadcn themes with AI rules',
+  title: 'Theme Studio',
+  description: 'Generate personality-first component library themes with AI rules',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

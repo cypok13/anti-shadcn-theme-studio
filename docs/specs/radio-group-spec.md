@@ -257,3 +257,8 @@ Min touch target: 44×44px — wrapping `<label>` handles via full row.
 - [x] Test plan written
 
 **Spec complete:** YES
+
+## Related
+- [[switch-spec]]
+- [[select-spec]]
+- [[slider-spec]]

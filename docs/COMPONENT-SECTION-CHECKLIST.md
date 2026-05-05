@@ -70,3 +70,8 @@
 - [ ] `npm run test:components` (Playwright, Gates 0-3) → PASS
 - [ ] Нет `console.error` / hydration warnings в браузере при первой загрузке
 - [ ] Нет JS errors при переключении всех 5 табов
+
+## Related
+- [[MISSING-REQUIREMENTS]]
+- [[2026-04-30]]
+- [[TOKEN-INDEX]]

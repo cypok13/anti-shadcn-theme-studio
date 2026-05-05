@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import { Loader2, Search, Trash2 } from 'lucide-react'
+import { Loader2, Search, Trash2, CheckCircle, AlertTriangle, Info, Zap } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Checkbox } from '../ui/checkbox'
 import { Switch } from '../ui/switch'
@@ -35,6 +35,8 @@ import { Popover, PopoverTrigger, PopoverContent } from '../ui/popover'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
 import { ComponentSection } from './ComponentSection'
+import { LeftNav } from '@/components/layout/LeftNav'
+import { EmailCTA } from '@/components/layout/EmailCTA'
 import { ButtonApiTab, ButtonUsageTab, ButtonCodeTab } from './docs/ButtonDocs'
 import {
   CheckboxOverviewTab,
@@ -60,6 +62,7 @@ import {
 import { SliderSection } from './SliderSection'
 import { SelectSection } from './SelectSection'
 import { TooltipSection } from './TooltipSection'
+import { TabsSection } from './TabsSection'
 import {
   ComboboxOverviewTab,
   ComboboxApiTab,
@@ -69,6 +72,7 @@ import {
 } from './docs/ComboboxDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
+import { SiteHeader } from '@/components/layout/SiteHeader'
 
 const StatsCard = dynamic(() => import('./cards/StatsCard').then(m => ({ default: m.StatsCard })), { ssr: false })
 const ActivityGoalCard = dynamic(() => import('./cards/ActivityGoalCard').then(m => ({ default: m.ActivityGoalCard })), { ssr: false })
@@ -77,12 +81,26 @@ const CreateAccountCard = dynamic(() => import('./cards/CreateAccountCard').then
 const DatePickerCard = dynamic(() => import('./cards/DatePickerCard').then(m => ({ default: m.DatePickerCard })), { ssr: false })
 
 export function ComponentGallery() {
+  const [navOpen, setNavOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [darkMode, setDarkMode] = useState(false)
+
   return (
     <TooltipProvider>
-      <div className="h-full overflow-y-auto bg-[hsl(var(--background))] text-[hsl(var(--foreground))]">
-        <div className="mx-auto max-w-[1120px] flex items-start gap-12 px-8 pt-8 pb-16">
-          <div className="flex-1 min-w-0 space-y-6">
+      <>
+        <SiteHeader
+          darkMode={darkMode}
+          onToggleDark={() => setDarkMode((v) => !v)}
+          onOpenNav={() => setNavOpen(true)}
+          onOpenSidebar={() => setSidebarOpen(true)}
+        />
+        <div className="flex bg-[hsl(var(--background))] text-[hsl(var(--foreground))]" style={{ height: 'calc(100vh - 65px)' }}>
+          <LeftNav isOpen={navOpen} onClose={() => setNavOpen(false)} />
+          <div className="gallery-scroll flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-[1120px] flex items-start gap-12 px-4 lg:px-8 pt-8 pb-16">
+            <div className="flex-1 min-w-0 space-y-6">
             <ComponentSection
+              id="button"
               title="Button"
               tabs={[
                 { key: 'variants', label: 'Variants', content: <ButtonVariantsGrid /> },
@@ -94,6 +112,7 @@ export function ComponentGallery() {
             />
 
             <ComponentSection
+              id="checkbox"
               title="Checkbox"
               tabs={[
                 { key: 'overview', label: 'Overview', content: <CheckboxOverviewTab /> },
@@ -105,12 +124,14 @@ export function ComponentGallery() {
             />
 
             <ComponentSection
+              id="dialog"
               title="Dialog"
             >
               <DialogDemo />
             </ComponentSection>
 
             <ComponentSection
+              id="input"
               title="Input"
             >
               <InputDemo />
@@ -121,6 +142,7 @@ export function ComponentGallery() {
             <TooltipSection />
 
             <ComponentSection
+              id="switch"
               title="Switch"
               tabs={[
                 { key: 'overview', label: 'Overview', content: <SwitchOverviewTab /> },
@@ -132,6 +154,7 @@ export function ComponentGallery() {
             />
 
             <ComponentSection
+              id="radio"
               title="Radio"
               tabs={[
                 { key: 'overview', label: 'Overview', content: <RadioOverviewTab /> },
@@ -145,6 +168,7 @@ export function ComponentGallery() {
             <SliderSection />
 
             <ComponentSection
+              id="combobox"
               title="Combobox"
               tabs={[
                 { key: 'overview', label: 'Overview', content: <ComboboxOverviewTab /> },
@@ -156,32 +180,99 @@ export function ComponentGallery() {
             />
 
             <ComponentSection
+              id="badge"
               title="Badge"
             >
               <BadgeDemo />
             </ComponentSection>
 
             <ComponentSection
+              id="separator"
               title="Separator"
             >
               <SeparatorDemo />
             </ComponentSection>
 
             <ComponentSection
+              id="popover"
               title="Popover"
             >
               <PopoverDemo />
             </ComponentSection>
 
-            {/* Playwright test fixtures */}
-            <TabsDemo />
-            <TabsPrimitiveDemo />
+            <TabsSection />
+            <EmailCTA />
           </div>
-          <div className="w-[280px] shrink-0 sticky top-8">
+          <div className="hidden lg:block w-[280px] shrink-0 sticky top-8">
             <ThemeSidebar />
           </div>
         </div>
-      </div>
+          </div>
+        </div>
+
+        {/* Mobile ThemeSidebar bottom-sheet */}
+        <div
+          className="lg:hidden"
+          aria-hidden={!sidebarOpen}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 60,
+            pointerEvents: sidebarOpen ? 'auto' : 'none',
+          }}
+        >
+          {/* Backdrop */}
+          <div
+            onClick={() => setSidebarOpen(false)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(0,0,0,0.4)',
+              opacity: sidebarOpen ? 1 : 0,
+              transition: 'opacity 0.25s ease',
+            }}
+          />
+
+          {/* Bottom sheet panel */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              maxHeight: '80vh',
+              overflowY: 'auto',
+              background: 'hsl(var(--background))',
+              borderTop: '1px solid hsl(var(--border))',
+              borderRadius: '16px 16px 0 0',
+              padding: '16px',
+              transform: sidebarOpen ? 'translateY(0)' : 'translateY(100%)',
+              transition: 'transform 0.25s ease',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))' }}>Customize Theme</span>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                aria-label="Close customizer"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: 18,
+                  color: 'hsl(var(--muted-foreground))',
+                  padding: '4px 8px',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <Suspense>
+              <ThemeSidebar />
+            </Suspense>
+          </div>
+        </div>
+      </>
     </TooltipProvider>
   )
 }
@@ -422,15 +513,36 @@ function SeparatorDemo() {
   return (
     <section className="space-y-4" data-section="separator">
       <h4 className={sectionHeading}>Separator</h4>
-      <div className="space-y-4">
-        <Separator />
-        <div className="flex items-center gap-3 text-sm text-[hsl(var(--muted-foreground))]">
-          <span>Item A</span>
-          <Separator orientation="vertical" className="h-4" />
-          <span>Item B</span>
-          <Separator orientation="vertical" className="h-4" />
-          <span>Item C</span>
+      <div className="space-y-6">
+
+        {/* Horizontal */}
+        <div className="space-y-2">
+          <p className="text-xs text-[hsl(var(--muted-foreground))]">Horizontal</p>
+          <Separator />
         </div>
+
+        {/* Vertical */}
+        <div className="space-y-2">
+          <p className="text-xs text-[hsl(var(--muted-foreground))]">Vertical</p>
+          <div className="flex items-center gap-3 text-sm text-[hsl(var(--muted-foreground))]">
+            <span>Item A</span>
+            <Separator orientation="vertical" className="h-4" />
+            <span>Item B</span>
+            <Separator orientation="vertical" className="h-4" />
+            <span>Item C</span>
+          </div>
+        </div>
+
+        {/* With label */}
+        <div className="space-y-2">
+          <p className="text-xs text-[hsl(var(--muted-foreground))]">With label</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Separator style={{ flex: 1 }} />
+            <span style={{ fontSize: 12, color: 'hsl(var(--muted-foreground))', whiteSpace: 'nowrap' }}>OR</span>
+            <Separator style={{ flex: 1 }} />
+          </div>
+        </div>
+
       </div>
     </section>
   )
@@ -1200,17 +1312,9 @@ function PopoverDemo() {
                   label="Username"
                   inputProps={{ placeholder: 'Enter username', defaultValue: 'alex_k' }}
                 />
-                <button
-                  className={[
-                    'w-full min-h-[36px] px-3 rounded-[var(--radius)] text-sm font-medium',
-                    'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))]',
-                    'hover:bg-[hsl(var(--primary)/0.9)] cursor-pointer',
-                    'focus-visible:outline-none focus-visible:ring-2',
-                    'focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2',
-                  ].join(' ')}
-                >
+                <Button variant="default" className="w-full">
                   Save changes
-                </button>
+                </Button>
               </div>
             </PopoverContent>
           </Popover>
@@ -1280,26 +1384,43 @@ function PopoverDemo() {
 
 function BadgeDemo() {
   return (
-    <section className="space-y-3" data-section="badge">
-      <h4 className={sectionHeading}>Badge</h4>
-      <div className="space-y-2">
+    <section className="space-y-4" data-section="badge">
+      <div className="space-y-3">
+        {/* Color variants */}
+        <p className="text-xs text-[hsl(var(--muted-foreground))]">Color variants</p>
         <div className="flex flex-wrap gap-2">
-          <Badge variant="default">Default</Badge>
-          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="default">Brand</Badge>
+          <Badge variant="secondary">Gray</Badge>
           <Badge variant="outline">Outline</Badge>
-          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="destructive">Error</Badge>
           <Badge variant="success">Success</Badge>
           <Badge variant="warning">Warning</Badge>
           <Badge variant="info">Info</Badge>
         </div>
+
+        {/* Sizes */}
+        <p className="text-xs text-[hsl(var(--muted-foreground))]">Sizes</p>
         <div className="flex flex-wrap gap-2 items-center">
-          <Badge variant="default" size="sm">sm</Badge>
-          <Badge variant="default" size="md">md</Badge>
+          <Badge variant="default" size="sm">Small</Badge>
+          <Badge variant="default" size="md">Medium</Badge>
         </div>
+
+        {/* With dot indicator */}
+        <p className="text-xs text-[hsl(var(--muted-foreground))]">With dot indicator</p>
         <div className="flex flex-wrap gap-2 items-center">
-          <Badge variant="success" dot aria-label="Online" />
-          <Badge variant="destructive" dot aria-label="Offline" />
-          <Badge variant="warning" dot aria-label="Away" />
+          <Badge variant="success" dot>Online</Badge>
+          <Badge variant="destructive" dot>Offline</Badge>
+          <Badge variant="warning" dot>Away</Badge>
+          <Badge variant="info" dot>Busy</Badge>
+        </div>
+
+        {/* With leading icon */}
+        <p className="text-xs text-[hsl(var(--muted-foreground))]">With leading icon</p>
+        <div className="flex flex-wrap gap-2 items-center">
+          <Badge variant="success"><CheckCircle aria-hidden="true" />Verified</Badge>
+          <Badge variant="destructive"><AlertTriangle aria-hidden="true" />Critical</Badge>
+          <Badge variant="info"><Info aria-hidden="true" />Info</Badge>
+          <Badge variant="default"><Zap aria-hidden="true" />New</Badge>
         </div>
       </div>
     </section>

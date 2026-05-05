@@ -139,8 +139,11 @@ export const TooltipContent = React.forwardRef<HTMLDivElement, TooltipContentPro
       placement,
       middleware: [offset(sideOffset), flip(), shift({ padding: 8 }), arrow({ element: arrowRef })],
       whileElementsMounted: autoUpdate,
-      elements: { reference: triggerRef.current ?? undefined },
     })
+
+    React.useEffect(() => {
+      refs.setReference(triggerRef.current)
+    }, [refs, triggerRef])
 
     const arrowSide = { top: 'bottom', right: 'left', bottom: 'top', left: 'right' }[
       computedPlacement.split('-')[0]

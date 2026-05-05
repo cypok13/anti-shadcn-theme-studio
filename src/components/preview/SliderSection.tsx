@@ -12,6 +12,7 @@ import {
 export function SliderSection() {
   return (
     <ComponentSection
+      id="slider"
       title="Slider"
       tabs={[
         { key: 'overview', label: 'Overview', content: <SliderOverviewTab /> },

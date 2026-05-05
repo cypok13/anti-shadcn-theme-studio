@@ -12,6 +12,7 @@ import {
 export function SelectSection() {
   return (
     <ComponentSection
+      id="select"
       title="Select"
       tabs={[
         { key: 'overview', label: 'Overview', content: <SelectOverviewTab /> },

@@ -106,3 +106,8 @@ DEPRECATED (не читать):
   docs/component-spec.md    → заменён COMPONENT-INDEX.md
   docs/token-spec.md        → заменён TOKEN-INDEX.md
 ```
+
+## Related
+- [[COMPONENT-INDEX]]
+- [[TOKEN-INDEX]]
+- [[MISSING-REQUIREMENTS]]

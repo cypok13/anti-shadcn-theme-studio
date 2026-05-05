@@ -987,3 +987,8 @@ shadcn/skills = rules для КОМПОНЕНТОВ. Разные слои, но
 **Linear:** ALE-721 Done
 
 **Следующий шаг:** Badge Preview Block (Pipeline v2) или pre-existing TokenEditor DS violations cleanup
+
+## Related
+- [[PLAN]]
+- [[ALE-637 - Anti-shadcn Theme Studio — free OSS tool + portfolio case study]]
+- [[shadcn-theme-editor-niche-analysis]]

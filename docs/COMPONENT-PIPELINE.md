@@ -543,3 +543,8 @@ Required sections:
 - Result: junior-level output that misses 60% of states
 
 One component done right > three components done wrong.
+
+## Related
+- [[ALE-950 - [theme-studio] Complete Input component — all variants + tests]]
+- [[ALE-768 - theme-studio- Input component full pipeline]]
+- [[component-spec-template]]

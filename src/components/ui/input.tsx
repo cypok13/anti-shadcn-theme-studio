@@ -50,12 +50,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       isOutlined && 'border bg-[hsl(var(--background))]',
       isOutlined && 'hover:border-[hsl(var(--ring))]',
       isOutlined && 'focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-1 focus-visible:ring-offset-[hsl(var(--background))]',
-      isOutlined && (isError ? 'border-[hsl(var(--destructive))]' : 'border-[hsl(var(--border))]'),
+      isOutlined && (isError ? 'border-[hsl(var(--destructive))]' : 'border-[hsl(var(--input))]'),
       // filled variant
       isFilled && 'bg-[hsl(var(--muted))] border-0 border-b-2 rounded-b-none',
       isFilled && 'hover:border-b-[hsl(var(--ring))]',
       isFilled && 'focus-visible:outline-none focus-visible:border-b-[hsl(var(--ring))]',
-      isFilled && (isError ? 'border-b-[hsl(var(--destructive))]' : 'border-b-[hsl(var(--border))]'),
+      isFilled && (isError ? 'border-b-[hsl(var(--destructive))]' : 'border-b-[hsl(var(--input))]'),
       // size (base px, may be overridden by icon padding below)
       sizeClasses[size],
       // icon padding overrides

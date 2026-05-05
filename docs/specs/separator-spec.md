@@ -226,3 +226,8 @@ expect(bg).toMatch(/^rgb/)
 - [x] Test plan written
 
 **Spec complete:** YES
+
+## Related
+- [[tabs-spec]]
+- [[COMPONENT-SECTION-CHECKLIST]]
+- [[component-spec]]

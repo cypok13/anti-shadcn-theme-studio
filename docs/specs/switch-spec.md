@@ -248,3 +248,8 @@ Formula: thumb translate = track width − thumb size − 4px (2px padding each 
 - [x] Test plan written
 
 **Spec complete:** YES
+
+## Related
+- [[button-spec]]
+- [[radio-group-spec]]
+- [[checkbox-spec]]

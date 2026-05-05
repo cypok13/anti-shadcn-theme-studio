@@ -286,3 +286,8 @@ const [value, setValue] = useState('system')
 - **Memory update:** yes
 
 <!-- retrospective updated 2026-04-28 -->
+
+## Related
+- [[combobox-spec]]
+- [[radio-group-spec]]
+- [[switch-spec]]

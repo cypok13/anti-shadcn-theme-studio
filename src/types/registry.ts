@@ -1,5 +1,5 @@
 /**
- * shadcn/ui registry format types.
+ * Component library registry format types.
  * Spec: https://ui.shadcn.com/docs/registry/registry-item-json
  */
 

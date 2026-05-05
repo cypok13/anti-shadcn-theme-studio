@@ -26,3 +26,8 @@ All documentation committed to this repository must be:
 3. Free of internal project management references
 
 If a doc is internal (planning, research, personal notes) — keep it out of this repo.
+
+## Related
+- [[ALE-728 - theme-studio- remove internal Obsidian notes from public repo tracking]]
+- [[2026-04-28-theme-studio-nosession]]
+- [[PLAN]]

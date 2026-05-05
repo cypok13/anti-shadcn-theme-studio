@@ -14,7 +14,6 @@ import {
 } from '../ui/select'
 import { RadiusPicker } from './RadiusPicker'
 import { ShadowPicker } from './ShadowPicker'
-import { ExportTrigger } from './ExportTrigger'
 
 const HEADING_OPTIONS = [
   { label: 'Inter',          value: 'var(--font-sans)' },
@@ -48,12 +47,11 @@ export function ThemeSidebar() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const currentTheme  = searchParams.get('theme')  ?? PRESETS[0].id
-  const currentMode   = searchParams.get('mode')   ?? 'light'
-  const currentRadius = searchParams.get('radius') ?? '0.5rem'
-  const currentShadow = searchParams.get('shadow') ?? 'none'
-
-  const currentPreset      = PRESETS.find((p) => p.id === currentTheme) ?? PRESETS[0]
+  const currentTheme   = searchParams.get('theme') ?? PRESETS[0].id
+  const currentMode    = searchParams.get('mode')  ?? 'light'
+  const currentPreset  = PRESETS.find((p) => p.id === currentTheme) ?? PRESETS[0]
+  const currentRadius  = searchParams.get('radius') ?? '0.5rem'
+  const currentShadow  = searchParams.get('shadow') ?? currentPreset.shadowStyle ?? 'none'
   const currentFontHeading = searchParams.get('fontHeading') ?? currentPreset.fonts.heading
   const currentFontBody    = searchParams.get('fontBody')    ?? currentPreset.fonts.body
   const currentFontMono    = searchParams.get('fontMono')    ?? currentPreset.fonts.mono
@@ -83,17 +81,13 @@ export function ThemeSidebar() {
     [router, searchParams],
   )
 
-  const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(window.location.href)
-  }, [])
-
   return (
-    <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] shadow-md overflow-y-auto max-h-[calc(100vh-64px)] p-4 flex flex-col gap-4">
+    <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] [box-shadow:var(--shadow-md)] overflow-y-auto max-h-[calc(100vh-64px)] p-4 flex flex-col gap-4">
 
       {/* Theme preset */}
       <section>
         <p className={labelClass}>Theme</p>
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-1">
           {PRESETS.map((preset) => (
             <Button
               key={preset.id}
@@ -127,8 +121,8 @@ export function ThemeSidebar() {
               className="flex-1 capitalize gap-1.5"
             >
               {mode === 'light'
-                ? <Sun  className="size-3.5" aria-hidden="true" />
-                : <Moon className="size-3.5" aria-hidden="true" />}
+                ? <Sun  className="size-4" aria-hidden="true" />
+                : <Moon className="size-4" aria-hidden="true" />}
               {mode}
             </Button>
           ))}
@@ -153,7 +147,7 @@ export function ThemeSidebar() {
       {/* Typography */}
       <section>
         <p className={labelClass}>Typography</p>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {([
             { key: 'fontHeading', label: 'Heading', value: currentFontHeading, options: HEADING_OPTIONS },
             { key: 'fontBody',    label: 'Body',    value: currentFontBody,    options: BODY_OPTIONS },
@@ -179,17 +173,15 @@ export function ThemeSidebar() {
       </section>
 
 
-      {/* Export */}
-      <ExportTrigger />
-
-      {/* Copy Theme */}
-      <Button variant="secondary" size="sm" className="w-full" onClick={handleCopy}>
-        Copy Theme URL
-      </Button>
+      {/* TODO: Colors block — disabled for v1 release (incorrect behavior, needs rework) */}
+      {/* <section>
+        <p className={labelClass}>Colors</p>
+        ...
+      </section> */}
 
       {/* GitHub */}
       <a
-        href="https://github.com/cypok13/anti-shadcn-theme-studio"
+        href="https://github.com/cypok13/theme-studio"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center justify-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors pb-1"

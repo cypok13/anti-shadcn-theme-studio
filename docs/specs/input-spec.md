@@ -265,3 +265,8 @@ Which disabled-like pattern?
 - [x] Test plan written
 
 **Spec complete:** YES
+
+## Related
+- [[ALE-769 - Input v2 — icon slots + filled variant]]
+- [[component-spec-template]]
+- [[button-spec]]

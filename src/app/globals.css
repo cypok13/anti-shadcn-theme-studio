@@ -87,6 +87,42 @@
   --z-tooltip: 1060;
 
   color-scheme: light;
+
+  /* ─── Badge component tokens ────────────────────────────────────────────── */
+  /* Legacy (built-by badge) */
+  --surface-badge: hsl(var(--popover));
+  --text-badge-label: hsl(var(--muted-foreground));
+  --text-badge-name: hsl(var(--foreground));
+  --text-badge-arrow: hsl(var(--muted-foreground));
+
+  /* Semantic badge color variants */
+  --badge-brand-background: hsl(var(--primary) / 0.12);
+  --badge-brand-border: hsl(var(--primary) / 0.3);
+  --badge-brand-text: hsl(var(--primary));
+
+  --badge-gray-background: hsl(var(--secondary));
+  --badge-gray-border: hsl(var(--border));
+  --badge-gray-text: hsl(var(--secondary-foreground));
+
+  --badge-outline-background: transparent;
+  --badge-outline-border: hsl(var(--border));
+  --badge-outline-text: hsl(var(--foreground));
+
+  --badge-error-background: hsl(var(--destructive) / 0.12);
+  --badge-error-border: hsl(var(--destructive) / 0.3);
+  --badge-error-text: hsl(var(--destructive));
+
+  --badge-success-background: hsl(var(--success) / 0.12);
+  --badge-success-border: hsl(var(--success) / 0.3);
+  --badge-success-text: hsl(var(--success));
+
+  --badge-warning-background: hsl(var(--warning) / 0.12);
+  --badge-warning-border: hsl(var(--warning) / 0.3);
+  --badge-warning-text: hsl(var(--warning));
+
+  --badge-info-background: hsl(var(--info) / 0.12);
+  --badge-info-border: hsl(var(--info) / 0.3);
+  --badge-info-text: hsl(var(--info));
 }
 
 /* ─── Reduced motion ─────────────────────────────────────────────────────── */
@@ -158,4 +194,25 @@ code, pre, kbd, samp {
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.6);
+}
+
+/* ─── Built-by badge ─────────────────────────────────────────────────────── */
+
+@keyframes badge-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.badge-spin-ring {
+  animation: badge-spin 3s linear infinite;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    transparent 30%,
+    hsl(var(--primary)) 45%,
+    hsl(var(--primary) / 0.7) 50%,
+    hsl(var(--primary)) 55%,
+    transparent 70%,
+    transparent 100%
+  );
 }

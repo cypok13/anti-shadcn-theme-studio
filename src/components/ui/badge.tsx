@@ -22,13 +22,13 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default:     'border-transparent bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] [a&]:hover:bg-[hsl(var(--primary)/0.9)]',
-        secondary:   'border-transparent bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] [a&]:hover:bg-[hsl(var(--secondary)/0.9)]',
-        outline:     'border-[hsl(var(--border))] text-[hsl(var(--foreground))] [a&]:hover:bg-[hsl(var(--accent))]',
-        destructive: 'border-transparent bg-[hsl(var(--destructive)/0.15)] text-[hsl(var(--destructive))]',
-        success:     'border-transparent bg-[hsl(var(--success)/0.15)] text-[hsl(var(--success))]',
-        warning:     'border-transparent bg-[hsl(var(--warning)/0.15)] text-[hsl(var(--warning))]',
-        info:        'border-transparent bg-[hsl(var(--info)/0.15)] text-[hsl(var(--info))]',
+        default:     'bg-[var(--badge-brand-background)] border-[var(--badge-brand-border)] text-[var(--badge-brand-text)]',
+        secondary:   'bg-[var(--badge-gray-background)] border-[var(--badge-gray-border)] text-[var(--badge-gray-text)]',
+        outline:     'bg-[var(--badge-outline-background)] border-[var(--badge-outline-border)] text-[var(--badge-outline-text)]',
+        destructive: 'bg-[var(--badge-error-background)] border-[var(--badge-error-border)] text-[var(--badge-error-text)]',
+        success:     'bg-[var(--badge-success-background)] border-[var(--badge-success-border)] text-[var(--badge-success-text)]',
+        warning:     'bg-[var(--badge-warning-background)] border-[var(--badge-warning-border)] text-[var(--badge-warning-text)]',
+        info:        'bg-[var(--badge-info-background)] border-[var(--badge-info-border)] text-[var(--badge-info-text)]',
       },
       size: {
         sm: 'px-2 py-0.5',

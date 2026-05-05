@@ -275,3 +275,8 @@ No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h
 - **Automation child ticket:** N/A (iterations ≤ 5).
 - **Key insight:** tri-valued `checked: boolean | "indeterminate"` (Radix pattern) keeps API surface minimal versus separate `indeterminate` prop. `data-state` + `data-error` attrs give tests deterministic hooks without relying on CSS specificity.
 - **Carryover:** `DocPropsTable` grid fix improves all future component Preview Blocks (DocPropsTable was the real bottleneck, not the Checkbox itself).
+
+## Related
+- [[checkbox-states-research]]
+- [[switch-spec]]
+- [[button-spec]]

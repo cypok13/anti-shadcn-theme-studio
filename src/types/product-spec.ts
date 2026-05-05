@@ -9,7 +9,7 @@
  *   - TokenOverrides v2: extends ThemeTokens (src/lib/themes/types.ts) with OKLCH
  *   - StructuralPreset: from Day 10 CSS mapping (docs/research/day10-structural-mutation.md)
  *   - GalleryEntry: social gallery schema for Phase 4
- *   - RegistryExport: shadcn registry format, extends RegistryEntry (src/types/registry.ts)
+ *   - RegistryExport: component library registry format, extends RegistryEntry (src/types/registry.ts)
  */
 
 // ─────────────────────────────────────────────────────────────
@@ -45,14 +45,14 @@ export interface TokenValue {
 }
 
 /**
- * TokenOverrides v2 — all shadcn/ui semantic color tokens + OKLCH support.
+ * TokenOverrides v2 — all semantic color tokens + OKLCH support.
  *
  * Extends v1 (ThemeTokens) by:
  * 1. Wrapping each color field in TokenValue (hsl + oklch) instead of bare string
  * 2. Separating light/dark mode into explicit fields
  * 3. Adding radius as a first-class field
  *
- * shadcn/ui token reference: https://ui.shadcn.com/docs/theming
+ * Token reference: https://ui.shadcn.com/docs/theming
  */
 export interface TokenOverridesV2 {
   // ── Color tokens (light mode) ──────────────────────────────
@@ -76,7 +76,7 @@ export interface TokenOverridesV2 {
     border: TokenValue
     input: TokenValue
     ring: TokenValue
-    /** Chart palette — optional, defaults to shadcn preset */
+    /** Chart palette — optional, defaults to library preset */
     chart1?: TokenValue
     chart2?: TokenValue
     chart3?: TokenValue
@@ -281,20 +281,20 @@ export interface GalleryEntry {
 // ─────────────────────────────────────────────────────────────
 
 /**
- * Theme Studio's output format for shadcn CLI install.
+ * Theme Studio's output format for component library CLI install.
  *
- * Extends the shadcn registry:theme format with structural preset data.
+ * Extends the registry:theme format with structural preset data.
  * Compatible with: `npx shadcn@latest add https://theme-studio-beta.vercel.app/r/[name]`
  *
- * shadcn registry spec: https://ui.shadcn.com/docs/registry/registry-item-json
+ * Registry spec: https://ui.shadcn.com/docs/registry/registry-item-json
  *
  * Key invariants:
  *   - type is always "registry:theme"
  *   - cssVars.light and cssVars.dark must both be present for complete themes
- *   - structural is undefined for the Default preset (baseline shadcn)
+ *   - structural is undefined for the Default preset (baseline)
  */
 export interface RegistryExport {
-  /** shadcn registry schema URL */
+  /** Registry schema URL */
   $schema: "https://ui.shadcn.com/schema/registry-item.json"
 
   /** URL-safe theme slug. Used as the filename: /r/[name].json */
@@ -318,9 +318,9 @@ export interface RegistryExport {
   /**
    * Core CSS custom property values.
    * Keys are CSS variable names without the '--' prefix.
-   * Values are bare HSL triples "h s% l%" (shadcn format).
+   * Values are bare HSL triples "h s% l%" (component library format).
    *
-   * Consumed by shadcn CLI to generate :root { ... } and .dark { ... } blocks.
+   * Consumed by the CLI to generate :root { ... } and .dark { ... } blocks.
    */
   cssVars: {
     light: Record<string, string>
@@ -332,7 +332,7 @@ export interface RegistryExport {
    * Undefined when the Default structural preset is used.
    *
    * When present, these CSS vars are applied in addition to cssVars.
-   * The consuming app must apply them to :root manually (shadcn CLI ignores extra keys).
+   * The consuming app must apply them to :root manually (CLI ignores extra keys).
    */
   structural?: {
     preset: StructuralPresetId

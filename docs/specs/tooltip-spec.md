@@ -258,3 +258,8 @@ No `variant` or `size` prop — single style, single size. Placement/alignment o
 **Old Gate 7/11 locators:** Used removed `[data-section="tooltip"]` attribute — updated to `getByRole('button', { name: 'Save changes' }).first()`.
 
 **Ticket:** ALE-837
+
+## Related
+- [[button-spec]]
+- [[dialog-spec]]
+- [[select-spec]]

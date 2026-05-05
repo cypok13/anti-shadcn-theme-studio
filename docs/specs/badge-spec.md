@@ -286,3 +286,8 @@ expect(bg).toMatch(/^rgb/)
 - [x] Test plan written
 
 **Spec complete:** YES
+
+## Related
+- [[ALE-951 - [theme-studio] Complete Badge component — all variants + tests]]
+- [[button-spec]]
+- [[component-spec-template]]

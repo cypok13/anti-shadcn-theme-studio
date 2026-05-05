@@ -14,13 +14,14 @@ interface Tab {
 
 interface ComponentSectionProps {
   title: string
+  id?: string
   docsHref?: string
   tabs?: Tab[]
   children?: React.ReactNode
   className?: string
 }
 
-export function ComponentSection({ title, docsHref: _docsHref, tabs, children, className }: ComponentSectionProps) {
+export function ComponentSection({ title, id, docsHref: _docsHref, tabs, children, className }: ComponentSectionProps) {
   const [activeTab, setActiveTab] = useState<TabKey>(tabs?.[0]?.key ?? 'variants')
   const baseId = useId()
   const tablistRef = useRef<HTMLDivElement>(null)
@@ -52,10 +53,13 @@ export function ComponentSection({ title, docsHref: _docsHref, tabs, children, c
   }
 
   return (
-    <div className={cn(
-      'rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-8',
-      className
-    )}>
+    <div
+      id={id}
+      className={cn(
+        'rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] p-8',
+        className
+      )}
+    >
       {/* Header */}
       <div className="flex items-baseline justify-between mb-6">
         <h2 className="text-2xl font-semibold text-[hsl(var(--foreground))]">{title}</h2>
@@ -111,7 +115,7 @@ export function ComponentSection({ title, docsHref: _docsHref, tabs, children, c
           : {})}
         className="rounded-xl bg-[hsl(var(--muted)/0.4)] p-6 min-h-[80px] [box-shadow:var(--shadow-preset,none)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2"
       >
-        <div className="w-full overflow-x-auto [overflow-y:visible] px-1.5 py-1.5">
+        <div className="w-full overflow-x-hidden overflow-y-visible px-1.5 py-1.5">
           {activeContent}
         </div>
       </div>
