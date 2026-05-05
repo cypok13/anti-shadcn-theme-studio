@@ -70,18 +70,6 @@ export function LeftNav({ isOpen = false, onClose }: Props) {
 
   const navContent = (
     <>
-      <div
-        style={{
-          fontSize: 11,
-          fontWeight: 600,
-          color: 'hsl(var(--muted-foreground))',
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          marginBottom: 12,
-        }}
-      >
-        Components
-      </div>
       <ul
         style={{
           listStyle: 'none',

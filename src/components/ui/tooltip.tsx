@@ -141,9 +141,9 @@ export const TooltipContent = React.forwardRef<HTMLDivElement, TooltipContentPro
       whileElementsMounted: autoUpdate,
     })
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
       refs.setReference(triggerRef.current)
-    }, [refs, triggerRef, open])
+    }, [refs, triggerRef])
 
     const arrowSide = { top: 'bottom', right: 'left', bottom: 'top', left: 'right' }[
       computedPlacement.split('-')[0]

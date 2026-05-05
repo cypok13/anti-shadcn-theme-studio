@@ -21,9 +21,12 @@ export function SiteHeader({ onOpenNav, onOpenSidebar }: Props) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '12px 24px',
-        maxWidth: '100%',
+        padding: '12px 32px',
+        maxWidth: '1360px',
+        marginLeft: 'auto',
+        marginRight: 'auto',
         gap: '8px',
+        width: '100%',
       }}>
         {/* Mobile hamburger */}
         {onOpenNav && (
@@ -58,7 +61,7 @@ export function SiteHeader({ onOpenNav, onOpenSidebar }: Props) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
           {/* GitHub link */}
           <a
-            href="https://github.com/cypok13/anti-shadcn-theme-studio"
+            href="https://github.com/cypok13/theme-studio"
             target="_blank"
             rel="noopener noreferrer"
             style={{
