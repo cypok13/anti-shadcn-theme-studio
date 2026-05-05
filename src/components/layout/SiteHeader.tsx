@@ -28,13 +28,16 @@ export function SiteHeader({ onOpenNav, onOpenSidebar }: Props) {
       pointerEvents: 'none',
     }}>
       <div style={{
+        maxWidth: '1360px',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: '100%',
+      }}>
+      <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '10px 20px',
-        maxWidth: '1360px',
-        marginLeft: 'auto',
-        marginRight: 'auto',
         gap: '8px',
         width: '100%',
         background: 'hsl(var(--background) / 0.88)',
@@ -120,6 +123,7 @@ export function SiteHeader({ onOpenNav, onOpenSidebar }: Props) {
             </button>
           )}
         </div>
+      </div>
       </div>
     </header>
   )

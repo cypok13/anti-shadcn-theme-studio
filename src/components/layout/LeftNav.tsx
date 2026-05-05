@@ -7,7 +7,6 @@ const COMPONENTS = [
   { id: 'checkbox', label: 'Checkbox' },
   { id: 'input', label: 'Input' },
   { id: 'select', label: 'Select' },
-  { id: 'tooltip', label: 'Tooltip' },
   { id: 'switch', label: 'Switch' },
   { id: 'radio', label: 'Radio' },
   { id: 'slider', label: 'Slider' },
