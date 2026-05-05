@@ -123,53 +123,60 @@ export function BadgeCodeTab() {
   )
 }
 
+function DoDontCard({ type, title, children }: { type: 'do' | 'dont'; title: string; children: React.ReactNode }) {
+  return (
+    <div className={['rounded-lg p-4 text-sm', type === 'do' ? 'border-l-[3px] border-l-[hsl(var(--success,142_71%_45%))] bg-[hsl(var(--success,142_71%_45%)/0.06)]' : 'border-l-[3px] border-l-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)]'].join(' ')}>
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className={['text-xs font-bold uppercase tracking-wider', type === 'do' ? 'text-[hsl(var(--success,142_71%_45%))]' : 'text-[hsl(var(--destructive))]'].join(' ')}>{type === 'do' ? '✓ Do' : "✕ Don't"}</span>
+        <span className="text-xs font-medium text-[hsl(var(--foreground))]">{title}</span>
+      </div>
+      <div className="text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">{children}</div>
+    </div>
+  )
+}
+
+const VARIANT_GUIDE = [
+  { variant: 'default',     when: 'Primary status label or action label' },
+  { variant: 'secondary',   when: 'Neutral info — categories, tags, counts' },
+  { variant: 'outline',     when: 'Low-emphasis label on colored backgrounds' },
+  { variant: 'destructive', when: 'Error, failure, danger state' },
+  { variant: 'success',     when: 'Success, active, verified, online' },
+  { variant: 'warning',     when: 'Caution, pending, expiring soon' },
+  { variant: 'info',        when: 'Informational, neutral-blue context' },
+]
+
 export function BadgeUsageTab() {
   return (
-    <div className="space-y-8 max-w-sm">
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">User status</p>
-        <div className="space-y-2">
-          {[
-            { name: 'Alex Krasnov', role: 'Admin', status: 'Online' as const, v: 'success' as const },
-            { name: 'Maria Garcia', role: 'Editor', status: 'Away' as const, v: 'warning' as const },
-            { name: 'James Lee', role: 'Viewer', status: 'Offline' as const, v: 'secondary' as const },
-          ].map(u => (
-            <div key={u.name} className="flex items-center justify-between py-2 border-b border-[hsl(var(--border)/0.5)] last:border-0">
-              <div>
-                <p className="text-sm font-medium text-[hsl(var(--foreground))]">{u.name}</p>
-                <p className="text-xs text-[hsl(var(--muted-foreground))]">{u.role}</p>
-              </div>
-              <Badge variant={u.v} dot size="sm">{u.status}</Badge>
+    <div className="space-y-6 text-sm">
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
+        <div className="grid grid-cols-2 gap-3">
+          <DoDontCard type="do" title="Use for status and labels">
+            Badge is for communicating state (active, pending, error) or categorising content (tags, types). It is a decorative element.
+          </DoDontCard>
+          <DoDontCard type="dont" title="Use as a button">
+            Badge has no click handler by default. If you need an interactive tag, use a Button with a variant or add an action via <code className="font-mono">asChild</code>.
+          </DoDontCard>
+          <DoDontCard type="do" title="Add aria-label to dot badges">
+            A dot badge with no text child must have <code className="font-mono">aria-label</code> so screen readers announce the status (e.g. "Online").
+          </DoDontCard>
+          <DoDontCard type="dont" title="Use badge for full-width status">
+            For a prominent alert or callout bar, use a dedicated Callout or Alert component — badge is inline and compact.
+          </DoDontCard>
+        </div>
+      </section>
+
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">When to use each variant</p>
+        <div className="rounded-lg border border-[hsl(var(--border))] overflow-hidden">
+          {VARIANT_GUIDE.map((row, i) => (
+            <div key={row.variant} className={`flex items-center gap-4 px-4 py-2 ${i < VARIANT_GUIDE.length - 1 ? 'border-b border-[hsl(var(--border))]' : ''}`}>
+              <code className="font-mono text-xs text-[hsl(var(--primary))] w-28 shrink-0">{row.variant}</code>
+              <p className="text-xs text-[hsl(var(--muted-foreground))]">{row.when}</p>
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Severity labels</p>
-        <div className="space-y-2">
-          {[
-            { msg: 'Deployment failed on prod', v: 'destructive' as const, label: 'Critical' },
-            { msg: 'SSL cert expires in 7 days', v: 'warning' as const, label: 'Warning' },
-            { msg: 'New version available', v: 'info' as const, label: 'Info' },
-            { msg: 'All checks passed', v: 'success' as const, label: 'Resolved' },
-          ].map(e => (
-            <div key={e.msg} className="flex items-start gap-3">
-              <Badge variant={e.v} size="sm" className="mt-0.5 shrink-0">{e.label}</Badge>
-              <p className="text-sm text-[hsl(var(--foreground))]">{e.msg}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Tag chips</p>
-        <div className="flex flex-wrap gap-2">
-          {['Next.js', 'TypeScript', 'Tailwind', 'Supabase', 'Vercel', 'React'].map(tag => (
-            <Badge key={tag} variant="outline">{tag}</Badge>
-          ))}
-        </div>
-      </div>
+      </section>
     </div>
   )
 }

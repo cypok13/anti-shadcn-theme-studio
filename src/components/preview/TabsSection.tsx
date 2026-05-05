@@ -278,79 +278,55 @@ function TabsOverviewTab() {
   )
 }
 
+function DoDontCard({ type, title, children }: { type: 'do' | 'dont'; title: string; children: React.ReactNode }) {
+  return (
+    <div className={['rounded-lg p-4 text-sm', type === 'do' ? 'border-l-[3px] border-l-[hsl(var(--success,142_71%_45%))] bg-[hsl(var(--success,142_71%_45%)/0.06)]' : 'border-l-[3px] border-l-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)]'].join(' ')}>
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className={['text-xs font-bold uppercase tracking-wider', type === 'do' ? 'text-[hsl(var(--success,142_71%_45%))]' : 'text-[hsl(var(--destructive))]'].join(' ')}>{type === 'do' ? '✓ Do' : "✕ Don't"}</span>
+        <span className="text-xs font-medium text-[hsl(var(--foreground))]">{title}</span>
+      </div>
+      <div className="text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">{children}</div>
+    </div>
+  )
+}
+
+const VARIANT_GUIDE = [
+  { variant: 'default (pill)', when: 'Sub-tabs inside a section — compact, contained style' },
+  { variant: 'line',           when: 'Page-level or section-level navigation — underline indicator' },
+]
+
 function TabsUsageTab() {
   return (
-    <div className="space-y-8">
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Settings page</p>
-        <Tabs defaultValue="profile">
-          <TabsList>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="password">Password</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          </TabsList>
-          <TabsContent value="profile" className="mt-4">
-            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <p className="text-xs text-[hsl(var(--muted-foreground))] mb-1">First name</p>
-                  <p className="text-sm text-[hsl(var(--foreground))] font-medium">Alex</p>
-                </div>
-                <div>
-                  <p className="text-xs text-[hsl(var(--muted-foreground))] mb-1">Last name</p>
-                  <p className="text-sm text-[hsl(var(--foreground))] font-medium">Krasnov</p>
-                </div>
-              </div>
-              <div>
-                <p className="text-xs text-[hsl(var(--muted-foreground))] mb-1">Email</p>
-                <p className="text-sm text-[hsl(var(--foreground))]">alex@example.com</p>
-              </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="password" className="mt-4">
-            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Change your password here.</p>
-            </div>
-          </TabsContent>
-          <TabsContent value="notifications" className="mt-4">
-            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Manage your notification preferences.</p>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
+    <div className="space-y-6 text-sm">
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
+        <div className="grid grid-cols-2 gap-3">
+          <DoDontCard type="do" title="Use for related content panels">
+            Tabs switch between multiple views of related content within the same context — settings sections, data views, component demos.
+          </DoDontCard>
+          <DoDontCard type="dont" title="Use for page navigation">
+            Tabs do not navigate between pages. For routing, use <code className="font-mono">{'<Link>'}</code>. Tabs stay on the same URL.
+          </DoDontCard>
+          <DoDontCard type="do" title="Keep at least 2 tabs">
+            A single tab is meaningless — it implies no choice. If there is only one panel, remove the tabs and show the content directly.
+          </DoDontCard>
+          <DoDontCard type="dont" title="Nest tabs inside tabs">
+            A tablist inside a tabpanel creates a nested tablist — this is an ARIA violation and confuses keyboard navigation. Use a different layout pattern instead.
+          </DoDontCard>
+        </div>
+      </section>
 
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Dashboard nav (underline)</p>
-        <Tabs defaultValue="week">
-          <TabsList variant="line">
-            <TabsTrigger value="day">Day</TabsTrigger>
-            <TabsTrigger value="week">Week</TabsTrigger>
-            <TabsTrigger value="month">Month</TabsTrigger>
-            <TabsTrigger value="year">Year</TabsTrigger>
-          </TabsList>
-          <TabsContent value="day" className="mt-4">
-            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Today's data: 142 events.</p>
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">When to use each variant</p>
+        <div className="rounded-lg border border-[hsl(var(--border))] overflow-hidden">
+          {VARIANT_GUIDE.map((row, i) => (
+            <div key={row.variant} className={`flex items-center gap-4 px-4 py-2 ${i < VARIANT_GUIDE.length - 1 ? 'border-b border-[hsl(var(--border))]' : ''}`}>
+              <code className="font-mono text-xs text-[hsl(var(--primary))] w-36 shrink-0">{row.variant}</code>
+              <p className="text-xs text-[hsl(var(--muted-foreground))]">{row.when}</p>
             </div>
-          </TabsContent>
-          <TabsContent value="week" className="mt-4">
-            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Last 7 days: 1 024 events.</p>
-            </div>
-          </TabsContent>
-          <TabsContent value="month" className="mt-4">
-            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Last 30 days: 4 312 events.</p>
-            </div>
-          </TabsContent>
-          <TabsContent value="year" className="mt-4">
-            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Last 12 months: 51 880 events.</p>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }

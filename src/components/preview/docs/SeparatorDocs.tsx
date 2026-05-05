@@ -62,53 +62,55 @@ export function SeparatorApiTab() {
   )
 }
 
+function DoDontCard({ type, title, children }: { type: 'do' | 'dont'; title: string; children: React.ReactNode }) {
+  return (
+    <div className={['rounded-lg p-4 text-sm', type === 'do' ? 'border-l-[3px] border-l-[hsl(var(--success,142_71%_45%))] bg-[hsl(var(--success,142_71%_45%)/0.06)]' : 'border-l-[3px] border-l-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)]'].join(' ')}>
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className={['text-xs font-bold uppercase tracking-wider', type === 'do' ? 'text-[hsl(var(--success,142_71%_45%))]' : 'text-[hsl(var(--destructive))]'].join(' ')}>{type === 'do' ? '✓ Do' : "✕ Don't"}</span>
+        <span className="text-xs font-medium text-[hsl(var(--foreground))]">{title}</span>
+      </div>
+      <div className="text-xs text-[hsl(var(--muted-foreground))] leading-relaxed">{children}</div>
+    </div>
+  )
+}
+
+const ORIENTATION_GUIDE = [
+  { use: 'horizontal', when: 'Dividing stacked sections — card rows, form groups, list items' },
+  { use: 'vertical',   when: 'Dividing inline items — breadcrumbs, toolbar actions, nav links' },
+]
+
 export function SeparatorUsageTab() {
   return (
-    <div className="space-y-8 max-w-sm">
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Card sections</p>
-        <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 space-y-3">
-          <div>
-            <p className="text-sm font-medium text-[hsl(var(--foreground))]">Alex Krasnov</p>
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">alex@example.com</p>
-          </div>
-          <Separator />
-          <div className="space-y-1">
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">Plan</p>
-            <p className="text-sm text-[hsl(var(--foreground))]">Pro — $12/mo</p>
-          </div>
-          <Separator />
-          <p className="text-xs text-[hsl(var(--destructive))] cursor-pointer">Delete account</p>
+    <div className="space-y-6 text-sm">
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
+        <div className="grid grid-cols-2 gap-3">
+          <DoDontCard type="do" title="Use to group related content">
+            Separator creates visual breathing room between distinct groups. Use it inside cards, sidebars, and menus to separate sections without a heading.
+          </DoDontCard>
+          <DoDontCard type="dont" title="Use instead of spacing">
+            Separator is a structural element, not a substitute for margin or padding. Don&apos;t reach for it just to add space — use a spacing token instead.
+          </DoDontCard>
+          <DoDontCard type="do" title="Set explicit height on vertical separators">
+            Vertical separators inherit 100% of the flex container height. Always pass <code className="font-mono">className=&quot;h-4&quot;</code> (or another height) to keep it visually proportional.
+          </DoDontCard>
+          <DoDontCard type="dont" title="Use decorative separators as landmarks">
+            Leave <code className="font-mono">decorative</code> at its default (<code className="font-mono">true</code>) unless the separator marks a genuine structural boundary that screen readers must announce.
+          </DoDontCard>
         </div>
-      </div>
+      </section>
 
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Breadcrumb divider</p>
-        <div className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]">
-          <span className="text-[hsl(var(--foreground))]">Dashboard</span>
-          <Separator orientation="vertical" className="h-4" />
-          <span className="text-[hsl(var(--foreground))]">Settings</span>
-          <Separator orientation="vertical" className="h-4" />
-          <span>Profile</span>
+      <section>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Orientation guide</p>
+        <div className="rounded-lg border border-[hsl(var(--border))] overflow-hidden">
+          {ORIENTATION_GUIDE.map((row, i) => (
+            <div key={row.use} className={`flex items-center gap-4 px-4 py-2 ${i < ORIENTATION_GUIDE.length - 1 ? 'border-b border-[hsl(var(--border))]' : ''}`}>
+              <code className="font-mono text-xs text-[hsl(var(--primary))] w-28 shrink-0">{row.use}</code>
+              <p className="text-xs text-[hsl(var(--muted-foreground))]">{row.when}</p>
+            </div>
+          ))}
         </div>
-      </div>
-
-      <div className="space-y-3">
-        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Auth form divider</p>
-        <div className="space-y-3">
-          <button className="w-full py-2 px-4 rounded-[var(--radius)] border border-[hsl(var(--border))] text-sm text-[hsl(var(--foreground))] bg-[hsl(var(--background))]">
-            Continue with Google
-          </button>
-          <div className="flex items-center gap-3">
-            <Separator className="flex-1" />
-            <span className="text-xs text-[hsl(var(--muted-foreground))]">or</span>
-            <Separator className="flex-1" />
-          </div>
-          <button className="w-full py-2 px-4 rounded-[var(--radius)] text-sm font-medium text-[hsl(var(--primary-foreground))] bg-[hsl(var(--primary))]">
-            Sign in with email
-          </button>
-        </div>
-      </div>
+      </section>
     </div>
   )
 }
