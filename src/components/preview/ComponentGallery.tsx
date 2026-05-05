@@ -51,7 +51,7 @@ import {
   ComboboxCodeTab,
   ComboboxStatesTab,
 } from './docs/ComboboxDocs'
-import { InputOverviewTab, InputApiTab, InputCodeTab } from './docs/InputDocs'
+import { InputOverviewTab, InputApiTab, InputCodeTab, InputStatesTab, InputUsageTab } from './docs/InputDocs'
 import { BadgeOverviewTab, BadgeApiTab, BadgeCodeTab } from './docs/BadgeDocs'
 import { SeparatorOverviewTab, SeparatorApiTab } from './docs/SeparatorDocs'
 import { DemoRow } from './DemoRow'
@@ -111,8 +111,10 @@ export function ComponentGallery() {
               title="Input"
               tabs={[
                 { key: 'overview', label: 'Overview', content: <InputOverviewTab /> },
+                { key: 'usage',    label: 'Usage',    content: <InputUsageTab /> },
                 { key: 'api',      label: 'API',      content: <InputApiTab /> },
                 { key: 'code',     label: 'Code',     content: <InputCodeTab /> },
+                { key: 'states',   label: 'States',   content: <InputStatesTab /> },
               ]}
             />
 

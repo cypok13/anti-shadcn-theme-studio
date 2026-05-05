@@ -99,104 +99,84 @@ const INPUT_PROPS = [
 
 export function InputOverviewTab() {
   return (
-    <section className="space-y-4">
-      <div className="space-y-4 max-w-sm">
-        <Field
-          id="input-default"
-          label="Default"
-          inputProps={{ placeholder: 'Type something…' }}
-        />
+    <div className="space-y-4 max-w-sm">
+      <Field
+        id="input-ov-default"
+        label="Default"
+        inputProps={{ placeholder: 'Type something…' }}
+      />
+      <Field
+        id="input-ov-icon"
+        label="With icon"
+        inputProps={{ placeholder: 'Search…', leftIcon: <SearchIcon /> }}
+      />
+      <Field
+        id="input-ov-helper"
+        label="With helper text"
+        helperText="As it appears on your passport"
+        inputProps={{ placeholder: 'Full name' }}
+      />
+      <Field
+        id="input-ov-error"
+        label="Error state"
+        isError
+        errorMessage="Enter a valid email address"
+        inputProps={{ defaultValue: 'not-an-email', type: 'email' }}
+      />
+    </div>
+  )
+}
 
-        <Field
-          id="input-placeholder"
-          label="With placeholder"
-          inputProps={{ placeholder: 'you@company.com', type: 'email' }}
-        />
+export function InputStatesTab() {
+  return (
+    <div className="space-y-4 max-w-sm">
+      <Field id="input-st-default"   label="Default"      inputProps={{ placeholder: 'Type something…' }} />
+      <Field id="input-st-value"     label="With value"   inputProps={{ defaultValue: 'Alex Krasnov' }} />
+      <Field id="input-st-disabled"  label="Disabled"     inputProps={{ defaultValue: 'Free plan', disabled: true }} />
+      <Field id="input-st-readonly"  label="Read only"    inputProps={{ defaultValue: 'read-only@example.com', readOnly: true }} />
+      <Field id="input-st-error"     label="Error"        isError errorMessage="Enter a valid email address" inputProps={{ defaultValue: 'not-an-email', type: 'email' }} />
+      <Field id="input-st-helper"    label="Helper text"  helperText="As it appears on your passport" inputProps={{ placeholder: 'Full name' }} />
+      <Field id="input-st-sm"        label="Size — sm"    inputProps={{ placeholder: 'Small', size: 'sm' }} />
+      <Field id="input-st-md"        label="Size — md"    inputProps={{ placeholder: 'Medium (default)' }} />
+      <Field id="input-st-lg"        label="Size — lg"    inputProps={{ placeholder: 'Large', size: 'lg' }} />
+      <Field id="input-st-left"      label="Left icon"    inputProps={{ placeholder: 'Search…', leftIcon: <SearchIcon /> }} />
+      <Field id="input-st-right"     label="Right icon"   inputProps={{ placeholder: 'Pick a date', rightIcon: <CalendarIcon /> }} />
+      <Field id="input-st-both"      label="Both icons"   inputProps={{ placeholder: 'Search…', leftIcon: <SearchIcon />, rightIcon: <XIcon /> }} />
+      <Field id="input-st-filled"    label="Filled"       inputProps={{ placeholder: 'Filled input', variant: 'filled' }} />
+      <Field id="input-st-filled-ic" label="Filled + icon" inputProps={{ placeholder: 'Search…', variant: 'filled', leftIcon: <SearchIcon /> }} />
+    </div>
+  )
+}
 
+export function InputUsageTab() {
+  return (
+    <div className="space-y-8 max-w-sm">
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Login form</p>
+        <div className="space-y-3">
+          <Field id="usage-email" label="Email" inputProps={{ placeholder: 'you@example.com', type: 'email' }} />
+          <Field id="usage-pass"  label="Password" inputProps={{ placeholder: '••••••••', type: 'password' }} />
+        </div>
+      </div>
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Search bar</p>
         <Field
-          id="input-value"
-          label="With value"
-          inputProps={{ defaultValue: 'Alex Krasnov' }}
-        />
-
-        <Field
-          id="input-disabled"
-          label="Disabled"
-          inputProps={{ defaultValue: 'Free plan', disabled: true }}
-        />
-
-        <Field
-          id="input-readonly"
-          label="Read only"
-          inputProps={{ defaultValue: 'read-only@example.com', readOnly: true }}
-        />
-
-        <Field
-          id="input-error"
-          label="Error state"
-          isError
-          errorMessage="Enter a valid email address"
-          inputProps={{ defaultValue: 'not-an-email', type: 'email' }}
-        />
-
-        <Field
-          id="input-helper"
-          label="Helper text"
-          helperText="As it appears on your passport"
-          inputProps={{ placeholder: 'Full name' }}
-        />
-
-        <Field
-          id="input-sm"
-          label="Small"
-          inputProps={{ placeholder: 'Small input', size: 'sm' }}
-        />
-
-        <Field
-          id="input-lg"
-          label="Large"
-          inputProps={{ placeholder: 'Large input', size: 'lg' }}
-        />
-
-        <Field
-          id="input-left-icon"
-          label="With left icon"
-          inputProps={{ placeholder: 'Search…', leftIcon: <SearchIcon /> }}
-        />
-
-        <Field
-          id="input-right-icon"
-          label="With right icon"
-          inputProps={{ placeholder: 'Pick a date', rightIcon: <CalendarIcon /> }}
-        />
-
-        <Field
-          id="input-both-icons"
-          label="Both icons"
-          inputProps={{ placeholder: 'Search…', leftIcon: <SearchIcon />, rightIcon: <XIcon /> }}
-        />
-
-        <Field
-          id="input-filled"
-          label="Filled variant"
-          inputProps={{ placeholder: 'Filled input', variant: 'filled' }}
-        />
-
-        <Field
-          id="input-filled-icon"
-          label="Filled with icon"
-          inputProps={{ placeholder: 'Search…', variant: 'filled', leftIcon: <SearchIcon /> }}
-        />
-
-        <Field
-          id="input-error-icon"
-          label="Error with icon"
-          isError
-          errorMessage="This field is required"
-          inputProps={{ leftIcon: <SearchIcon />, defaultValue: 'invalid input' }}
+          id="usage-search"
+          label="Search"
+          inputProps={{ placeholder: 'Search components…', leftIcon: <SearchIcon /> }}
         />
       </div>
-    </section>
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Validation error</p>
+        <Field
+          id="usage-err"
+          label="Username"
+          isError
+          errorMessage="Username must be at least 3 characters"
+          inputProps={{ defaultValue: 'ab' }}
+        />
+      </div>
+    </div>
   )
 }
 
