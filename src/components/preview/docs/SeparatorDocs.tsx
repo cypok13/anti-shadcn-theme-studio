@@ -2,6 +2,7 @@
 
 import { Separator } from '../../ui/separator'
 import { DocPropsTable } from './DocPropsTable'
+import { DocCodeBlock } from './DocCodeBlock'
 
 const SEPARATOR_PROPS = [
   {
@@ -118,26 +119,30 @@ export function SeparatorUsageTab() {
 export function SeparatorCodeTab() {
   return (
     <div className="space-y-4">
-      <pre className="bg-[hsl(var(--muted))] rounded-[var(--radius)] p-4 text-sm font-mono text-[hsl(var(--foreground))] overflow-x-auto">
-        <code>{`import { Separator } from '@/components/ui/separator'
-
-// Horizontal (default)
-<Separator />
-
-// Vertical — set a height via className
-<div className="flex items-center gap-2">
+      <DocCodeBlock
+        label="Horizontal (default)"
+        code={`<Separator />`}
+      />
+      <DocCodeBlock
+        label="Vertical — explicit height required"
+        code={`<div className="flex items-center gap-2">
   <span>Home</span>
   <Separator orientation="vertical" className="h-4" />
   <span>Settings</span>
-</div>
-
-// With label
-<div className="flex items-center gap-3">
+</div>`}
+      />
+      <DocCodeBlock
+        label="With label"
+        code={`<div className="flex items-center gap-3">
   <Separator className="flex-1" />
   <span className="text-xs text-muted-foreground">OR</span>
   <Separator className="flex-1" />
-</div>`}</code>
-      </pre>
+</div>`}
+      />
+      <DocCodeBlock
+        label="Semantic (structural landmark)"
+        code={`<Separator decorative={false} />`}
+      />
     </div>
   )
 }

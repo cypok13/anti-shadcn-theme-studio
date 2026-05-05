@@ -2,6 +2,7 @@
 
 import { ComponentSection } from './ComponentSection'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs'
+import { DocCodeBlock } from './docs/DocCodeBlock'
 
 function TabsApiTab() {
   return (
@@ -42,29 +43,53 @@ function TabsApiTab() {
 
 function TabsCodeTab() {
   return (
-    <pre className="bg-[hsl(var(--muted))] rounded-[var(--radius)] p-4 text-sm font-mono text-[hsl(var(--foreground))] overflow-x-auto">
-      <code>{`import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-
-// Default (pill) style
-<Tabs defaultValue="account">
+    <div className="space-y-4">
+      <DocCodeBlock
+        label="Default (pill) style"
+        code={`<Tabs defaultValue="account">
   <TabsList>
     <TabsTrigger value="account">Account</TabsTrigger>
     <TabsTrigger value="settings">Settings</TabsTrigger>
   </TabsList>
   <TabsContent value="account">Account content</TabsContent>
   <TabsContent value="settings">Settings content</TabsContent>
-</Tabs>
-
-// Underline style
-<Tabs defaultValue="overview">
+</Tabs>`}
+      />
+      <DocCodeBlock
+        label="Underline style"
+        code={`<Tabs defaultValue="overview">
   <TabsList variant="line">
     <TabsTrigger value="overview">Overview</TabsTrigger>
     <TabsTrigger value="analytics">Analytics</TabsTrigger>
     <TabsTrigger value="disabled" disabled>Disabled</TabsTrigger>
   </TabsList>
   <TabsContent value="overview">Overview content</TabsContent>
-</Tabs>`}</code>
-    </pre>
+</Tabs>`}
+      />
+      <DocCodeBlock
+        label="Controlled"
+        code={`const [tab, setTab] = useState('account')
+
+<Tabs value={tab} onValueChange={setTab}>
+  <TabsList>
+    <TabsTrigger value="account">Account</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="account">Account content</TabsContent>
+  <TabsContent value="settings">Settings content</TabsContent>
+</Tabs>`}
+      />
+      <DocCodeBlock
+        label="With count badge"
+        code={`<TabsTrigger value="inbox">
+  Inbox
+  <span className="ml-1.5 inline-flex items-center justify-center rounded-full
+    bg-primary text-primary-foreground text-[10px] font-semibold h-4 min-w-4 px-1">
+    12
+  </span>
+</TabsTrigger>`}
+      />
+    </div>
   )
 }
 
