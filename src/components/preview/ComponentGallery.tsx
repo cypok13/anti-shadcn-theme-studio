@@ -52,8 +52,8 @@ import {
   ComboboxStatesTab,
 } from './docs/ComboboxDocs'
 import { InputOverviewTab, InputApiTab, InputCodeTab, InputStatesTab, InputUsageTab } from './docs/InputDocs'
-import { BadgeOverviewTab, BadgeApiTab, BadgeCodeTab } from './docs/BadgeDocs'
-import { SeparatorOverviewTab, SeparatorApiTab } from './docs/SeparatorDocs'
+import { BadgeOverviewTab, BadgeApiTab, BadgeCodeTab, BadgeUsageTab, BadgeStatesTab } from './docs/BadgeDocs'
+import { SeparatorOverviewTab, SeparatorApiTab, SeparatorUsageTab, SeparatorCodeTab } from './docs/SeparatorDocs'
 import { DemoRow } from './DemoRow'
 import { ThemeSidebar } from './ThemeSidebar'
 import { SiteHeader } from '@/components/layout/SiteHeader'
@@ -164,7 +164,9 @@ export function ComponentGallery() {
               tabs={[
                 { key: 'overview', label: 'Overview', content: <BadgeOverviewTab /> },
                 { key: 'api',      label: 'API',      content: <BadgeApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <BadgeUsageTab /> },
                 { key: 'code',     label: 'Code',     content: <BadgeCodeTab /> },
+                { key: 'states',   label: 'States',   content: <BadgeStatesTab /> },
               ]}
             />
 
@@ -174,6 +176,8 @@ export function ComponentGallery() {
               tabs={[
                 { key: 'overview', label: 'Overview', content: <SeparatorOverviewTab /> },
                 { key: 'api',      label: 'API',      content: <SeparatorApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <SeparatorUsageTab /> },
+                { key: 'code',     label: 'Code',     content: <SeparatorCodeTab /> },
               ]}
             />
 

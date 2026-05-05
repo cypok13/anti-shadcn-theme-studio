@@ -278,6 +278,134 @@ function TabsOverviewTab() {
   )
 }
 
+function TabsUsageTab() {
+  return (
+    <div className="space-y-8">
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Settings page</p>
+        <Tabs defaultValue="profile">
+          <TabsList>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+            <TabsTrigger value="password">Password</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          </TabsList>
+          <TabsContent value="profile" className="mt-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))] mb-1">First name</p>
+                  <p className="text-sm text-[hsl(var(--foreground))] font-medium">Alex</p>
+                </div>
+                <div>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))] mb-1">Last name</p>
+                  <p className="text-sm text-[hsl(var(--foreground))] font-medium">Krasnov</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-[hsl(var(--muted-foreground))] mb-1">Email</p>
+                <p className="text-sm text-[hsl(var(--foreground))]">alex@example.com</p>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="password" className="mt-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">Change your password here.</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="notifications" className="mt-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">Manage your notification preferences.</p>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Dashboard nav (underline)</p>
+        <Tabs defaultValue="week">
+          <TabsList variant="line">
+            <TabsTrigger value="day">Day</TabsTrigger>
+            <TabsTrigger value="week">Week</TabsTrigger>
+            <TabsTrigger value="month">Month</TabsTrigger>
+            <TabsTrigger value="year">Year</TabsTrigger>
+          </TabsList>
+          <TabsContent value="day" className="mt-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">Today's data: 142 events.</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="week" className="mt-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">Last 7 days: 1 024 events.</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="month" className="mt-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">Last 30 days: 4 312 events.</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="year" className="mt-4">
+            <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] p-4">
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">Last 12 months: 51 880 events.</p>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  )
+}
+
+function TabsStatesTab() {
+  return (
+    <div className="space-y-8">
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Default — all tabs enabled</p>
+        <Tabs defaultValue="a">
+          <TabsList>
+            <TabsTrigger value="a">First</TabsTrigger>
+            <TabsTrigger value="b">Second</TabsTrigger>
+            <TabsTrigger value="c">Third</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a" className="mt-4"><p className="text-sm text-[hsl(var(--muted-foreground))]">First tab content.</p></TabsContent>
+          <TabsContent value="b" className="mt-4"><p className="text-sm text-[hsl(var(--muted-foreground))]">Second tab content.</p></TabsContent>
+          <TabsContent value="c" className="mt-4"><p className="text-sm text-[hsl(var(--muted-foreground))]">Third tab content.</p></TabsContent>
+        </Tabs>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">With disabled tabs</p>
+        <Tabs defaultValue="active">
+          <TabsList>
+            <TabsTrigger value="active">Active</TabsTrigger>
+            <TabsTrigger value="locked" disabled>Locked</TabsTrigger>
+            <TabsTrigger value="plan" disabled>Pro only</TabsTrigger>
+          </TabsList>
+          <TabsContent value="active" className="mt-4">
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">This tab is accessible. The others are disabled.</p>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Underline — with disabled</p>
+        <Tabs defaultValue="open">
+          <TabsList variant="line">
+            <TabsTrigger value="open">Open</TabsTrigger>
+            <TabsTrigger value="closed">Closed</TabsTrigger>
+            <TabsTrigger value="archived" disabled>Archived</TabsTrigger>
+          </TabsList>
+          <TabsContent value="open" className="mt-4">
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">12 open issues.</p>
+          </TabsContent>
+          <TabsContent value="closed" className="mt-4">
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">48 closed issues.</p>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  )
+}
+
 export function TabsSection() {
   return (
     <ComponentSection
@@ -286,7 +414,9 @@ export function TabsSection() {
       tabs={[
         { key: 'overview', label: 'Overview', content: <TabsOverviewTab /> },
         { key: 'api',      label: 'API',      content: <TabsApiTab /> },
+        { key: 'usage',    label: 'Usage',    content: <TabsUsageTab /> },
         { key: 'code',     label: 'Code',     content: <TabsCodeTab /> },
+        { key: 'states',   label: 'States',   content: <TabsStatesTab /> },
       ]}
     />
   )

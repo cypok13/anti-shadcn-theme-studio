@@ -122,3 +122,93 @@ export function BadgeCodeTab() {
     </div>
   )
 }
+
+export function BadgeUsageTab() {
+  return (
+    <div className="space-y-8 max-w-sm">
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">User status</p>
+        <div className="space-y-2">
+          {[
+            { name: 'Alex Krasnov', role: 'Admin', status: 'Online' as const, v: 'success' as const },
+            { name: 'Maria Garcia', role: 'Editor', status: 'Away' as const, v: 'warning' as const },
+            { name: 'James Lee', role: 'Viewer', status: 'Offline' as const, v: 'secondary' as const },
+          ].map(u => (
+            <div key={u.name} className="flex items-center justify-between py-2 border-b border-[hsl(var(--border)/0.5)] last:border-0">
+              <div>
+                <p className="text-sm font-medium text-[hsl(var(--foreground))]">{u.name}</p>
+                <p className="text-xs text-[hsl(var(--muted-foreground))]">{u.role}</p>
+              </div>
+              <Badge variant={u.v} dot size="sm">{u.status}</Badge>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Severity labels</p>
+        <div className="space-y-2">
+          {[
+            { msg: 'Deployment failed on prod', v: 'destructive' as const, label: 'Critical' },
+            { msg: 'SSL cert expires in 7 days', v: 'warning' as const, label: 'Warning' },
+            { msg: 'New version available', v: 'info' as const, label: 'Info' },
+            { msg: 'All checks passed', v: 'success' as const, label: 'Resolved' },
+          ].map(e => (
+            <div key={e.msg} className="flex items-start gap-3">
+              <Badge variant={e.v} size="sm" className="mt-0.5 shrink-0">{e.label}</Badge>
+              <p className="text-sm text-[hsl(var(--foreground))]">{e.msg}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Tag chips</p>
+        <div className="flex flex-wrap gap-2">
+          {['Next.js', 'TypeScript', 'Tailwind', 'Supabase', 'Vercel', 'React'].map(tag => (
+            <Badge key={tag} variant="outline">{tag}</Badge>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function BadgeStatesTab() {
+  const VARIANTS = ['default', 'secondary', 'outline', 'destructive', 'success', 'warning', 'info'] as const
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">All variants — md</p>
+        <div className="flex flex-wrap gap-2">
+          {VARIANTS.map(v => <Badge key={v} variant={v}>{v}</Badge>)}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">All variants — sm</p>
+        <div className="flex flex-wrap gap-2">
+          {VARIANTS.map(v => <Badge key={v} variant={v} size="sm">{v}</Badge>)}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">With dot</p>
+        <div className="flex flex-wrap gap-2">
+          {VARIANTS.map(v => <Badge key={v} variant={v} dot>{v}</Badge>)}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">With leading icon</p>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="success"><CheckCircle aria-hidden="true" />Verified</Badge>
+          <Badge variant="destructive"><AlertTriangle aria-hidden="true" />Critical</Badge>
+          <Badge variant="info"><Info aria-hidden="true" />Info</Badge>
+          <Badge variant="default"><Zap aria-hidden="true" />New</Badge>
+        </div>
+      </div>
+    </div>
+  )
+}
