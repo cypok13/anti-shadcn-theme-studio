@@ -51,7 +51,7 @@ export function ThemeSidebar() {
   const currentMode    = searchParams.get('mode')  ?? 'light'
   const currentPreset  = PRESETS.find((p) => p.id === currentTheme) ?? PRESETS[0]
   const currentRadius  = searchParams.get('radius') ?? '0.5rem'
-  const currentShadow  = searchParams.get('shadow') ?? currentPreset.shadowStyle ?? 'none'
+  const currentShadow  = searchParams.get('shadow') ?? 'none'
   const currentFontHeading = searchParams.get('fontHeading') ?? currentPreset.fonts.heading
   const currentFontBody    = searchParams.get('fontBody')    ?? currentPreset.fonts.body
   const currentFontMono    = searchParams.get('fontMono')    ?? currentPreset.fonts.mono
@@ -158,7 +158,7 @@ export function ThemeSidebar() {
               <div className="flex-1 min-w-0">
                 <Select value={value} onValueChange={(v) => setParam(key, v)}>
                   <SelectTrigger size="sm" aria-label={`${label} font`}>
-                    <SelectValue />
+                    <SelectValue label={options.find((o) => o.value === value)?.label} />
                   </SelectTrigger>
                   <SelectContent>
                     {options.map((opt) => (

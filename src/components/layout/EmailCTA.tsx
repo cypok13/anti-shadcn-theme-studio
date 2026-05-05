@@ -26,16 +26,26 @@ export function EmailCTA() {
 
   return (
     <div style={{ position: 'relative', marginTop: 32 }}>
-      {/* Fade-out overlay */}
-      <div style={{
-        position: 'absolute',
-        top: -80,
-        left: 0,
-        right: 0,
-        height: 80,
-        background: 'linear-gradient(to bottom, transparent, hsl(var(--background)))',
-        pointerEvents: 'none',
-      }} />
+      {/* Skeleton block — suggests more content exists */}
+      <div style={{ position: 'relative', height: 120, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '0 4px' }}>
+          <div className="animate-pulse" style={{ height: 16, width: '75%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
+          <div className="animate-pulse" style={{ height: 16, width: '55%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
+          <div className="animate-pulse" style={{ height: 16, width: '65%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
+          <div className="animate-pulse" style={{ height: 16, width: '40%', borderRadius: 6, background: 'hsl(var(--muted))' }} />
+        </div>
+
+        {/* Gradient overlay over skeleton — bottom-up fade */}
+        <div style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '70%',
+          background: 'linear-gradient(to top, hsl(var(--background)), transparent)',
+          pointerEvents: 'none',
+        }} />
+      </div>
 
       {/* CTA content */}
       <div style={{

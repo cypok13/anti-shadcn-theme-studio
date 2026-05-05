@@ -81,7 +81,7 @@ export const zincViolet: ThemePreset = {
     mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.5rem',
-  shadowStyle: 'soft',
+  shadowStyle: 'none',
   aiPersonality: {
     tone: 'Precise, confident, modern',
     doList: [

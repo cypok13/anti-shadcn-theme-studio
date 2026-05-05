@@ -81,7 +81,7 @@ export const broadsheet: ThemePreset = {
     mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.125rem',
-  shadowStyle: 'flat',
+  shadowStyle: 'none',
   aiPersonality: {
     tone: 'Authoritative, measured, precise',
     doList: [

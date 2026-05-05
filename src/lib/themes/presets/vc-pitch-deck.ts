@@ -81,7 +81,7 @@ export const vcPitchDeck: ThemePreset = {
     mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.5rem',
-  shadowStyle: 'soft',
+  shadowStyle: 'none',
   aiPersonality: {
     tone: 'Confident, forward-looking, data-driven',
     doList: [

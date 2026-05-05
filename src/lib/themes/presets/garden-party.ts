@@ -81,7 +81,7 @@ export const gardenParty: ThemePreset = {
     mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.75rem',
-  shadowStyle: 'soft',
+  shadowStyle: 'none',
   aiPersonality: {
     tone: 'Warm, grounded, approachable',
     doList: [

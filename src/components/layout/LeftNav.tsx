@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react'
 const COMPONENTS = [
   { id: 'button', label: 'Button' },
   { id: 'checkbox', label: 'Checkbox' },
-  { id: 'dialog', label: 'Dialog' },
   { id: 'input', label: 'Input' },
   { id: 'select', label: 'Select' },
   { id: 'tooltip', label: 'Tooltip' },
@@ -15,7 +14,6 @@ const COMPONENTS = [
   { id: 'combobox', label: 'Combobox' },
   { id: 'badge', label: 'Badge' },
   { id: 'separator', label: 'Separator' },
-  { id: 'popover', label: 'Popover' },
   { id: 'tabs', label: 'Tabs' },
 ]
 
@@ -132,9 +130,8 @@ export function LeftNav({ isOpen = false, onClose }: Props) {
           height: '100vh',
           overflowY: 'auto',
           padding: '32px 16px',
-          borderRight: '1px solid hsl(var(--border))',
           background: 'hsl(var(--background))',
-          width: 200,
+          width: 280,
           flexShrink: 0,
           flexDirection: 'column',
         }}

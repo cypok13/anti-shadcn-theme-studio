@@ -148,11 +148,18 @@ export function Select({
 
 // ─── SelectValue (display selected label) ────────────────────────────────────
 
-export function SelectValue({ placeholder = '' }: { placeholder?: string }) {
+export function SelectValue({ placeholder = '', label }: { placeholder?: string; label?: string }) {
   const { value, items } = useSelectContext()
   const found = items.find((i) => i.value === value)
-  if (!value || !found) {
+  if (!value) {
     return <span className="text-[hsl(var(--muted-foreground))]">{placeholder}</span>
+  }
+  if (!found) {
+    return (
+      <span className="truncate">
+        {label ?? <span className="text-[hsl(var(--muted-foreground))]">{placeholder}</span>}
+      </span>
+    )
   }
   return (
     <span className="flex items-center gap-2 truncate">

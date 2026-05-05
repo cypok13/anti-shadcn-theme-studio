@@ -81,7 +81,7 @@ export const quietTokyo: ThemePreset = {
     mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.375rem',
-  shadowStyle: 'soft',
+  shadowStyle: 'none',
   aiPersonality: {
     tone: 'Calm, considered, precise',
     doList: [

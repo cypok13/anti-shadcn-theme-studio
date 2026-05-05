@@ -81,7 +81,7 @@ export const cassetteFuturism: ThemePreset = {
     mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.25rem',
-  shadowStyle: 'soft',
+  shadowStyle: 'none',
   aiPersonality: {
     tone: 'Nostalgic, optimistic, tactile',
     doList: [

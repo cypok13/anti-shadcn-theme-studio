@@ -81,7 +81,7 @@ export const lateNightTerminal: ThemePreset = {
     mono: 'var(--font-jetbrains-mono)',
   },
   radius: '0.25rem',
-  shadowStyle: 'glow',
+  shadowStyle: 'none',
   aiPersonality: {
     tone: 'Terse, technical, no-nonsense',
     doList: [
