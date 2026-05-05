@@ -179,16 +179,6 @@ export function ThemeSidebar() {
         ...
       </section> */}
 
-      {/* GitHub */}
-      <a
-        href="https://github.com/cypok13/theme-studio"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center justify-center gap-1.5 text-xs text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors pb-1"
-      >
-        ↗ GitHub
-      </a>
-
     </div>
   )
 }

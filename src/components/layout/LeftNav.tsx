@@ -103,7 +103,7 @@ export function LeftNav({ isOpen = false, onClose }: Props) {
                     ? 'hsl(var(--accent-foreground))'
                     : 'hsl(var(--muted-foreground))',
                 border: 'none',
-                borderRadius: 6,
+                borderRadius: 'var(--radius-sm)',
                 padding: '6px 12px',
                 cursor: 'pointer',
                 fontSize: 14,
@@ -127,11 +127,14 @@ export function LeftNav({ isOpen = false, onClose }: Props) {
       <nav
         className="hidden lg:flex"
         style={{
-          height: '100vh',
+          position: 'sticky',
+          top: 32,
+          maxHeight: 'calc(100vh - 96px)',
           overflowY: 'auto',
-          padding: '32px 16px',
+          height: 'fit-content',
+          padding: '0 16px',
           background: 'hsl(var(--background))',
-          width: 240,
+          width: 200,
           flexShrink: 0,
           flexDirection: 'column',
         }}

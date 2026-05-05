@@ -80,10 +80,9 @@ export function ComponentGallery() {
           onOpenNav={() => setNavOpen(true)}
           onOpenSidebar={() => setSidebarOpen(true)}
         />
-        <div className="flex bg-[hsl(var(--background))] text-[hsl(var(--foreground))]" style={{ height: 'calc(100vh - 65px)' }}>
-          <LeftNav isOpen={navOpen} onClose={() => setNavOpen(false)} />
-          <div className="gallery-scroll flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1120px] flex items-start gap-12 px-4 lg:px-8 pt-8 pb-16">
+        <div className="gallery-scroll flex-1 overflow-y-auto bg-[hsl(var(--background))] text-[hsl(var(--foreground))]" style={{ height: 'calc(100vh - 65px)' }}>
+          <div className="mx-auto max-w-[1120px] flex items-start gap-8 px-4 lg:px-8 pt-8 pb-16">
+            <LeftNav isOpen={navOpen} onClose={() => setNavOpen(false)} />
             <div className="flex-1 min-w-0 space-y-6">
             <ComponentSection
               id="button"
@@ -179,7 +178,6 @@ export function ComponentGallery() {
             <ThemeSidebar />
           </div>
         </div>
-          </div>
         </div>
 
         {/* Mobile ThemeSidebar bottom-sheet */}

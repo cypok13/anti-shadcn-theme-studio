@@ -44,6 +44,7 @@ export function AppShell() {
   }, [presetId, mode])
 
   return (
+    <>
     <div
       style={{
         display: 'flex',
@@ -247,7 +248,8 @@ export function AppShell() {
         isOpen={exportOpen}
         onClose={() => setExportOpen(false)}
       />
-      <BuiltByBadge />
     </div>
+    <BuiltByBadge />
+    </>
   )
 }
