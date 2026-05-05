@@ -23,23 +23,18 @@ export function SiteHeader({ onOpenNav, onOpenSidebar }: Props) {
       top: 0,
       zIndex: 50,
       width: '100%',
-      padding: '8px 16px',
+      paddingTop: '8px',
+      paddingBottom: '8px',
       background: 'transparent',
       pointerEvents: 'none',
     }}>
-      <div style={{
-        maxWidth: '1360px',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        width: '100%',
-      }}>
+      <div className="mx-auto max-w-[1360px] px-4 lg:px-8">
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '10px 20px',
         gap: '8px',
-        width: '100%',
         background: 'hsl(var(--background) / 0.88)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
