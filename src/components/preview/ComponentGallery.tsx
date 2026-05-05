@@ -111,8 +111,8 @@ export function ComponentGallery() {
               title="Input"
               tabs={[
                 { key: 'overview', label: 'Overview', content: <InputOverviewTab /> },
-                { key: 'usage',    label: 'Usage',    content: <InputUsageTab /> },
                 { key: 'api',      label: 'API',      content: <InputApiTab /> },
+                { key: 'usage',    label: 'Usage',    content: <InputUsageTab /> },
                 { key: 'code',     label: 'Code',     content: <InputCodeTab /> },
                 { key: 'states',   label: 'States',   content: <InputStatesTab /> },
               ]}
