@@ -103,7 +103,7 @@ export function LeftNav({ isOpen = false, onClose }: Props) {
                     ? 'hsl(var(--accent-foreground))'
                     : 'hsl(var(--muted-foreground))',
                 border: 'none',
-                borderRadius: 'var(--radius-sm)',
+                borderRadius: 'var(--radius)',
                 padding: '6px 12px',
                 cursor: 'pointer',
                 fontSize: 14,

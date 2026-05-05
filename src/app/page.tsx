@@ -1,6 +1,7 @@
 import { PRESETS } from '@/lib/themes/registry'
 import { resolveCSS } from '@/lib/themes/resolve'
 import { ComponentGallery } from '@/components/preview/ComponentGallery'
+import { BuiltByBadge } from '@/components/BuiltByBadge'
 import type { ThemeTokens } from '@/lib/themes/types'
 
 const RADIUS_RE = /^\d+(\.\d+)?(rem|px|em|%)$/
@@ -78,6 +79,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <style dangerouslySetInnerHTML={{ __html: shadowCss /* nosemgrep: typescript.react.security.audit.react-dangerouslysetinnerhtml.react-dangerouslysetinnerhtml */ }} />
       <style dangerouslySetInnerHTML={{ __html: shikiModeCss }} />
       <ComponentGallery />
+      <BuiltByBadge />
     </>
   )
 }
