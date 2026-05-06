@@ -64,7 +64,22 @@ export function SiteHeader({ onOpenNav, onOpenSidebar }: Props) {
           </button>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+        <a
+          href="/"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            flex: 1,
+            minWidth: 0,
+            textDecoration: 'none',
+            padding: '6px 8px',
+            margin: '-6px -8px',
+            borderRadius: 8,
+            cursor: 'pointer',
+          }}
+          title="Reset to default theme"
+        >
           <LogoMark />
           <div>
             <div style={{ fontSize: 15, fontWeight: 700, color: 'hsl(var(--foreground))', lineHeight: 1 }}>
@@ -74,7 +89,7 @@ export function SiteHeader({ onOpenNav, onOpenSidebar }: Props) {
               Visual design token editor
             </div>
           </div>
-        </div>
+        </a>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
           <a
