@@ -19,7 +19,7 @@ import { TooltipProvider } from '../ui/tooltip'
 import { ComponentSection } from './ComponentSection'
 import { LeftNav } from '@/components/layout/LeftNav'
 import { EmailCTA } from '@/components/layout/EmailCTA'
-import { ButtonApiTab, ButtonUsageTab, ButtonCodeTab } from './docs/ButtonDocs'
+import { ButtonOverviewTab, ButtonApiTab, ButtonUsageTab, ButtonCodeTab, ButtonStatesTab } from './docs/ButtonDocs'
 import {
   CheckboxOverviewTab,
   CheckboxApiTab,
@@ -86,11 +86,11 @@ export function ComponentGallery() {
               id="button"
               title="Button"
               tabs={[
-                { key: 'variants', label: 'Variants', content: <ButtonVariantsGrid /> },
-                { key: 'sizes',    label: 'Sizes',    content: <ButtonSizesGrid /> },
+                { key: 'overview', label: 'Overview', content: <ButtonOverviewTab /> },
                 { key: 'api',      label: 'API',      content: <ButtonApiTab /> },
                 { key: 'usage',    label: 'Usage',    content: <ButtonUsageTab /> },
                 { key: 'code',     label: 'Code',     content: <ButtonCodeTab /> },
+                { key: 'states',   label: 'States',   content: <ButtonStatesTab /> },
               ]}
             />
 

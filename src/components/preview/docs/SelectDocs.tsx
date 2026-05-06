@@ -190,8 +190,8 @@ function DoDontCard({ type, title, children }: { type: 'do' | 'dont'; title: str
       className={[
         'rounded-lg p-4 text-sm',
         type === 'do'
-          ? 'border-l-4 border-l-[hsl(var(--success))] bg-[hsl(var(--success)/0.06)]'
-          : 'border-l-4 border-l-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)]',
+          ? 'border-l-[3px] border-l-[hsl(var(--success,142_71%_45%))] bg-[hsl(var(--success,142_71%_45%)/0.06)]'
+          : 'border-l-[3px] border-l-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.06)]',
       ].join(' ')}
     >
       <div className="flex items-baseline gap-1.5 mb-2">
@@ -199,7 +199,7 @@ function DoDontCard({ type, title, children }: { type: 'do' | 'dont'; title: str
           className={[
             'text-xs font-bold uppercase tracking-wider shrink-0',
             type === 'do'
-              ? 'text-[hsl(var(--success))]'
+              ? 'text-[hsl(var(--success,142_71%_45%))]'
               : 'text-[hsl(var(--destructive))]',
           ].join(' ')}
         >

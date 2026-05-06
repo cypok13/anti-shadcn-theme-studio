@@ -1,5 +1,6 @@
 import { DocPropsTable } from './DocPropsTable'
 import { DocCodeBlock } from './DocCodeBlock'
+import { Button } from '../../ui/button'
 
 const BUTTON_PROPS = [
   {
@@ -136,6 +137,88 @@ export function ButtonUsageTab() {
           ))}
         </div>
       </section>
+    </div>
+  )
+}
+
+const BTN_VARIANTS = ['default', 'secondary', 'outline', 'ghost', 'destructive'] as const
+const BTN_STATES_COLS = [
+  { label: 'Normal',   props: {} },
+  { label: 'Disabled', props: { disabled: true } },
+  { label: 'Loading',  props: { isLoading: true } },
+] as const
+const BTN_SIZES = ['sm', 'default', 'lg'] as const
+const BTN_SIZE_LABELS: Record<string, string> = { sm: 'Small', default: 'Medium', lg: 'Large' }
+
+export function ButtonOverviewTab() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Variants</p>
+        <div className="overflow-x-auto">
+          <table className="border-separate border-spacing-x-3 border-spacing-y-3">
+            <thead>
+              <tr>
+                <th className="w-28" />
+                {BTN_STATES_COLS.map(({ label }) => (
+                  <th key={label} className="text-xs font-normal text-[hsl(var(--muted-foreground))] pb-2 text-center px-2">
+                    {label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {BTN_VARIANTS.map((variant) => (
+                <tr key={variant}>
+                  <td className="text-xs text-[hsl(var(--muted-foreground))] pr-4 capitalize align-middle">{variant}</td>
+                  {BTN_STATES_COLS.map(({ label, props }) => (
+                    <td key={label}>
+                      <Button variant={variant} {...props}>Button</Button>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Sizes</p>
+        <div className="flex items-end gap-6">
+          {BTN_SIZES.map((size) => (
+            <div key={size} className="flex flex-col items-center gap-2">
+              <Button size={size}>Button</Button>
+              <span className="text-xs text-[hsl(var(--muted-foreground))]">{BTN_SIZE_LABELS[size]}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function ButtonStatesTab() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Disabled — all variants</p>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="default" disabled>Default</Button>
+          <Button variant="secondary" disabled>Secondary</Button>
+          <Button variant="outline" disabled>Outline</Button>
+          <Button variant="ghost" disabled>Ghost</Button>
+          <Button variant="destructive" disabled>Destructive</Button>
+        </div>
+      </div>
+      <div className="space-y-3">
+        <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))]">Sizes</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm">Small</Button>
+          <Button size="default">Default</Button>
+          <Button size="lg">Large</Button>
+          <Button size="icon"><span className="text-base">+</span></Button>
+        </div>
+      </div>
     </div>
   )
 }
