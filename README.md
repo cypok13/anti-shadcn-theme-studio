@@ -2,7 +2,7 @@
 
 **Personality-first visual design token editor.** Pick a vibe, tune the tokens, preview in real time.
 
-→ **[theme-studio-beta.vercel.app](https://theme-studio-beta.vercel.app)**
+→ **[themestudio.notjustsasha.com](https://themestudio.notjustsasha.com)**
 
 ---
 
