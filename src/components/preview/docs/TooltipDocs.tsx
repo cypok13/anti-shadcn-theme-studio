@@ -171,7 +171,7 @@ export function TooltipUsageTab() {
     <div className="space-y-6 text-sm">
       <section>
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Use for non-interactive supplementary information only">
             Tooltips are for brief labels and hints — keyboard shortcuts, icon meanings, field context. They disappear on blur/mouseout.
           </DoDontCard>

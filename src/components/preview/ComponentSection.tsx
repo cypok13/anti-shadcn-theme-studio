@@ -73,7 +73,7 @@ export function ComponentSection({ title, id, docsHref: _docsHref, tabs, childre
           aria-orientation="horizontal"
           aria-label={`${title} sections`}
           onKeyDown={handleKeyDown}
-          className="flex gap-1 mb-4"
+          className="flex gap-1 mb-4 overflow-x-auto pb-px [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
           {tabs.map((tab) => {
             const isActive = activeTab === tab.key

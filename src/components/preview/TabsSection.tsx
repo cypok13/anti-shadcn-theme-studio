@@ -209,7 +209,7 @@ function TabsUsageTab() {
     <div className="space-y-6 text-sm">
       <section>
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Use for related content panels">
             Tabs switch between multiple views of related content within the same context — settings sections, data views, component demos.
           </DoDontCard>

@@ -173,7 +173,7 @@ export function InputUsageTab() {
     <div className="space-y-6 text-sm">
       <section>
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Always pair input with a label">
             Every <code className="font-mono">Field</code> must have a visible label. Use <code className="font-mono">id</code> + <code className="font-mono">htmlFor</code> to link them — orphan inputs are a critical accessibility violation.
           </DoDontCard>

@@ -85,7 +85,7 @@ export function SeparatorUsageTab() {
     <div className="space-y-6 text-sm">
       <section>
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Use to group related content">
             Separator creates visual breathing room between distinct groups. Use it inside cards, sidebars, and menus to separate sections without a heading.
           </DoDontCard>

@@ -246,7 +246,7 @@ export function ComboboxUsageTab() {
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">
           Guidelines
         </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Use Combobox for 5 or more options">
             When the list is long enough that users benefit from typing to filter, a Combobox
             reduces cognitive load versus scrolling a long Select.

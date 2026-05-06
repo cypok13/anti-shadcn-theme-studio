@@ -93,7 +93,7 @@ export function ButtonUsageTab() {
     <div className="space-y-6 text-sm">
       <section>
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Use one primary per view">
             Reserve <code className="font-mono">default</code> variant for the single most important action on screen. Competing primaries dilute hierarchy.
           </DoDontCard>

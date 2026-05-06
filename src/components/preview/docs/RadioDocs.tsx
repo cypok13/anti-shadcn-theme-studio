@@ -171,7 +171,7 @@ export function RadioUsageTab() {
     <div className="space-y-6 text-sm">
       <section>
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Use for mutually exclusive options">
             One choice from a small set (2–5 options). Selecting one automatically deselects the others — that is the entire point.
           </DoDontCard>

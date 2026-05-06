@@ -361,7 +361,7 @@ export function SelectUsageTab() {
     <div className="space-y-6 text-sm">
       <section>
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Use Select for 6+ mutually exclusive options when vertical space is constrained">
             A collapsed trigger keeps forms compact. The listbox renders in a portal — it never affects surrounding layout.
           </DoDontCard>

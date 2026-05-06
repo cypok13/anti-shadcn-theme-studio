@@ -155,7 +155,7 @@ export function BadgeUsageTab() {
     <div className="space-y-6 text-sm">
       <section>
         <p className="text-xs font-semibold uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Guidelines</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DoDontCard type="do" title="Use for status and labels">
             Badge is for communicating state (active, pending, error) or categorising content (tags, types). It is a decorative element.
           </DoDontCard>
