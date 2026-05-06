@@ -118,18 +118,16 @@ export function SiteHeader({ onOpenNav, onOpenSidebar }: Props) {
             <button
               onClick={onOpenSidebar}
               aria-label="Open theme customizer"
-              className="lg:hidden"
+              className="lg:hidden flex items-center"
               style={{
                 background: 'none',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: 8,
-                padding: '6px 8px',
+                padding: '6px 10px',
                 cursor: 'pointer',
-                fontSize: 13,
+                fontSize: 16,
                 color: 'hsl(var(--foreground))',
                 flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
                 gap: 4,
               }}
             >

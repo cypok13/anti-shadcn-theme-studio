@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 export function EmailCTA() {
   const [email, setEmail] = useState('')
@@ -66,40 +68,20 @@ export function EmailCTA() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <input
+            <Input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="your@email.com"
               required
-              style={{
-                padding: '8px 12px',
-                borderRadius: 8,
-                border: '1px solid hsl(var(--border))',
-                background: 'hsl(var(--background))',
-                color: 'hsl(var(--foreground))',
-                fontSize: 14,
-                outline: 'none',
-                minWidth: 220,
-              }}
+              style={{ minWidth: 220 }}
             />
-            <button
+            <Button
               type="submit"
               disabled={status === 'loading'}
-              style={{
-                padding: '8px 16px',
-                borderRadius: 8,
-                background: 'hsl(var(--primary))',
-                color: 'hsl(var(--primary-foreground))',
-                border: 'none',
-                fontSize: 14,
-                fontWeight: 500,
-                cursor: status === 'loading' ? 'not-allowed' : 'pointer',
-                opacity: status === 'loading' ? 0.7 : 1,
-              }}
             >
               {status === 'loading' ? 'Sending...' : 'Notify me'}
-            </button>
+            </Button>
           </form>
         )}
 

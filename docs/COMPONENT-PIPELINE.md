@@ -41,11 +41,7 @@ Research best practices for [ComponentName] component:
    - Keyboard behavior
    - Data attributes for state
 
-3. shadcn/ui docs: https://ui.shadcn.com/docs/components/[name]
-   - Variants available
-   - Known edge cases
-
-4. Search GitHub for: "[ComponentName] accessibility implementation site:github.com"
+3. Search GitHub for: "[ComponentName] accessibility implementation site:github.com"
    - Find 2-3 real implementations in production component libraries
    - Extract: keyboard handlers, ARIA attributes, token patterns
 
@@ -57,7 +53,6 @@ Research best practices for [ComponentName] component:
    - Spectrum (Adobe)
    - Fluent Design 2 (Microsoft)
    - Atlassian Design System
-   - shadcn/ui
 
    For each system find: what props, slots, and visual variants does their [ComponentName] expose?
    Return a gap table: feature | how many DS have it | we have it?
@@ -476,12 +471,12 @@ Documented failures from Session A. Each rule above has a reason. Read before im
 
 ### E-012: Broken main can persist for days when Vercel auto-build silently fails
 
-**Symptom (ALE-825 / ALE-829, 2026-04-27):** Standalone repo `cypok13/anti-shadcn-theme-studio` had main broken 4+ days after ALE-812 Checkbox merge (4 components imported `@radix-ui/*` without deps in package.json). Every push triggered a failed Vercel build, but no signal reached the operator — production stayed on `a19ebc20` (день 15) while main HEAD advanced to `ac3f37b`. 13 most recent production deploys all shared the same SHA = silent auto-redeploy retries with no new commits getting through.
+**Symptom:** Standalone repo had main broken 4+ days after a Checkbox merge (4 components imported `@radix-ui/*` without deps in package.json). Every push triggered a failed Vercel build with no signal — production stayed on the old SHA while main HEAD advanced. 13 most recent production deploys all shared the same SHA = silent auto-redeploy retries with no new commits getting through.
 **Root cause:** Standalone repo had **zero CI workflows**. Markdown rule `feedback_session_start_build_check.md` ("run `npm run build` at session start when prior session had uncommitted work") existed but was not enforced — operator skipped it. Vercel deployment failures were not surfaced anywhere (no Telegram, no Slack, no dashboard).
 **Fix (two layers, ALE-829):**
-1. **GitHub Actions required status check** — `.github/workflows/build.yml` on standalone (`npm install` + `npm run build`). Branch protection blocks merge to main when red. (`lint:ui` and `test:components` skipped: `eslint` not in standalone deps; Playwright needs browser install + dev server. `npm run build` alone catches the ALE-825 root cause — missing/broken deps.)
-2. **Vercel deploy-failure → Telegram alert** — n8n workflow `vercel-theme-studio-deploy-alert` polls Vercel API every 15 min, alerts on `state == ERROR` deployments with dedupe.
-**Prevention:** Standalone repos with Vercel auto-deploy MUST have CI gate + alerting. Markdown-only rules are not enforcement. Apply to any future standalone repo: see `~/My_Projects/.github/workflows/build.yml` as template.
+1. **GitHub Actions required status check** — `.github/workflows/build.yml` (`npm install` + `npm run build`). Branch protection blocks merge to main when red.
+2. **Vercel deploy-failure alerting** — poll Vercel API, alert on `state == ERROR` with dedupe.
+**Prevention:** Standalone repos with Vercel auto-deploy MUST have CI gate + alerting. Markdown-only rules are not enforcement.
 
 ---
 

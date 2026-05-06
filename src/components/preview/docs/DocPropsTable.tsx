@@ -39,7 +39,7 @@ export function DocPropsTable({ rows }: DocPropsTableProps) {
   return (
     <div className="rounded-lg border border-[hsl(var(--border))] overflow-hidden text-sm">
       {/* Desktop header — hidden on mobile */}
-      <div className="hidden sm:grid grid-cols-[140px_minmax(0,1.2fr)_100px_minmax(0,1.5fr)] gap-4 px-4 py-2 bg-[hsl(var(--muted)/0.5)] border-b border-[hsl(var(--border))]">
+      <div className="hidden xl:grid grid-cols-[140px_minmax(0,1.2fr)_100px_minmax(0,1.5fr)] gap-4 px-4 py-2 bg-[hsl(var(--muted)/0.5)] border-b border-[hsl(var(--border))]">
         {['Prop', 'Type', 'Default', 'Description'].map((h) => (
           <span key={h} className="text-xs font-semibold uppercase tracking-wider text-[hsl(var(--muted-foreground))]">
             {h}
@@ -49,7 +49,7 @@ export function DocPropsTable({ rows }: DocPropsTableProps) {
       {rows.map((row, i) => (
         <div key={row.name} className={i < rows.length - 1 ? 'border-b border-[hsl(var(--border))]' : ''}>
           {/* Desktop row */}
-          <div className="hidden sm:grid grid-cols-[140px_minmax(0,1.2fr)_100px_minmax(0,1.5fr)] gap-4 px-4 py-3">
+          <div className="hidden xl:grid grid-cols-[140px_minmax(0,1.2fr)_100px_minmax(0,1.5fr)] gap-4 px-4 py-3">
             <div className="flex items-center gap-1.5">
               <code className="text-xs font-mono font-medium text-[hsl(var(--primary))]">{row.name}</code>
               {row.required && (
@@ -69,7 +69,7 @@ export function DocPropsTable({ rows }: DocPropsTableProps) {
             <p className="text-xs text-[hsl(var(--muted-foreground))] leading-relaxed pt-0.5">{row.description}</p>
           </div>
           {/* Mobile card */}
-          <div className="sm:hidden px-4 py-3 space-y-2">
+          <div className="xl:hidden px-4 py-3 space-y-2">
             <div className="flex items-center gap-1.5">
               <code className="text-xs font-mono font-medium text-[hsl(var(--primary))]">{row.name}</code>
               {row.required && (
