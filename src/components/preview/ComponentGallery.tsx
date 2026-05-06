@@ -221,16 +221,25 @@ export function ComponentGallery() {
               left: 0,
               right: 0,
               maxHeight: '80vh',
-              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
               background: 'hsl(var(--background))',
               borderTop: '1px solid hsl(var(--border))',
               borderRadius: '16px 16px 0 0',
-              padding: '16px',
               transform: sidebarOpen ? 'translateY(0)' : 'translateY(100%)',
               transition: 'transform 0.25s ease',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            {/* Sticky header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '16px 16px 12px',
+              borderBottom: '1px solid hsl(var(--border))',
+              flexShrink: 0,
+            }}>
               <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))' }}>Customize Theme</span>
               <button
                 onClick={() => setSidebarOpen(false)}
@@ -247,9 +256,12 @@ export function ComponentGallery() {
                 ✕
               </button>
             </div>
-            <Suspense>
-              <ThemeSidebar />
-            </Suspense>
+            {/* Scrollable content */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+              <Suspense>
+                <ThemeSidebar />
+              </Suspense>
+            </div>
           </div>
         </div>
       </>
