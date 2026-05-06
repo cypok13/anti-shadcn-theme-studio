@@ -34,41 +34,46 @@ const BADGE_PROPS = [
 
 export function BadgeOverviewTab() {
   return (
-    <section className="space-y-4" data-section="badge">
-      <div className="space-y-3">
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">Color variants</p>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="default">Brand</Badge>
-          <Badge variant="secondary">Gray</Badge>
-          <Badge variant="outline">Outline</Badge>
-          <Badge variant="destructive">Error</Badge>
-          <Badge variant="success">Success</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="info">Info</Badge>
-        </div>
+    <section className="space-y-6" data-section="badge">
 
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">Sizes</p>
-        <div className="flex flex-wrap gap-2 items-center">
-          <Badge variant="default" size="sm">Small</Badge>
-          <Badge variant="default" size="md">Medium</Badge>
-        </div>
+      {/* Variants grid */}
+      <div className="grid grid-cols-4 gap-2">
+        {([
+          { variant: 'default',     label: 'Brand' },
+          { variant: 'secondary',   label: 'Gray' },
+          { variant: 'outline',     label: 'Outline' },
+          { variant: 'destructive', label: 'Error' },
+          { variant: 'success',     label: 'Success' },
+          { variant: 'warning',     label: 'Warning' },
+          { variant: 'info',        label: 'Info' },
+        ] as const).map(({ variant, label }) => (
+          <div key={variant} className="flex flex-col items-center gap-2 rounded-lg bg-[hsl(var(--muted)/0.4)] p-3">
+            <Badge variant={variant}>{label}</Badge>
+            <span className="text-[10px] text-[hsl(var(--muted-foreground))]">{variant}</span>
+          </div>
+        ))}
+      </div>
 
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">With dot indicator</p>
-        <div className="flex flex-wrap gap-2 items-center">
+      {/* Dot + sizes row */}
+      <div className="flex items-center gap-6 flex-wrap">
+        <div className="flex items-center gap-2">
           <Badge variant="success" dot>Online</Badge>
           <Badge variant="destructive" dot>Offline</Badge>
           <Badge variant="warning" dot>Away</Badge>
-          <Badge variant="info" dot>Busy</Badge>
         </div>
-
-        <p className="text-xs text-[hsl(var(--muted-foreground))]">With leading icon</p>
-        <div className="flex flex-wrap gap-2 items-center">
+        <div className="w-px h-4 bg-[hsl(var(--border))]" aria-hidden="true" />
+        <div className="flex items-center gap-2">
+          <Badge variant="default" size="sm">sm</Badge>
+          <Badge variant="default" size="md">md</Badge>
+        </div>
+        <div className="w-px h-4 bg-[hsl(var(--border))]" aria-hidden="true" />
+        <div className="flex items-center gap-2">
           <Badge variant="success"><CheckCircle aria-hidden="true" />Verified</Badge>
           <Badge variant="destructive"><AlertTriangle aria-hidden="true" />Critical</Badge>
-          <Badge variant="info"><Info aria-hidden="true" />Info</Badge>
           <Badge variant="default"><Zap aria-hidden="true" />New</Badge>
         </div>
       </div>
+
     </section>
   )
 }
