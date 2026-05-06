@@ -22,12 +22,20 @@ dist/
 test-results/
 playwright-report/
 
+# qa screenshots (ephemeral)
+qa-*.png
+
 # env
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# internal AI tooling — never commit to public repo
+CLAUDE.md
+AGENTS.md
+.claude/
 
 # docs/ — whitelist: only approved files committed to public repo.
 docs/*
@@ -39,4 +47,3 @@ docs/*
 !docs/specs/
 !docs/specs/component-spec-template.md
 .gitnexus
-!docs/COMPONENT-SECTION-CHECKLIST.md

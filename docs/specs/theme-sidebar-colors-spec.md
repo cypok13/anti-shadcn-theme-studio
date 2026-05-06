@@ -1,6 +1,6 @@
 # Feature Spec: Colors Section in ThemeSidebar
 
-> ALE-858 — created 2026-04-30 before implementation.
+> Created 2026-04-30 before implementation.
 
 ---
 
@@ -44,8 +44,6 @@ The plumbing is complete — only the UI section is missing.
 - **Feature:** Colors section in ThemeSidebar
 - **File:** `src/components/preview/ThemeSidebar.tsx`
 - **Picker:** `src/components/tokens/OklchPicker.tsx` (reuse as-is)
-- **Ticket:** ALE-858
-- **Parent:** ALE-721 (OklchPicker implementation)
 
 ---
 
@@ -215,6 +213,5 @@ designer subagent #2: check hardcoded values, spacing off 4px scale, native elem
 **Spec complete:** YES
 
 ## Related
-- [[ALE-858 - feat(theme-studio)- add Colors section with OklchPicker to ThemeSidebar]]
 - [[oklch-picker-spec]]
 - [[component-spec]]

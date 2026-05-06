@@ -626,11 +626,9 @@ function ButtonsDemo() {
 
       {/* States */}
       <div className="flex flex-wrap gap-2 items-center pt-1">
-        {/* native disabled — убирает из tab order */}
         <Button disabled>Disabled</Button>
         <Button variant="outline" disabled>Disabled</Button>
-        {/* aria-disabled — остаётся в tab order, объясним почему */}
-        <Button aria-disabled="true" title="Заполните форму">
+        <Button aria-disabled="true" title="Complete the form first">
           aria-disabled
         </Button>
         {/* loading */}

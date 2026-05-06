@@ -6,23 +6,23 @@
 
 ### When to use this component
 
-- Use when: разделение групп контента, section dividers на preview page, горизонтальный разрыв между компонентами в gallery
-- Do NOT use when: нужен заголовок/label внутри разделителя → "labeled divider" паттерн; нужны отступы → используй spacing/margin родителя
+- Use when: separating content groups, section dividers on the preview page, horizontal breaks between components in the gallery
+- Do NOT use when: a heading/label inside the divider is needed → use the "labeled divider" pattern; spacing is needed → use parent spacing/margin
 
 ### Common patterns
 
 ```tsx
-// Горизонтальный (по умолчанию, декоративный)
+// Horizontal (default, decorative)
 <Separator />
 
-// Вертикальный в inline-flex ряду
+// Vertical in an inline-flex row
 <div className="flex items-center gap-2">
   <span>Item A</span>
   <Separator orientation="vertical" className="h-4" />
   <span>Item B</span>
 </div>
 
-// Семантический (структурный разрыв контента)
+// Semantic (structural content break)
 <Separator decorative={false} />
 ```
 
@@ -34,7 +34,6 @@
 - **File:** `src/components/ui/separator.tsx`
 - **ARIA APG pattern:** [Separator (role)](https://www.w3.org/WAI/ARIA/apg/patterns/separator/) — decorative: `role="none"`, semantic: `role="separator"`
 - **Reference:** [Radix Separator](https://www.radix-ui.com/primitives/docs/components/separator), [shadcn/ui Separator](https://ui.shadcn.com/docs/components/radix/separator)
-- **Ticket:** ALE-773
 
 ---
 
@@ -104,7 +103,7 @@ No `variant` or `size` props — overrides via `className`.
 | Horizontal | `w-full` (100%) | `h-px` (1px) | — |
 | Vertical | `w-px` (1px) | `h-full` (100%) | — |
 
-**На 4px scale:** `1px` — accepted exception. Separator — hairline rule, не layout box. Используется в 5/5 DS.
+**On the 4px scale:** `1px` — accepted exception. Separator is a hairline rule, not a layout box. Used in 5/5 DS.
 
 ### Internal proportions
 
@@ -164,13 +163,13 @@ No border radius. No border — separator IS the visual line via `background-col
 | horizontal default | "Horizontal" | Full width |
 | vertical default | "Vertical" | Inside flex row, explicit `h-4` |
 
-**GATE:** Оба варианта должны быть видны в ComponentGallery перед Visual Gate.
+**GATE:** Both variants must be visible in ComponentGallery before Visual Gate.
 
 ---
 
 ## Test Plan
 
-### Universal gates (уже в component-qa.spec.ts)
+### Universal gates (already in component-qa.spec.ts)
 
 - [x] No JS errors
 - [x] axe-core: 0 critical violations

@@ -65,7 +65,6 @@ const [value, setValue] = useState('system')
 - **File:** `src/components/ui/select.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/combobox/ (Select-only combobox)
 - **Reference:** shadcn/ui Select, Radix UI Select primitive
-- **Ticket:** ALE-834
 
 ---
 

@@ -1,7 +1,7 @@
 # Component Spec: Slider
 
 > Fill this out COMPLETELY before writing any implementation code.
-> Source: ARIA APG → Radix UI → shadcn/ui → MUI / Carbon / Spectrum gap analysis (ALE-830 researcher report)
+> Source: ARIA APG → primitive docs → component library reference → MUI / Carbon / Spectrum gap analysis
 
 ---
 
@@ -81,7 +81,6 @@ Binary on/off?
 - **File:** `src/components/ui/slider.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/slider/
 - **Reference:** https://www.radix-ui.com/primitives/docs/components/slider | https://ui.shadcn.com/docs/components/slider
-- **Ticket:** ALE-830
 
 ---
 
@@ -304,7 +303,7 @@ Min interactive target: thumb 16/20px is below 44px — pointer-area is extended
 - `iterations_to_done`: **2**
 - Root cause iter 2: focus-stealing — `handleTrackPointerDown` and `handleThumbPointerDown` did not call `e.preventDefault()` before explicit `thumb.focus()`. Browser's native focus-on-pointerdown algorithm then walked up to the surrounding `tabpanel[tabIndex=0]` ancestor and overrode the explicit focus. Single-line fix in both pointer handlers.
 - New error code: **E-013** — pointer-down handlers that call `element.focus()` MUST also call `e.preventDefault()` first when the element lives inside any focusable ancestor (tabpanel, dialog, etc.). Otherwise native focus-on-pointerdown walks up the tree and overrides explicit focus. Affects every component with internal focus management nested in a tabpanel — pre-emptively audit Switch / RadioGroup / Tabs / Combobox.
-- Automation ticket: not needed (single-line preventDefault fix; covered now via Gate 19 `track click → thumb focused` assertion). E-013 added to Error Log.
+- Automation issue: not needed (single-line preventDefault fix; covered now via Gate 19 `track click → thumb focused` assertion). E-013 added to Error Log.
 - Pipeline v2 mirror pattern: validated 4× in a row (Checkbox → Switch → Radio → Slider, all ≤2 iterations).
 - Non-blocking from ux-reviewer (filed for follow-up): phantom vertical scrollbar in Overview card from `overflow-x-auto` implicit y-scroll (3px overflow); affects Radio Preview Block too — 1-line shared fix.
 

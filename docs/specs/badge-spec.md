@@ -52,7 +52,6 @@ What does the badge communicate?
 - **File:** `src/components/ui/badge.tsx`
 - **ARIA APG pattern:** No dedicated pattern. Uses `<span>` (static) or `role="status"` (dynamic counter). See [ARIA22](https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA22)
 - **Reference:** [shadcn v4 new-york badge](https://github.com/shadcn-ui/ui), [Fluent 2 Badge SPEC](https://github.com/microsoft/fluentui-react-native/tree/main/packages/components/Badge), [Spectrum Badge](https://react-spectrum.adobe.com/react-spectrum/Badge.html)
-- **Ticket:** ALE-772
 
 ---
 
@@ -288,6 +287,5 @@ expect(bg).toMatch(/^rgb/)
 **Spec complete:** YES
 
 ## Related
-- [[ALE-951 - [theme-studio] Complete Badge component — all variants + tests]]
 - [[button-spec]]
 - [[component-spec-template]]

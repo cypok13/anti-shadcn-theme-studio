@@ -52,8 +52,7 @@ Which disabled pattern?
 - **Component name:**
 - **File:** `src/components/ui/[name].tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/[pattern]/
-- **Reference:** (MUI / Radix / shadcn source links)
-- **Ticket:** ALE-XXX
+- **Reference:** (MUI / Radix / component library source links)
 
 ---
 
@@ -269,9 +268,9 @@ RadioGroup:
 - [ ] ARIA specified
 - [ ] Test plan written
 
-> **GATE:** Если хотя бы один пункт выше не отмечен → `Spec complete: NO`.
-> `designer` субагент приступает к реализации ТОЛЬКО при `Spec complete: YES`.
-> Оркестратор ОБЯЗАН проверить этот статус перед Step 2.
+> **GATE:** If any item above is unchecked → `Spec complete: NO`.
+> The `designer` subagent begins implementation ONLY when `Spec complete: YES`.
+> The orchestrator MUST verify this status before Step 2.
 
 **Spec complete:** YES / NO
 
@@ -287,7 +286,7 @@ Required by COMPONENT-PIPELINE.md § 7. Fill every field — blank blocks merge.
 - **What went wrong (≤3 lines):**
 - **Root cause (one sentence):**
 - **New Error Log entry created?** `E-0NN` / no (required if iterations > 5)
-- **Automation ticket link:** `ALE-NNN` / none
+- **Automation issue link:** issue / none
 - **Memory update:** `memory/theme_studio_component_pipeline.md` updated? yes / n/a
 
 ## Related

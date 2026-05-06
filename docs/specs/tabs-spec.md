@@ -6,21 +6,21 @@
 
 ### When to use this component
 
-- Use when: переключение между несколькими связанными панелями контента без перехода на новую страницу — sub-tabs внутри секций Preview page (Variants/Sizes/States)
-- Do NOT use when: нужна навигация между страницами → используй `<Link>`; меньше 2 вариантов → используй Switch или Toggle; контент должен быть виден одновременно → используй Accordion или Stack
+- Use when: switching between several related content panels without navigating to a new page — sub-tabs inside Preview page sections (Variants/Sizes/States)
+- Do NOT use when: page-level navigation is needed → use `<Link>`; fewer than 2 options → use Switch or Toggle; content must be visible simultaneously → use Accordion or Stack
 
 ### Variant decision tree
 
 ```
-Какой визуальный стиль?
-├── Sub-tabs внутри секции (компактный) → variant="default" (pill/contained)
-└── Page-level navigation (с весом) → variant="line" (underline)
+Which visual style?
+├── Sub-tabs inside a section (compact) → variant="default" (pill/contained)
+└── Page-level navigation (prominent) → variant="line" (underline)
 ```
 
 ### Common patterns
 
 ```tsx
-// Sub-tabs в preview секции
+// Sub-tabs in a preview section
 <Tabs defaultValue="variants">
   <TabsList>
     <TabsTrigger value="variants">Variants</TabsTrigger>
@@ -53,7 +53,6 @@
 - **File:** `src/components/ui/tabs.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/tabs/
 - **Reference:** [Radix UI Tabs](https://www.radix-ui.com/primitives/docs/components/tabs), [shadcn v4 new-york tabs](https://github.com/shadcn-ui/ui/blob/main/apps/v4/registry/new-york-v4/ui/tabs.tsx)
-- **Ticket:** ALE-774
 
 ---
 
@@ -201,13 +200,13 @@
 | Second tab clickable | "Tab 2" | |
 | Third tab disabled | "Tab 3" | `disabled` prop |
 
-**GATE:** Все три таба должны быть видны, disabled стейт visible до Visual Gate.
+**GATE:** All three tabs must be visible, disabled state visible before Visual Gate.
 
 ---
 
 ## Test Plan
 
-### Universal gates (уже в component-qa.spec.ts — no action needed)
+### Universal gates (already in component-qa.spec.ts — no action needed)
 
 - [x] No JS errors
 - [x] axe-core: 0 critical violations

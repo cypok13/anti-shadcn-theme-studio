@@ -1,6 +1,6 @@
 # Component Spec: OklchPicker
 
-> ALE-721 — created 2026-04-30 before implementation.
+> Created 2026-04-30 before implementation.
 
 ---
 
@@ -42,7 +42,6 @@ Need color editing?
 - **File:** `src/components/tokens/OklchPicker.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/
 - **Reference:** OKLCHpicker.com, culori, oklch.com
-- **Ticket:** ALE-721
 
 ---
 
@@ -224,10 +223,9 @@ Need color editing?
 - **What went wrong:** (1) ALE-754 regression — `page.tsx` was redirecting to `/preview` instead of rendering AppShell, making OklchPicker unreachable. Discovered during QA. (2) `before:inset-[-10px]` is off 4px scale — fixed to `-12px`.
 - **Root cause:** Routing regression pre-dated ALE-721 (introduced in ALE-754 token cleanup). Token audit caught off-scale spacing in new file.
 - **New Error Log entry created?** No — both issues were resolved within ≤5 iterations. Target HIT.
-- **Automation ticket link:** ALE-721
+- **Automation issue link:** see retrospective
 - **Memory update:** yes
 
 ## Related
-- [[ALE-721 - [theme-studio] Replace native color input with OKLCH picker (L-C-H sliders + hex text input)]]
 - [[theme-sidebar-colors-spec]]
 - [[token-spec]]

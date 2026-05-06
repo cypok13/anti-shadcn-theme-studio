@@ -34,7 +34,7 @@ export interface OklchColor {
 
 /**
  * A single token entry with both HSL (legacy) and OKLCH representations.
- * HSL is the storage format (shadcn-compatible bare triples "210 40% 98%").
+ * HSL is the storage format (CSS variable compatible bare triples "210 40% 98%").
  * OKLCH is computed on the fly via culori for export and color picker.
  */
 export interface TokenValue {
@@ -52,7 +52,6 @@ export interface TokenValue {
  * 2. Separating light/dark mode into explicit fields
  * 3. Adding radius as a first-class field
  *
- * Token reference: https://ui.shadcn.com/docs/theming
  */
 export interface TokenOverridesV2 {
   // ── Color tokens (light mode) ──────────────────────────────
@@ -284,7 +283,7 @@ export interface GalleryEntry {
  * Theme Studio's output format for component library CLI install.
  *
  * Extends the registry:theme format with structural preset data.
- * Compatible with: `npx shadcn@latest add https://theme-studio-beta.vercel.app/r/[name]`
+ * Compatible with: `npx shadcn@latest add https://themestudio.notjustsasha.com/r/[name]`
  *
  * Registry spec: https://ui.shadcn.com/docs/registry/registry-item-json
  *

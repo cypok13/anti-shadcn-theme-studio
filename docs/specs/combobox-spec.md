@@ -52,7 +52,6 @@ Need a selection control?
 - **Component name:** Combobox
 - **File:** `src/components/ui/combobox.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/combobox/
-- **Ticket:** ALE-831
 
 ---
 

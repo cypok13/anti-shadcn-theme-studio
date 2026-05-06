@@ -1,13 +1,13 @@
 # Documentation Architecture — Theme Studio
 
-> Source of truth о том, как связаны docs/, scripts/, и src/.
-> Создан: 2026-04-17 | Обновлять при изменении архитектуры пайплайна.
+> Source of truth for how docs/, scripts/, and src/ are connected.
+> Created: 2026-04-17 | Update when pipeline architecture changes.
 
-## Как читать эту диаграмму
+## How to read this diagram
 
-Синие узлы — исходный код. Оранжевые — скрипты-генераторы. Зелёные — авто-сгенерированные документы (не трогать вручную). Серые — ручные документы (обновлять по протоколу Step 7). Красные — устаревшие файлы (не читать).
+Blue nodes — source code. Orange — generator scripts. Green — auto-generated documents (do not edit manually). Gray — manual documents (update per Step 7 protocol). Red — deprecated files (do not read).
 
-## Диаграмма
+## Diagram
 
 ```mermaid
 graph TD
@@ -79,32 +79,32 @@ graph TD
     class hook,step7 enforcement
 ```
 
-## Event Matrix — что обновляется когда
+## Event Matrix — what gets updated when
 
-| Событие | Автоматически | Вручную |
-|---------|--------------|---------|
-| Добавлен `ui/*.tsx` компонент | COMPONENT-INDEX (`docs:sync`) | `docs/specs/[name]-spec.md` (по шаблону), IMPLEMENTATION-TRACKER |
-| Добавлен CSS токен в `globals.css` | TOKEN-INDEX (`docs:sync`) | Решить: нужен ли в `ThemeTokens` (types.ts) |
-| Обнаружена архитектурная ошибка | — | COMPONENT-PIPELINE.md Error Log + memory |
-| Изменён пресет | — | IMPLEMENTATION-TRACKER секция 8 |
-| Изменена архитектура пайплайна | — | Этот файл (DOCS-ARCHITECTURE.md) |
+| Event | Automatically | Manually |
+|-------|--------------|---------|
+| `ui/*.tsx` component added | COMPONENT-INDEX (`docs:sync`) | `docs/specs/[name]-spec.md` (from template), IMPLEMENTATION-TRACKER |
+| CSS token added to `globals.css` | TOKEN-INDEX (`docs:sync`) | Decide: does it need to go into `ThemeTokens` (types.ts) |
+| Architectural error found | — | COMPONENT-PIPELINE.md Error Log + memory |
+| Preset changed | — | IMPLEMENTATION-TRACKER section 8 |
+| Pipeline architecture changed | — | This file (DOCS-ARCHITECTURE.md) |
 
-## Правила
+## Rules
 
 ```
-AUTO-GENERATED (не редактировать вручную):
+AUTO-GENERATED (do not edit manually):
   docs/TOKEN-INDEX.md       ← npm run docs:sync
   docs/COMPONENT-INDEX.md   ← npm run docs:sync
 
-MANUAL (обновлять по протоколу Step 7):
+MANUAL (update per Step 7 protocol):
   docs/IMPLEMENTATION-TRACKER.md
   docs/specs/*.md
   docs/COMPONENT-PIPELINE.md  (Error Log E-001..E-010)
   CLAUDE.md
 
-DEPRECATED (не читать):
-  docs/component-spec.md    → заменён COMPONENT-INDEX.md
-  docs/token-spec.md        → заменён TOKEN-INDEX.md
+DEPRECATED (do not read):
+  docs/component-spec.md    → replaced by COMPONENT-INDEX.md
+  docs/token-spec.md        → replaced by TOKEN-INDEX.md
 ```
 
 ## Related

@@ -89,7 +89,6 @@ Need to block user interaction with background?
 - **File:** `src/components/ui/dialog.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/
 - **Reference:** https://www.radix-ui.com/primitives/docs/components/dialog · https://ui.shadcn.com/docs/components/dialog
-- **Ticket:** ALE-722
 
 ---
 
@@ -212,13 +211,13 @@ Header sticks to top, footer sticks to bottom, body (`DialogBody`) scrolls:
 
 ## ARIA
 
-- **role:** `dialog` — set automatically by Radix on Content
-- **aria-modal:** `"true"` — set automatically by Radix
-- **aria-labelledby:** Radix links Content to Title automatically when DialogTitle is present
-- **aria-describedby:** Radix links Content to Description when DialogDescription is present; omit Description for complex body content
-- **Focus trap:** Radix implements natively (Tab/Shift+Tab cycles within Content)
-- **Escape:** Radix handles natively
-- **Return focus:** Radix returns focus to trigger on close automatically
+- **role:** `dialog` — set automatically by the primitive on Content
+- **aria-modal:** `"true"` — set automatically by the primitive
+- **aria-labelledby:** primitive links Content to Title automatically when DialogTitle is present
+- **aria-describedby:** primitive links Content to Description when DialogDescription is present; omit Description for complex body content
+- **Focus trap:** implemented natively by the primitive (Tab/Shift+Tab cycles within Content)
+- **Escape:** handled natively by the primitive
+- **Return focus:** primitive returns focus to trigger on close automatically
 
 ---
 

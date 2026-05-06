@@ -70,7 +70,6 @@ Need hover/focus contextual info?
 - **File:** `src/components/ui/tooltip.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/
 - **Reference:** https://www.radix-ui.com/primitives/docs/components/tooltip · https://ui.shadcn.com/docs/components/tooltip
-- **Ticket:** ALE-743
 
 ---
 

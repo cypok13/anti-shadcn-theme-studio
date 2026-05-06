@@ -1,7 +1,7 @@
 # Component Spec: Popover
 
 > Fill this out COMPLETELY before writing any implementation code.
-> Source: ARIA APG pattern → Radix UI → shadcn/ui reference.
+> Source: ARIA APG pattern → primitive docs → component library reference.
 
 ---
 
@@ -73,7 +73,6 @@ const [open, setOpen] = useState(false)
 - **File:** `src/components/ui/popover.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/ (non-modal variant)
 - **Reference:** https://www.radix-ui.com/primitives/docs/components/popover, https://ui.shadcn.com/docs/components/popover
-- **Ticket:** ALE-637
 
 ---
 
@@ -187,14 +186,14 @@ const [open, setOpen] = useState(false)
 
 ## ARIA
 
-- **role:** `dialog` (set by Radix PopoverContent automatically)
-- **aria-expanded:** `true/false` on Trigger (set by Radix automatically)
-- **aria-controls:** `{content-id}` on Trigger (set by Radix automatically)
+- **role:** `dialog` (set by the primitive on PopoverContent automatically)
+- **aria-expanded:** `true/false` on Trigger (set by the primitive automatically)
+- **aria-controls:** `{content-id}` on Trigger (set by the primitive automatically)
 - **aria-modal:** NOT set — popover is non-modal by default
 - **aria-live:** off — not a live region
 - **aria-label / aria-labelledby:** Consumer responsibility
 - **aria-disabled:** N/A — delegated to trigger
-- **aria-hidden on decorative icons:** Arrow is decorative — handled by Radix
+- **aria-hidden on decorative icons:** Arrow is decorative — handled by the primitive
 
 ---
 

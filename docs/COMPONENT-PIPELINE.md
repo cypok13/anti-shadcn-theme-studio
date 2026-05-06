@@ -19,8 +19,8 @@ Key insight from Session A retrospective: the pipeline must be autonomous — Cl
 ## Pipeline Steps
 
 ### 0. Ticket + Branch
-- Linear ticket created
-- Branch: `ale-NNN/theme-studio-[component-name]`
+- Issue created
+- Branch: `[issue-id]/theme-studio-[component-name]`
 - Scope: 1 component per session
 
 ---
@@ -37,7 +37,7 @@ Research best practices for [ComponentName] component:
    - Required keyboard interactions
    - Required ARIA roles/attributes/states
    
-2. Radix UI primitive: https://www.radix-ui.com/primitives/docs/components/[name]
+2. Primitive component docs: https://www.radix-ui.com/primitives/docs/components/[name]
    - Keyboard behavior
    - Data attributes for state
 
@@ -107,9 +107,9 @@ Fill from researcher output + APG + Radix docs:
 
 **Gate:** Spec file exists and complete before any .tsx is written.
 
-> **Test Plan format rule:** вместо `- [ ] dropdown closes` писать:
+> **Test Plan format rule:** instead of `- [ ] dropdown closes`, write:
 > `- [ ] Given dropdown is open, When user clicks item B, Then [role="listbox"] not visible + trigger text = "B" + item B aria-selected="true"`
-> Это и есть скрипт для qa-engineer субагента — без него тест написать невозможно.
+> This is the script for the qa-engineer subagent — without it, writing the test is impossible.
 
 ---
 
@@ -161,22 +161,21 @@ Fill from researcher output + APG + Radix docs:
 
 ---
 
-### HITL — Layout Composition Gate (БЛОКИРУЕТ реализацию)
+### HITL — Layout Composition Gate (blocks implementation)
 
-**Trigger:** любой demo-блок с табличным или grid-контентом, несколькими колонками, или элементами
-с фиксированной шириной (кнопки, теги, таблицы).
+**Trigger:** any demo block with tabular or grid content, multiple columns, or elements with fixed widths (buttons, tags, tables).
 
-**Правило:** перед реализацией composer ДОЛЖЕН:
-1. Оценить, поместится ли контент в `max-w-3xl` (768px) без горизонтального скролла
-2. Если есть риск — остановиться и предложить CEO **3 варианта** композиции:
-   - вариант A (убрать столбцы/уменьшить)
-   - вариант B (компактные элементы)
-   - вариант C (сменить layout: flex-wrap, стек, etc.)
-3. Дождаться явного подтверждения CEO перед тем как писать код
+**Rule:** before implementing, the composer MUST:
+1. Evaluate whether the content fits in `max-w-3xl` (768px) without horizontal scroll
+2. If there is risk — stop and propose **3 layout options** to the reviewer:
+   - option A (remove columns / reduce)
+   - option B (compact elements)
+   - option C (change layout: flex-wrap, stack, etc.)
+3. Wait for explicit confirmation before writing code
 
-**Не делать:** молча добавлять `overflow-x-auto` и считать задачу решённой — это маскирует проблему.
+**Do not:** silently add `overflow-x-auto` and consider the task resolved — this masks the problem.
 
-Инцидент: ButtonSizesGrid — 5 колонок радиусов → горизонтальный скролл. Правильное решение: убрать ось радиусов и показывать только размеры.
+Incident: ButtonSizesGrid — 5 radius columns → horizontal scroll. Correct solution: remove the radius axis and show sizes only.
 
 ---
 
@@ -246,12 +245,12 @@ Playwright starts the dev server automatically via `webServer` in `playwright.co
 | Gate 4–6: Component-specific | Badge, Separator, Tabs deep assertions |
 | Gate 7: Overlay positioning | Select/Popover/Tooltip appear near trigger, not at (0,0) |
 
-**БЛОКИРУЮЩЕЕ ПРАВИЛО — Spec-Driven Tests:**
+**BLOCKING RULE — Spec-Driven Tests:**
 
-> Каждый `- [ ]` в разделе `## Test Plan` спецификации компонента ДОЛЖЕН иметь
-> соответствующий `test()` в `component-qa.spec.ts`. Без этого компонент не Done.
+> Every `- [ ]` in the `## Test Plan` section of the component spec MUST have
+> a corresponding `test()` in `component-qa.spec.ts`. Without this, the component is not Done.
 
-**Процесс для нового компонента (делегировать `qa-engineer` субагенту):**
+**Process for a new component (delegate to `qa-engineer` subagent):**
 ```
 Agent(subagent_type="qa-engineer", prompt="""
 Read docs/specs/[name]-spec.md § "Test Plan".
@@ -276,7 +275,7 @@ Report: N tests added, all passing.
 
 **Blocks merge if either sub-step fails or is skipped.**
 
-#### 5a. ux-reviewer субагент (automated visual QA — mandatory first)
+#### 5a. ux-reviewer subagent (automated visual QA — mandatory first)
 
 ```
 Agent(subagent_type="ux-reviewer", prompt="""
@@ -321,7 +320,7 @@ CEO visual checklist:
 - [ ] No text selection on interactive elements
 - [ ] Disabled state: cursor-not-allowed + reduced opacity
 
-**GATE:** Ticket moves to Done ONLY after CEO says "апрув" or equivalent explicit confirmation.
+**GATE:** Ticket moves to Done ONLY after explicit reviewer approval.
 
 ---
 
@@ -331,19 +330,19 @@ Runs AFTER Visual Gate approval, BEFORE `git merge → main`.
 
 **Commands:**
 ```bash
-npm run docs:sync        # регенерирует TOKEN-INDEX.md и COMPONENT-INDEX.md
-npm run docs:validate    # exit 1 если есть нарушения — фиксить до merge
+npm run docs:sync        # regenerates TOKEN-INDEX.md and COMPONENT-INDEX.md
+npm run docs:validate    # exit 1 if violations found — fix before merge
 ```
 
 **Manual checklist:**
-- [ ] `docs/specs/[name]-spec.md` — `Spec complete: YES` проставлен
-- [ ] `docs/IMPLEMENTATION-TRACKER.md` — строка компонента обновлена: `❌ → ✅`
-- [ ] `docs/COMPONENT-INDEX.md` — новый компонент появился (проверить git diff)
-- [ ] `docs/TOKEN-INDEX.md` — новые CSS vars из globals.css попали в индекс
-- [ ] Error Log — если в сессии найдена новая ошибка, E-0NN добавлен в COMPONENT-PIPELINE.md
-- [ ] Memory — `theme_studio_component_pipeline.md` обновлён если изменился Error Log
+- [ ] `docs/specs/[name]-spec.md` — `Spec complete: YES` set
+- [ ] `docs/IMPLEMENTATION-TRACKER.md` — component row updated: `❌ → ✅`
+- [ ] `docs/COMPONENT-INDEX.md` — new component appears (check git diff)
+- [ ] `docs/TOKEN-INDEX.md` — new CSS vars from globals.css included in index
+- [ ] Error Log — if a new error was found in the session, E-0NN added to COMPONENT-PIPELINE.md
+- [ ] Memory — `theme_studio_component_pipeline.md` updated if Error Log changed
 
-**Gate:** `npm run docs:validate` → exit 0. При exit 1 — фиксить до merge.
+**Gate:** `npm run docs:validate` → exit 0. If exit 1 — fix before merge.
 
 ---
 
@@ -353,7 +352,7 @@ Runs AFTER docs sync, BEFORE close. Purpose: convert painful iterations into enf
 
 **Mandatory actions:**
 
-1. **Log `iterations_to_done`** in `docs/build-log.md` — the number of full generate→validate cycles the component took from first implementation to CEO approval. Example: `iterations_to_done: 4`.
+1. **Log `iterations_to_done`** in `docs/build-log.md` — the number of full generate→validate cycles the component took from first implementation to approval. Example: `iterations_to_done: 4`.
 
 2. **If `iterations_to_done > 5`** — add a new entry to § "Error Log — Do Not Repeat These" below. Format:
    ```
@@ -361,10 +360,10 @@ Runs AFTER docs sync, BEFORE close. Purpose: convert painful iterations into enf
    **Symptom:** what went wrong
    **Root cause:** why (one sentence)
    **Fix:** concrete rule or code change
-   **Prevention:** can this be automated (ESLint / hook / Playwright gate)? If yes → create Linear ticket and link here.
+   **Prevention:** can this be automated (ESLint / hook / Playwright gate)? If yes → create a tracking issue and link here.
    ```
 
-3. **If root cause is automatable** — create a child Linear ticket for the enforcement (ESLint rule, Playwright test, PreToolUse hook) and link it in the build-log entry + Error Log entry. Do not merge without this link.
+3. **If root cause is automatable** — create a child issue for the enforcement (ESLint rule, Playwright test, PreToolUse hook) and link it in the build-log entry + Error Log entry. Do not merge without this link.
 
 4. **Update `memory/theme_studio_component_pipeline.md`** — mirror any new Error Log entry into the memory file.
 
@@ -473,7 +472,7 @@ Documented failures from Session A. Each rule above has a reason. Read before im
 
 **Symptom:** Standalone repo had main broken 4+ days after a Checkbox merge (4 components imported `@radix-ui/*` without deps in package.json). Every push triggered a failed Vercel build with no signal — production stayed on the old SHA while main HEAD advanced. 13 most recent production deploys all shared the same SHA = silent auto-redeploy retries with no new commits getting through.
 **Root cause:** Standalone repo had **zero CI workflows**. Markdown rule `feedback_session_start_build_check.md` ("run `npm run build` at session start when prior session had uncommitted work") existed but was not enforced — operator skipped it. Vercel deployment failures were not surfaced anywhere (no Telegram, no Slack, no dashboard).
-**Fix (two layers, ALE-829):**
+**Fix (two layers):**
 1. **GitHub Actions required status check** — `.github/workflows/build.yml` (`npm install` + `npm run build`). Branch protection blocks merge to main when red.
 2. **Vercel deploy-failure alerting** — poll Vercel API, alert on `state == ERROR` with dedupe.
 **Prevention:** Standalone repos with Vercel auto-deploy MUST have CI gate + alerting. Markdown-only rules are not enforcement.
@@ -482,7 +481,7 @@ Documented failures from Session A. Each rule above has a reason. Read before im
 
 ### E-013: Pointer-down handlers calling element.focus() must call e.preventDefault() first
 
-**Symptom (ALE-830, 2026-04-27):** Slider thumb is the intended focus target on track click. Component called `thumbRef.current?.focus()` from `handleTrackPointerDown`. Playwright assertion `document.activeElement === thumb` failed — focus landed on the surrounding `tabpanel[tabIndex=0]` ancestor instead.
+**Symptom:** Slider thumb is the intended focus target on track click. Component called `thumbRef.current?.focus()` from `handleTrackPointerDown`. Playwright assertion `document.activeElement === thumb` failed — focus landed on the surrounding `tabpanel[tabIndex=0]` ancestor instead.
 **Root cause:** Browser's native focus-on-pointerdown algorithm runs AFTER the React handler. Without `e.preventDefault()`, native focus walks up the DOM tree to the nearest focusable ancestor and overrides any explicit `.focus()` call made during the handler.
 **Fix:** Call `e.preventDefault()` at the top of any pointer-down handler that programmatically moves focus. Same pattern needed on both track and thumb pointer-down handlers. Single line.
 **Pre-emptive audit (any component with internal focus management nested inside a focusable ancestor):** Switch / RadioGroup / Tabs / Combobox pointer handlers — verify they either don't call `.focus()` (relying on native default) OR they call `e.preventDefault()` first.
@@ -492,7 +491,7 @@ Documented failures from Session A. Each rule above has a reason. Read before im
 
 ### E-014: Stale dev server masks passing tests as regressions
 
-**Symptom (ALE-830, 2026-04-27):** Designer round 3 reported 7/20 Gate 18+19 tests failing, claimed "pre-existing fail". Independent rerun after killing orphan dev server: 20/20 passing, zero code changes.
+**Symptom:** Designer round 3 reported 7/20 Gate 18+19 tests failing, claimed "pre-existing fail". Independent rerun after killing orphan dev server: 20/20 passing, zero code changes.
 **Root cause:** `playwright.config.ts` has `reuseExistingServer: !process.env.CI`. ux-reviewer left a Next dev server on port 3005 with an old build (HMR drift, missing the new Slider component). Playwright reused it. Tests asked for fresh DocPropsTable rows that the stale build never compiled.
 **Fix:** When test failures look like regressions but you didn't touch the affected code paths, kill orphan dev servers first: `lsof -ti:3005 | xargs -r kill -9` then re-run. Playwright will start a fresh server.
 **Process rule:** Subagent verdicts on test results are not load-bearing. Independently re-verify any "this is pre-existing" claim by running the failing tests yourself with a clean server. The cost of re-running is small; the cost of shipping a real regression flagged as "not mine" is large.
@@ -540,6 +539,4 @@ Required sections:
 One component done right > three components done wrong.
 
 ## Related
-- [[ALE-950 - [theme-studio] Complete Input component — all variants + tests]]
-- [[ALE-768 - theme-studio- Input component full pipeline]]
 - [[component-spec-template]]

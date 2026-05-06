@@ -1,7 +1,7 @@
 # Component Spec: Checkbox
 
 > Fill this out COMPLETELY before writing any implementation code.
-> Source: ARIA APG → Radix UI → shadcn/ui
+> Source: ARIA APG → primitive docs → component library reference
 
 ---
 
@@ -95,7 +95,6 @@ Disabled pattern:
 - **File:** `src/components/ui/checkbox.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/
 - **Reference:** https://www.radix-ui.com/primitives/docs/components/checkbox | https://ui.shadcn.com/docs/components/checkbox
-- **Ticket:** ALE-764
 
 ---
 
@@ -260,7 +259,7 @@ No explicit `variant` prop — single visual style. Size is fixed at 16×16px (h
 - [x] ARIA specified
 - [x] Test plan written
 
-**Spec complete:** YES (extended with indeterminate/required/error per ALE-812, 2026-04-24)
+**Spec complete:** YES (extended with indeterminate/required/error, 2026-04-24)
 
 ---
 

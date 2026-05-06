@@ -27,9 +27,7 @@ const buttonVariants = cva(
     'transition-[opacity,background-color,border-color,transform] [transition-duration:var(--duration-fast)] ease-in-out',
     // focus ring
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]',
-    // disabled (native) — убирает из tab order; cursor + opacity
     'disabled:cursor-not-allowed disabled:opacity-50',
-    // aria-disabled — остаётся в tab order; cursor + opacity (click guard в JS)
     '[&[aria-disabled=true]]:cursor-not-allowed [&[aria-disabled=true]]:opacity-50',
     // active scale (respects prefers-reduced-motion)
     'motion-safe:enabled:active:scale-[0.98]',

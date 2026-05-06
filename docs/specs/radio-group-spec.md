@@ -1,7 +1,7 @@
 # Component Spec: RadioGroup
 
 > Fill this out COMPLETELY before writing any implementation code.
-> Source: ARIA APG → Radix UI → shadcn/ui
+> Source: ARIA APG → primitive docs → component library reference
 
 ---
 
@@ -74,7 +74,6 @@ Disabled pattern:
 - **File:** `src/components/ui/radio-group.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/radio/
 - **Reference:** https://www.radix-ui.com/primitives/docs/components/radio-group | https://ui.shadcn.com/docs/components/radio-group
-- **Ticket:** ALE-753
 
 ---
 

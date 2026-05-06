@@ -1,7 +1,7 @@
 # Component Spec: Switch
 
 > Fill this out COMPLETELY before writing any implementation code.
-> Source: ARIA APG → Radix UI → shadcn/ui
+> Source: ARIA APG → primitive docs → component library reference
 
 ---
 
@@ -72,7 +72,6 @@ Disabled pattern:
 - **File:** `src/components/ui/switch.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/ARIA/apg/patterns/switch/
 - **Reference:** https://www.radix-ui.com/primitives/docs/components/switch | https://ui.shadcn.com/docs/components/switch
-- **Ticket:** ALE-765
 
 ---
 

@@ -1,11 +1,11 @@
 # Component Spec: Input
 
-> Source: ARIA ARIA21 technique → shadcn/ui → Chakra UI → MUI TextField → Material D3 (filled variant).
-> v2 additions: icon slots + filled variant (ALE-769).
+> Source: ARIA ARIA21 technique → component library reference → Chakra UI → MUI TextField → Material D3 (filled variant).
+> v2 additions: icon slots + filled variant.
 
 ---
 
-## Industry Parity Check (ALE-769 research — 2026-04-19)
+## Industry Parity Check (research — 2026-04-19)
 
 | Feature | Material | Carbon | Spectrum | Fluent | Atlassian | shadcn | **Include?** | Reason if excluded |
 |---|---|---|---|---|---|---|---|---|
@@ -77,7 +77,6 @@ Which disabled-like pattern?
 - **File:** `src/components/ui/input.tsx`
 - **ARIA APG pattern:** https://www.w3.org/WAI/WCAG21/Techniques/aria/ARIA21 (aria-invalid technique)
 - **Reference:** shadcn/ui Input, Chakra UI Input, MUI TextField
-- **Ticket:** ALE-768
 
 ---
 
@@ -267,6 +266,5 @@ Which disabled-like pattern?
 **Spec complete:** YES
 
 ## Related
-- [[ALE-769 - Input v2 — icon slots + filled variant]]
 - [[component-spec-template]]
 - [[button-spec]]
