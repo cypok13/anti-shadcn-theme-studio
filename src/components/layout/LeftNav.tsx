@@ -111,7 +111,7 @@ export function LeftNav({ isOpen = false, onClose }: Props) {
         style={{
           position: 'sticky',
           top: 32,
-          maxHeight: 'calc(100dvh - 96px)',
+          maxHeight: 'calc(100vh - 96px)',
           overflowY: 'auto',
           height: 'fit-content',
           padding: '0 16px',
