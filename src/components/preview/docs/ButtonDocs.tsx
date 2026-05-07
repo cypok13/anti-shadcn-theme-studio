@@ -155,7 +155,7 @@ export function ButtonOverviewTab() {
     <div className="space-y-6">
       <div>
         <p className="text-xs font-medium uppercase tracking-widest text-[hsl(var(--muted-foreground))] mb-3">Variants</p>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto w-full">
           <table className="border-separate border-spacing-x-3 border-spacing-y-3">
             <thead>
               <tr>

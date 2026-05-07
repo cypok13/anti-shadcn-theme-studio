@@ -67,14 +67,14 @@ export function EmailCTA() {
             You're on the list!
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: 8, justifyContent: 'center', alignItems: 'center', maxWidth: 460, margin: '0 auto' }}>
             <Input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="your@email.com"
               required
-              style={{ minWidth: 220 }}
+              style={{ flex: '1 1 0', minWidth: 160, maxWidth: 280 }}
             />
             <Button
               type="submit"

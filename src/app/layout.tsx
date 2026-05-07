@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import {
   Inter,
   Space_Grotesk,
@@ -74,6 +74,11 @@ const firaCode = Fira_Code({
 export const metadata: Metadata = {
   title: 'Theme Studio',
   description: 'Generate personality-first component library themes with AI rules',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
