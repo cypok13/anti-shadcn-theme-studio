@@ -49,7 +49,7 @@ export function AppShell() {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
+        height: '100dvh',
         overflow: 'hidden',
         background: `hsl(${tokens.background})`,
         color: `hsl(${tokens.foreground})`,
