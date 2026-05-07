@@ -82,7 +82,7 @@ export function ThemeSidebar() {
   )
 
   return (
-    <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] [box-shadow:var(--shadow-md)] overflow-y-auto max-h-[calc(100vh-64px)] p-4 flex flex-col gap-4">
+    <div className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--background))] [box-shadow:var(--shadow-md)] overflow-y-auto max-h-[calc(100dvh-64px)] p-4 flex flex-col gap-4">
 
       {/* Theme preset */}
       <section>

@@ -89,7 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       jetbrainsMono.variable, ibmPlexMono.variable, firaCode.variable,
       GeistSans.variable, GeistMono.variable,
     ].join(' ')}>
-      <body style={{ height: '100vh', overflow: 'hidden', margin: 0, padding: 0 }}>
+      <body style={{ height: '100dvh', overflow: 'hidden', margin: 0, padding: 0 }}>
         <NuqsAdapter>{children}</NuqsAdapter>
       </body>
     </html>
